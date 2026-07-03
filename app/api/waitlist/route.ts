@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mwvdpgay';
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,20 +14,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data, error } = await supabase
-      .from('waitlist')
-      .insert([{ email }])
-      .select()
-      .maybeSingle();
+    const res = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        site: 'deposit.now',
+        form: 'waitlist',
+      }),
+    });
 
-    if (error) {
-      if (error.code === '23505') {
-        return NextResponse.json(
-          { error: 'Email already registered' },
-          { status: 409 }
-        );
-      }
-      throw error;
+    if (!res.ok) {
+      throw new Error(`Formspree responded ${res.status}`);
     }
 
     return NextResponse.json(
