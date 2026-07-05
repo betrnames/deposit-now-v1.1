@@ -8,7 +8,9 @@ import { receiptIdFromPaymentHeader } from '@/lib/receipts';
 
 function receiptFields(request: NextRequest) {
   const header =
-    request.headers.get('x-payment') ?? request.headers.get('payment');
+    request.headers.get('payment-signature') ??
+    request.headers.get('x-payment') ??
+    request.headers.get('payment');
   const receiptId = header ? receiptIdFromPaymentHeader(header) : null;
   return receiptId
     ? {

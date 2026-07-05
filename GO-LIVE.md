@@ -46,5 +46,12 @@ stays on testnet. Local dev always runs testnet.
 ## Testing on testnet (optional, free)
 
 Fund a throwaway wallet with Base Sepolia test USDC (Circle faucet:
-faucet.circle.com) and run the /docs JavaScript example against
-http://localhost:3000/api/deposit with `EVM_PRIVATE_KEY` set to the throwaway key.
+faucet.circle.com), then from the project root:
+
+```
+$env:EVM_PRIVATE_KEY="0x..."   # throwaway key only — never paste into chat
+npm run test:deposit           # hits production by default
+```
+
+Use `DEPOSIT_API_URL=http://localhost:3000/api/deposit` for local dev.
+This proves the full loop: 402 → settle → receipt blob → `/receipt/<id>` page.
