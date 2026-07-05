@@ -493,6 +493,41 @@ asyncio.run(main())`,
                 </Tabs>
               </div>
 
+              {/* FAQ Section */}
+              <div id="faq" className="space-y-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Terminal className="h-6 w-6 text-blue-400" />
+                  <h2 className="text-2xl font-bold text-white">FAQ</h2>
+                </div>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="font-semibold mb-2 text-white">What is deposit.now?</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">
+                      deposit.now is the first public x402 API that lets AI agents autonomously
+                      deposit funds. Agents pay 0.01 USDC per call over HTTP — no accounts, API
+                      keys, or human sign-up required.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-2 text-white">How does an AI agent pay the deposit.now API?</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">
+                      The agent calls POST https://deposit.now/api/deposit and receives HTTP 402
+                      with signed payment requirements (x402 v2, exact scheme, USDC on Base). An
+                      x402 client SDK such as @x402/fetch for JavaScript or x402[httpx] for Python
+                      signs the payment and retries automatically; the facilitator verifies and
+                      settles it on-chain.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-2 text-white">What does the deposit.now API cost?</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">
+                      0.01 USDC per call, settled on Base via the x402 payment protocol. There are
+                      no subscriptions, accounts, or minimums.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Error Handling Section */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">
@@ -503,7 +538,7 @@ asyncio.run(main())`,
                   <div className="border-l-4 border-yellow-500 pl-4">
                     <div className="font-semibold mb-1 text-white">402 Payment Required</div>
                     <p className="text-sm text-gray-400">
-                      No payment provided or payment invalid. Check the Accept-Payment header for payment requirements.
+                      No payment provided or payment invalid. Decode the Payment-Required header (base64 JSON) for the payment requirements.
                     </p>
                   </div>
                   <div className="border-l-4 border-red-500 pl-4">

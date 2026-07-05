@@ -165,8 +165,9 @@ export default function Home() {
             </p>
 
             <p className="text-base sm:text-lg text-gray-400 max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed">
-              Deposit.now uses HTTP 402 Payment Required status to allow AI agents<br className="hidden sm:block" />
-              to fund wallets instantly via micro-stablecoins — no humans in the loop.
+              deposit.now is the first public x402 API that lets AI agents deposit funds
+              autonomously — 0.01 USDC per call on Base, paid over HTTP 402.
+              No accounts, no API keys, no humans in the loop.
             </p>
 
             {!isSubmitted ? (
