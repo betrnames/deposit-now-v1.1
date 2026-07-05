@@ -6,6 +6,8 @@ import {
   bazaarResourceServerExtension,
 } from '@x402/extensions/bazaar';
 import { facilitator as cdpFacilitator } from '@coinbase/x402';
+import { put } from '@vercel/blob';
+import { receiptIdFromPayload, receiptBlobPath } from './lib/receipts';
 
 const PAY_TO = '0x3f7a25Dc7307F5662489686e5A457DAD4879F685';
 
@@ -27,7 +29,50 @@ const facilitatorClient = new HTTPFacilitatorClient(
 
 const server = new x402ResourceServer(facilitatorClient)
   .register(NETWORK, new ExactEvmScheme())
-  .registerExtension(bazaarResourceServerExtension);
+  .registerExtension(bazaarResourceServerExtension)
+  .onAfterSettle(async (ctx) => {
+    // Phase 1: persist a public, verifiable deposit receipt after settlement.
+    try {
+      if (!process.env.BLOB_READ_WRITE_TOKEN) return;
+      const id = receiptIdFromPayload(ctx.paymentPayload);
+      if (!id) return;
+      const payload = ctx.paymentPayload as {
+        payload?: { authorization?: { from?: string } };
+      };
+      const req = ctx.requirements as {
+        amount?: string;
+        maxAmountRequired?: string;
+        asset?: string;
+        network?: string;
+        payTo?: string;
+      };
+      const result = ctx.result as {
+        payer?: string;
+        transaction?: string;
+        network?: string;
+      };
+      const amountAtomic = String(req.amount ?? req.maxAmountRequired ?? '');
+      const receipt = {
+        id,
+        payer: result.payer ?? payload.payload?.authorization?.from ?? null,
+        amountAtomic: amountAtomic || null,
+        amountUsdc: amountAtomic ? (Number(amountAtomic) / 1e6).toFixed(6) : null,
+        asset: req.asset ?? null,
+        network: req.network ?? result.network ?? null,
+        payTo: req.payTo ?? null,
+        txHash: result.transaction ?? null,
+        resource: 'https://deposit.now/api/deposit',
+        settledAt: new Date().toISOString(),
+      };
+      await put(receiptBlobPath(id), JSON.stringify(receipt), {
+        access: 'public',
+        addRandomSuffix: false,
+        contentType: 'application/json',
+      });
+    } catch (error) {
+      console.error('receipt write failed:', error);
+    }
+  });
 
 export const middleware = paymentProxy(
   {

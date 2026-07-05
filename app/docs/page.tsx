@@ -234,7 +234,9 @@ export default function DocsPage() {
                             {'  '}<span className="text-green-400">"timestamp"</span><span className="text-white">:</span> <span className="text-orange-400">"2025-12-30T12:00:00.000Z"</span><span className="text-white">,</span>{'\n'}
                             {'  '}<span className="text-green-400">"network"</span><span className="text-white">:</span> <span className="text-orange-400">"base-sepolia"</span><span className="text-white">,</span>{'\n'}
                             {'  '}<span className="text-green-400">"paymentReceived"</span><span className="text-white">:</span> <span className="text-yellow-300">true</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"transactionId"</span><span className="text-white">:</span> <span className="text-orange-400">"txn_1735563600000_abc123xyz"</span>{'\n'}
+                            {'  '}<span className="text-green-400">"transactionId"</span><span className="text-white">:</span> <span className="text-orange-400">"txn_1735563600000_abc123xyz"</span><span className="text-white">,</span>{'\n'}
+                            {'  '}<span className="text-green-400">"receiptId"</span><span className="text-white">:</span> <span className="text-orange-400">"a1b2c3d4e5f60718"</span><span className="text-white">,</span>{'\n'}
+                            {'  '}<span className="text-green-400">"receiptUrl"</span><span className="text-white">:</span> <span className="text-orange-400">"https://deposit.now/receipt/a1b2c3d4e5f60718"</span>{'\n'}
                             <span className="text-yellow-400">{'}'}</span>
                           </code>
                         </pre>

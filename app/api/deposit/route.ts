@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { receiptIdFromPaymentHeader } from '@/lib/receipts';
 
 // Payment is enforced by the x402 middleware (see middleware.ts).
-// If a request reaches this handler, the payment has been verified and
-// settled by the facilitator.
+// If a request reaches this handler, the payment has been verified; the
+// middleware settles it after this handler returns success and then writes
+// the public deposit receipt (see onAfterSettle in middleware.ts).
+
+function receiptFields(request: NextRequest) {
+  const header =
+    request.headers.get('x-payment') ?? request.headers.get('payment');
+  const receiptId = header ? receiptIdFromPaymentHeader(header) : null;
+  return receiptId
+    ? {
+        receiptId,
+        receiptUrl: `https://deposit.now/receipt/${receiptId}`,
+      }
+    : {};
+}
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -19,6 +33,7 @@ export async function GET(request: NextRequest) {
       network: request.headers.get('x-deposit-network') ?? 'base',
       timestamp: new Date().toISOString(),
       paymentReceived: true,
+      ...receiptFields(request),
     },
     { status: 200, headers: CORS_HEADERS }
   );
@@ -48,6 +63,7 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
       paymentReceived: true,
       transactionId: `txn_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+      ...receiptFields(request),
     },
     { status: 200, headers: CORS_HEADERS }
   );

@@ -1,5 +1,18 @@
 # deposit.now — go-live checklist
 
+## Phase 1 shipped (2026-07-05): verifiable deposit receipts
+
+- Every settled payment writes a public receipt to Vercel Blob (store
+  `deposit-receipts`) from the `onAfterSettle` hook in middleware.ts.
+- Receipt ID is derived deterministically from the payment signature, so the
+  API response can include `receiptId`/`receiptUrl` before settlement lands.
+- Public page: `https://deposit.now/receipt/<id>` — payer, amount, payTo,
+  settlement time, and a Basescan link to the settlement transaction.
+- Mainnet relaunch was intentionally rolled back until Phase 1 was live;
+  X402_NETWORK was removed from production (CDP keys remain stored).
+- HELD until mainnet relaunch: x402scan registration (rejects testnet) and
+  Bazaar indexing (happens automatically on first mainnet settlement).
+
 ## Current state (2026-07-04)
 
 - Real x402 v2 payment verification is live via `middleware.ts` (`@x402/next` `paymentProxy`).
