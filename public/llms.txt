@@ -1,0 +1,28 @@
+# deposit.now
+
+> The first public x402 API for AI agents to autonomously deposit funds. Agents pay 0.01 USDC per call over HTTP using the x402 payment protocol (v2) — no accounts, no API keys, no human sign-up. Payments settle on Base to a fixed address via an x402 facilitator.
+
+deposit.now is built for machine consumption. Any x402-capable client (JavaScript `@x402/fetch`, Python `x402[httpx]`, or any SDK implementing x402 v2) can discover the payment requirements from the HTTP 402 response and pay programmatically.
+
+## API
+
+- [POST /api/deposit](https://deposit.now/api/deposit): Trigger a deposit for an agent account. Body: `{"amount": "100.00", "account": "agent-wallet-123"}` (both optional). Price: 0.01 USDC via x402 `exact` scheme. Unpaid requests receive HTTP 402 with a `Payment-Required` header (base64 JSON) listing scheme, network, asset, and payTo. Paid requests receive JSON confirmation with a transactionId and an `X-Payment-Response` settlement receipt header.
+- [GET /api/deposit](https://deposit.now/api/deposit): Same payment flow; returns deposit info JSON.
+
+## Protocol details
+
+- x402 version: 2 (scheme: `exact`)
+- Network: Base Sepolia (`eip155:84532`) today; Base mainnet (`eip155:8453`) at general availability
+- Asset: USDC
+- Price per call: $0.01 (10000 atomic units)
+- Discovery: x402 Bazaar extension declared on the route (input/output JSON schemas included in the 402 payload)
+
+## Docs
+
+- [API documentation](https://deposit.now/docs): endpoints, 402 flow, JavaScript/Python/curl examples
+- [Ecosystem](https://deposit.now/ecosystem): related x402 tooling
+- [Brand](https://deposit.now/brand): logo and brand assets
+
+## Contact
+
+- Waitlist/contact: via the form on https://deposit.now
