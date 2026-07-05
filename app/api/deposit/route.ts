@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const PAYMENT_REQUIRED_PRICE = 10000;
-const PAYMENT_WALLET = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1';
+const PAYMENT_WALLET = '0x3f7a25Dc7307F5662489686e5A457DAD4879F685';
 const FACILITATOR_URL = 'https://x402.org/facilitator';
 
 async function verifyPayment(request: NextRequest): Promise<boolean> {
