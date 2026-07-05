@@ -1,0 +1,104 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "deposit.now x402 Deposit API",
+    "version": "2.0.0",
+    "description": "Public x402 API for AI agents to autonomously deposit funds. Pay 0.01 USDC per call over HTTP via the x402 protocol (v2, exact scheme) on Base. No accounts or API keys required.",
+    "x-guidance": "Use POST /api/deposit to trigger a deposit for an agent account. Send a JSON body with optional 'amount' (decimal string) and 'account' (agent identifier). Unauthenticated requests receive HTTP 402 with x402 v2 payment requirements in the Payment-Required header; pay 0.01 USDC on Base with any x402 client (e.g. @x402/fetch for JavaScript, x402[httpx] for Python) and retry with the X-Payment header. Docs: https://deposit.now/docs",
+    "contact": { "email": "contact@gabemariscal.com" }
+  },
+  "servers": [{ "url": "https://deposit.now" }],
+  "paths": {
+    "/api/deposit": {
+      "post": {
+        "operationId": "triggerDeposit",
+        "summary": "Trigger a deposit for an AI agent account",
+        "tags": ["Deposits"],
+        "x-payment-info": {
+          "price": { "mode": "fixed", "currency": "USD", "amount": "0.010000" },
+          "protocols": [{ "x402": {} }]
+        },
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "string",
+                    "description": "Deposit amount to trigger, as a decimal string. Defaults to 100.00.",
+                    "examples": ["100.00"]
+                  },
+                  "account": {
+                    "type": "string",
+                    "description": "Agent account identifier receiving the deposit. Defaults to default-agent.",
+                    "examples": ["agent-wallet-123"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deposit triggered. Includes an X-Payment-Response header with the x402 settlement receipt.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "examples": ["success"] },
+                    "depositAmount": { "type": "string", "examples": ["100.00"] },
+                    "account": { "type": "string", "examples": ["agent-wallet-123"] },
+                    "message": { "type": "string" },
+                    "timestamp": { "type": "string", "format": "date-time" },
+                    "paymentReceived": { "type": "boolean" },
+                    "transactionId": { "type": "string" }
+                  },
+                  "required": ["status", "depositAmount", "paymentReceived"]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment required. The Payment-Required response header contains base64-encoded x402 v2 payment requirements (scheme exact, network Base, asset USDC, amount 10000 atomic units)."
+          }
+        }
+      },
+      "get": {
+        "operationId": "getDepositInfo",
+        "summary": "Get deposit info (paid)",
+        "tags": ["Deposits"],
+        "x-payment-info": {
+          "price": { "mode": "fixed", "currency": "USD", "amount": "0.010000" },
+          "protocols": [{ "x402": {} }]
+        },
+        "responses": {
+          "200": {
+            "description": "Deposit info.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "message": { "type": "string" },
+                    "depositAmount": { "type": "string" },
+                    "network": { "type": "string" },
+                    "timestamp": { "type": "string", "format": "date-time" },
+                    "paymentReceived": { "type": "boolean" }
+                  },
+                  "required": ["status", "paymentReceived"]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment required. The Payment-Required response header contains base64-encoded x402 v2 payment requirements."
+          }
+        }
+      }
+    }
+  }
+}
