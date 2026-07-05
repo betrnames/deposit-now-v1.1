@@ -245,13 +245,20 @@ export default function DocsPage() {
                         <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
                           <code>
                             <span className="text-yellow-300">HTTP/1.1 402 Payment Required</span>{'\n'}
-                            <span className="text-green-400">Accept-Payment:</span> <span className="text-white">x402 1.0 amount=10000 currency=USDC network=base-sepolia</span>{'\n\n'}
+                            <span className="text-green-400">Payment-Required:</span> <span className="text-white">&lt;base64 of the JSON below&gt;</span>{'\n\n'}
                             <span className="text-yellow-400">{'{'}</span>{'\n'}
-                            {'  '}<span className="text-green-400">"error"</span><span className="text-white">:</span> <span className="text-orange-400">"Payment Required"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"message"</span><span className="text-white">:</span> <span className="text-orange-400">"This endpoint requires x402 payment"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"price"</span><span className="text-white">:</span> <span className="text-orange-400">"0.01 USDC"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"network"</span><span className="text-white">:</span> <span className="text-orange-400">"Base Sepolia"</span>{'\n'}
-                            <span className="text-yellow-400">{'}'}</span>
+                            {'  '}<span className="text-green-400">"x402Version"</span><span className="text-white">:</span> <span className="text-white">2</span><span className="text-white">,</span>{'\n'}
+                            {'  '}<span className="text-green-400">"error"</span><span className="text-white">:</span> <span className="text-orange-400">"Payment required"</span><span className="text-white">,</span>{'\n'}
+                            {'  '}<span className="text-green-400">"accepts"</span><span className="text-white">:</span> <span className="text-yellow-400">[{'{'}</span>{'\n'}
+                            {'    '}<span className="text-green-400">"scheme"</span><span className="text-white">:</span> <span className="text-orange-400">"exact"</span><span className="text-white">,</span>{'\n'}
+                            {'    '}<span className="text-green-400">"network"</span><span className="text-white">:</span> <span className="text-orange-400">"eip155:84532"</span><span className="text-white">,</span>{'\n'}
+                            {'    '}<span className="text-green-400">"payTo"</span><span className="text-white">:</span> <span className="text-orange-400">"0x3f7a...F685"</span><span className="text-white">,</span>{'\n'}
+                            {'    '}<span className="text-green-400">"asset"</span><span className="text-white">:</span> <span className="text-orange-400">"USDC"</span><span className="text-white">,</span>{'\n'}
+                            {'    '}<span className="text-green-400">"maxAmountRequired"</span><span className="text-white">:</span> <span className="text-orange-400">"10000"</span>{'\n'}
+                            {'  '}<span className="text-yellow-400">{'}'}]</span>{'\n'}
+                            <span className="text-yellow-400">{'}'}</span>{'\n\n'}
+                            <span className="text-gray-500"># Retry the request with a signed X-Payment header —</span>{'\n'}
+                            <span className="text-gray-500"># the x402 client SDKs handle this automatically.</span>
                           </code>
                         </pre>
                       </div>
@@ -290,7 +297,7 @@ export default function DocsPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => copyToClipboard('npm install @x402/fetch', 0)}
+                          onClick={() => copyToClipboard('npm install @x402/fetch @x402/core @x402/evm viem', 0)}
                         >
                           {copiedIndex === 0 ? (
                             <CheckCircle2 className="h-4 w-4" />
@@ -300,7 +307,7 @@ export default function DocsPage() {
                         </Button>
                       </div>
                       <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
-                        <code><span className="text-yellow-300">npm</span> <span className="text-green-400">install</span> <span className="text-white">@x402/fetch</span></code>
+                        <code><span className="text-yellow-300">npm</span> <span className="text-green-400">install</span> <span className="text-white">@x402/fetch @x402/core @x402/evm viem</span></code>
                       </pre>
                     </div>
 
@@ -312,17 +319,20 @@ export default function DocsPage() {
                           size="sm"
                           onClick={() =>
                             copyToClipboard(
-                              `import { fetch402 } from '@x402/fetch';
+                              `import { wrapFetchWithPayment } from '@x402/fetch';
+import { x402Client } from '@x402/core/client';
+import { ExactEvmScheme } from '@x402/evm/exact/client';
+import { privateKeyToAccount } from 'viem/accounts';
 
-const response = await fetch402('https://deposit.now/api/deposit', {
+const signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY);
+const client = new x402Client();
+client.register('eip155:*', new ExactEvmScheme(signer));
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
+
+const response = await fetchWithPayment('https://deposit.now/api/deposit', {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    amount: '100.00',
-    account: 'agent-wallet-123'
-  })
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ amount: '100.00', account: 'agent-wallet-123' })
 });
 
 const result = await response.json();
@@ -341,16 +351,18 @@ console.log('Transaction ID:', result.transactionId);`,
                       </div>
                       <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
                         <code>
-                          <span className="text-yellow-300">import</span> <span className="text-white">{'{'}</span> <span className="text-green-400">fetch402</span> <span className="text-white">{'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">'@x402/fetch'</span><span className="text-white">;</span>{'\n\n'}
-                          <span className="text-yellow-300">const</span> <span className="text-white">response</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">await</span> <span className="text-green-400">fetch402</span><span className="text-white">(</span><span className="text-orange-400">'https://deposit.now/api/deposit'</span><span className="text-white">,</span> <span className="text-white">{'{'}</span>{'\n'}
+                          <span className="text-yellow-300">import</span> <span className="text-white">{'{'} wrapFetchWithPayment {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">'@x402/fetch'</span><span className="text-white">;</span>{'\n'}
+                          <span className="text-yellow-300">import</span> <span className="text-white">{'{'} x402Client {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">'@x402/core/client'</span><span className="text-white">;</span>{'\n'}
+                          <span className="text-yellow-300">import</span> <span className="text-white">{'{'} ExactEvmScheme {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">'@x402/evm/exact/client'</span><span className="text-white">;</span>{'\n'}
+                          <span className="text-yellow-300">import</span> <span className="text-white">{'{'} privateKeyToAccount {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">'viem/accounts'</span><span className="text-white">;</span>{'\n\n'}
+                          <span className="text-yellow-300">const</span> <span className="text-white">signer</span> <span className="text-yellow-300">=</span> <span className="text-green-400">privateKeyToAccount</span><span className="text-white">(process.env.EVM_PRIVATE_KEY);</span>{'\n'}
+                          <span className="text-yellow-300">const</span> <span className="text-white">client</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">new</span> <span className="text-green-400">x402Client</span><span className="text-white">();</span>{'\n'}
+                          <span className="text-white">client.</span><span className="text-green-400">register</span><span className="text-white">(</span><span className="text-orange-400">'eip155:*'</span><span className="text-white">,</span> <span className="text-yellow-300">new</span> <span className="text-green-400">ExactEvmScheme</span><span className="text-white">(signer));</span>{'\n'}
+                          <span className="text-yellow-300">const</span> <span className="text-white">fetchWithPayment</span> <span className="text-yellow-300">=</span> <span className="text-green-400">wrapFetchWithPayment</span><span className="text-white">(fetch, client);</span>{'\n\n'}
+                          <span className="text-yellow-300">const</span> <span className="text-white">response</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">await</span> <span className="text-green-400">fetchWithPayment</span><span className="text-white">(</span><span className="text-orange-400">'https://deposit.now/api/deposit'</span><span className="text-white">,</span> <span className="text-white">{'{'}</span>{'\n'}
                           {'  '}<span className="text-green-400">method</span><span className="text-white">:</span> <span className="text-orange-400">'POST'</span><span className="text-white">,</span>{'\n'}
-                          {'  '}<span className="text-green-400">headers</span><span className="text-white">:</span> <span className="text-white">{'{'}</span>{'\n'}
-                          {'    '}<span className="text-orange-400">'Content-Type'</span><span className="text-white">:</span> <span className="text-orange-400">'application/json'</span><span className="text-white">,</span>{'\n'}
-                          {'  '}<span className="text-white">{'}'}</span><span className="text-white">,</span>{'\n'}
-                          {'  '}<span className="text-green-400">body</span><span className="text-white">:</span> <span className="text-white">JSON.</span><span className="text-green-400">stringify</span><span className="text-white">(</span><span className="text-white">{'{'}</span>{'\n'}
-                          {'    '}<span className="text-green-400">amount</span><span className="text-white">:</span> <span className="text-orange-400">'100.00'</span><span className="text-white">,</span>{'\n'}
-                          {'    '}<span className="text-green-400">account</span><span className="text-white">:</span> <span className="text-orange-400">'agent-wallet-123'</span>{'\n'}
-                          {'  '}<span className="text-white">{'}'}</span><span className="text-white">)</span>{'\n'}
+                          {'  '}<span className="text-green-400">headers</span><span className="text-white">:</span> <span className="text-white">{'{'}</span> <span className="text-orange-400">'Content-Type'</span><span className="text-white">:</span> <span className="text-orange-400">'application/json'</span> <span className="text-white">{'}'}</span><span className="text-white">,</span>{'\n'}
+                          {'  '}<span className="text-green-400">body</span><span className="text-white">:</span> <span className="text-white">JSON.</span><span className="text-green-400">stringify</span><span className="text-white">(</span><span className="text-white">{'{'}</span> <span className="text-green-400">amount</span><span className="text-white">:</span> <span className="text-orange-400">'100.00'</span><span className="text-white">,</span> <span className="text-green-400">account</span><span className="text-white">:</span> <span className="text-orange-400">'agent-wallet-123'</span> <span className="text-white">{'}'}</span><span className="text-white">)</span>{'\n'}
                           <span className="text-white">{'}'}</span><span className="text-white">);</span>{'\n\n'}
                           <span className="text-yellow-300">const</span> <span className="text-white">result</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">await</span> <span className="text-white">response.</span><span className="text-green-400">json</span><span className="text-white">();</span>{'\n'}
                           <span className="text-white">console.</span><span className="text-green-400">log</span><span className="text-white">(</span><span className="text-orange-400">'Deposit status:'</span><span className="text-white">,</span> <span className="text-white">result.status);</span>{'\n'}
@@ -367,7 +379,7 @@ console.log('Transaction ID:', result.transactionId);`,
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => copyToClipboard('pip install x402-client', 2)}
+                          onClick={() => copyToClipboard('pip install "x402[httpx]" eth-account', 2)}
                         >
                           {copiedIndex === 2 ? (
                             <CheckCircle2 className="h-4 w-4" />
@@ -377,7 +389,7 @@ console.log('Transaction ID:', result.transactionId);`,
                         </Button>
                       </div>
                       <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
-                        <code><span className="text-yellow-300">pip</span> <span className="text-green-400">install</span> <span className="text-white">x402-client</span></code>
+                        <code><span className="text-yellow-300">pip</span> <span className="text-green-400">install</span> <span className="text-white">"x402[httpx]" eth-account</span></code>
                       </pre>
                     </div>
 
@@ -389,21 +401,26 @@ console.log('Transaction ID:', result.transactionId);`,
                           size="sm"
                           onClick={() =>
                             copyToClipboard(
-                              `from x402 import Client
+                              `import asyncio, os
+from eth_account import Account
+from x402 import x402Client
+from x402.http.clients import x402HttpxClient
+from x402.mechanisms.evm import EthAccountSigner
+from x402.mechanisms.evm.exact.register import register_exact_evm_client
 
-client = Client()
+async def main():
+    client = x402Client()
+    account = Account.from_key(os.getenv("EVM_PRIVATE_KEY"))
+    register_exact_evm_client(client, EthAccountSigner(account))
 
-response = client.post(
-    'https://deposit.now/api/deposit',
-    json={
-        'amount': '100.00',
-        'account': 'agent-wallet-123'
-    }
-)
+    async with x402HttpxClient(client) as http:
+        response = await http.post(
+            "https://deposit.now/api/deposit",
+            json={"amount": "100.00", "account": "agent-wallet-123"},
+        )
+        print(await response.aread())
 
-result = response.json()
-print(f"Deposit status: {result['status']}")
-print(f"Transaction ID: {result['transactionId']}")`,
+asyncio.run(main())`,
                               3
                             )
                           }
@@ -417,18 +434,23 @@ print(f"Transaction ID: {result['transactionId']}")`,
                       </div>
                       <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
                         <code>
-                          <span className="text-yellow-300">from</span> <span className="text-white">x402</span> <span className="text-yellow-300">import</span> <span className="text-green-400">Client</span>{'\n\n'}
-                          <span className="text-white">client</span> <span className="text-yellow-300">=</span> <span className="text-green-400">Client</span><span className="text-white">()</span>{'\n\n'}
-                          <span className="text-white">response</span> <span className="text-yellow-300">=</span> <span className="text-white">client.</span><span className="text-green-400">post</span><span className="text-white">(</span>{'\n'}
-                          {'    '}<span className="text-orange-400">'https://deposit.now/api/deposit'</span><span className="text-white">,</span>{'\n'}
-                          {'    '}<span className="text-white">json</span><span className="text-yellow-300">=</span><span className="text-white">{'{'}</span>{'\n'}
-                          {'        '}<span className="text-orange-400">'amount'</span><span className="text-white">:</span> <span className="text-orange-400">'100.00'</span><span className="text-white">,</span>{'\n'}
-                          {'        '}<span className="text-orange-400">'account'</span><span className="text-white">:</span> <span className="text-orange-400">'agent-wallet-123'</span>{'\n'}
-                          {'    '}<span className="text-white">{'}'}</span>{'\n'}
-                          <span className="text-white">)</span>{'\n\n'}
-                          <span className="text-white">result</span> <span className="text-yellow-300">=</span> <span className="text-white">response.</span><span className="text-green-400">json</span><span className="text-white">()</span>{'\n'}
-                          <span className="text-green-400">print</span><span className="text-white">(</span><span className="text-orange-400">f"Deposit status: </span><span className="text-yellow-300">{'{'}</span><span className="text-white">result</span><span className="text-white">['status']</span><span className="text-yellow-300">{'}'}</span><span className="text-orange-400">"</span><span className="text-white">)</span>{'\n'}
-                          <span className="text-green-400">print</span><span className="text-white">(</span><span className="text-orange-400">f"Transaction ID: </span><span className="text-yellow-300">{'{'}</span><span className="text-white">result</span><span className="text-white">['transactionId']</span><span className="text-yellow-300">{'}'}</span><span className="text-orange-400">"</span><span className="text-white">)</span>
+                          <span className="text-yellow-300">import</span> <span className="text-white">asyncio, os</span>{'\n'}
+                          <span className="text-yellow-300">from</span> <span className="text-white">eth_account</span> <span className="text-yellow-300">import</span> <span className="text-green-400">Account</span>{'\n'}
+                          <span className="text-yellow-300">from</span> <span className="text-white">x402</span> <span className="text-yellow-300">import</span> <span className="text-green-400">x402Client</span>{'\n'}
+                          <span className="text-yellow-300">from</span> <span className="text-white">x402.http.clients</span> <span className="text-yellow-300">import</span> <span className="text-green-400">x402HttpxClient</span>{'\n'}
+                          <span className="text-yellow-300">from</span> <span className="text-white">x402.mechanisms.evm</span> <span className="text-yellow-300">import</span> <span className="text-green-400">EthAccountSigner</span>{'\n'}
+                          <span className="text-yellow-300">from</span> <span className="text-white">x402.mechanisms.evm.exact.register</span> <span className="text-yellow-300">import</span> <span className="text-green-400">register_exact_evm_client</span>{'\n\n'}
+                          <span className="text-yellow-300">async def</span> <span className="text-green-400">main</span><span className="text-white">():</span>{'\n'}
+                          {'    '}<span className="text-white">client</span> <span className="text-yellow-300">=</span> <span className="text-green-400">x402Client</span><span className="text-white">()</span>{'\n'}
+                          {'    '}<span className="text-white">account</span> <span className="text-yellow-300">=</span> <span className="text-white">Account.</span><span className="text-green-400">from_key</span><span className="text-white">(os.</span><span className="text-green-400">getenv</span><span className="text-white">(</span><span className="text-orange-400">"EVM_PRIVATE_KEY"</span><span className="text-white">))</span>{'\n'}
+                          {'    '}<span className="text-green-400">register_exact_evm_client</span><span className="text-white">(client, </span><span className="text-green-400">EthAccountSigner</span><span className="text-white">(account))</span>{'\n\n'}
+                          {'    '}<span className="text-yellow-300">async with</span> <span className="text-green-400">x402HttpxClient</span><span className="text-white">(client)</span> <span className="text-yellow-300">as</span> <span className="text-white">http:</span>{'\n'}
+                          {'        '}<span className="text-white">response</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">await</span> <span className="text-white">http.</span><span className="text-green-400">post</span><span className="text-white">(</span>{'\n'}
+                          {'            '}<span className="text-orange-400">"https://deposit.now/api/deposit"</span><span className="text-white">,</span>{'\n'}
+                          {'            '}<span className="text-white">json</span><span className="text-yellow-300">=</span><span className="text-white">{'{'}</span><span className="text-orange-400">"amount"</span><span className="text-white">:</span> <span className="text-orange-400">"100.00"</span><span className="text-white">,</span> <span className="text-orange-400">"account"</span><span className="text-white">:</span> <span className="text-orange-400">"agent-wallet-123"</span><span className="text-white">{'}'}</span><span className="text-white">,</span>{'\n'}
+                          {'        '}<span className="text-white">)</span>{'\n'}
+                          {'        '}<span className="text-green-400">print</span><span className="text-white">(</span><span className="text-yellow-300">await</span> <span className="text-white">response.</span><span className="text-green-400">aread</span><span className="text-white">())</span>{'\n\n'}
+                          <span className="text-white">asyncio.</span><span className="text-green-400">run</span><span className="text-white">(</span><span className="text-green-400">main</span><span className="text-white">())</span>
                         </code>
                       </pre>
                     </div>
@@ -441,27 +463,29 @@ print(f"Transaction ID: {result['transactionId']}")`,
                       </p>
                       <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
                         <code>
-                          <span className="text-yellow-300">curl</span> <span className="text-green-400">-X</span> <span className="text-white">POST</span> <span className="text-orange-400">https://deposit.now/api/deposit</span> <span className="text-white">\</span>{'\n'}
+                          <span className="text-yellow-300">curl</span> <span className="text-green-400">-i -X</span> <span className="text-white">POST</span> <span className="text-orange-400">https://deposit.now/api/deposit</span> <span className="text-white">\</span>{'\n'}
                           {'  '}<span className="text-green-400">-H</span> <span className="text-orange-400">"Content-Type: application/json"</span> <span className="text-white">\</span>{'\n'}
                           {'  '}<span className="text-green-400">-d</span> <span className="text-orange-400">'{`{`}"amount": "100.00", "account": "agent-wallet-123"{`}`}'</span>{'\n\n'}
-                          <span className="text-gray-500"># Response: HTTP 402 Payment Required</span>{'\n'}
-                          <span className="text-gray-500"># Accept-Payment: x402 1.0 amount=10000 currency=USDC network=base-sepolia</span>
+                          <span className="text-gray-500"># Response: HTTP 402 Payment Required with a Payment-Required</span>{'\n'}
+                          <span className="text-gray-500"># header listing accepted payment methods (scheme, network, payTo)</span>
                         </code>
                       </pre>
                     </div>
 
                     <div className="space-y-2">
                       <p className="text-sm text-gray-400">
-                        After payment, include proof headers
+                        The retry carries an X-Payment header — a signed payment payload
+                        (EIP-712), not a plain string. Generate it with an x402 SDK
+                        (JavaScript or Python above); it cannot be hand-written in curl.
                       </p>
                       <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
                         <code>
                           <span className="text-yellow-300">curl</span> <span className="text-green-400">-X</span> <span className="text-white">POST</span> <span className="text-orange-400">https://deposit.now/api/deposit</span> <span className="text-white">\</span>{'\n'}
                           {'  '}<span className="text-green-400">-H</span> <span className="text-orange-400">"Content-Type: application/json"</span> <span className="text-white">\</span>{'\n'}
-                          {'  '}<span className="text-green-400">-H</span> <span className="text-orange-400">"X-Payment-Proof: &lt;proof&gt;"</span> <span className="text-white">\</span>{'\n'}
-                          {'  '}<span className="text-green-400">-H</span> <span className="text-orange-400">"X-Payment-Tx: &lt;transaction-hash&gt;"</span> <span className="text-white">\</span>{'\n'}
+                          {'  '}<span className="text-green-400">-H</span> <span className="text-orange-400">"X-Payment: &lt;base64 signed payment payload from SDK&gt;"</span> <span className="text-white">\</span>{'\n'}
                           {'  '}<span className="text-green-400">-d</span> <span className="text-orange-400">'{`{`}"amount": "100.00", "account": "agent-wallet-123"{`}`}'</span>{'\n\n'}
-                          <span className="text-gray-500"># Response: HTTP 200 OK with deposit confirmation</span>
+                          <span className="text-gray-500"># Response: HTTP 200 OK with deposit confirmation +</span>{'\n'}
+                          <span className="text-gray-500"># X-Payment-Response header containing the settlement receipt</span>
                         </code>
                       </pre>
                     </div>
