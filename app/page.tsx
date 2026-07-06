@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,14 +14,6 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState('');
-  const [showStickyCta, setShowStickyCta] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setShowStickyCta(window.scrollY > 800);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -281,33 +273,6 @@ export default function Home() {
       </section>
 
       <SiteFooter />
-
-      {showStickyCta && !isSubmitted && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 transition-all duration-300 animate-in slide-in-from-bottom md:hidden">
-          <div className="bg-slate-900/95 backdrop-blur-xl border-t border-blue-500/30 shadow-2xl">
-            <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
-              <form onSubmit={handleSubmit} className="flex gap-0">
-                <Input
-                  type="email"
-                  placeholder="enter email..."
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="flex-1 bg-slate-800/60 border-blue-400/30 text-white placeholder:text-gray-400 h-14 text-base px-4 focus-visible:ring-1 focus-visible:ring-blue-500 rounded-none border-r-0"
-                />
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-wider px-8 h-14 rounded-none whitespace-nowrap"
-                >
-                  {isSubmitting ? 'Joining...' : 'Join the Waitlist'}
-                </Button>
-              </form>
-              {error && <p className="text-sm text-red-400 mt-2 px-4">{error}</p>}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

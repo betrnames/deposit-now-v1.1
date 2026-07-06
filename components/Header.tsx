@@ -120,7 +120,7 @@ export function Header() {
               </div>
               <div className="flex justify-center">
                 <Link href="/" className="flex items-center" aria-label="deposit.now home">
-                  <DepositLogo size={48} />
+                  <DepositLogo size={40} className="text-white/85" />
                 </Link>
               </div>
               <div className="flex justify-end">
@@ -134,7 +134,7 @@ export function Header() {
             <div className="hidden md:flex items-center justify-between h-14 sm:h-16 px-3 sm:px-6">
               <div className="flex items-center gap-6 lg:gap-8 min-w-0">
                 <Link href="/" className="flex items-center shrink-0" aria-label="deposit.now home">
-                  <DepositLogo size={48} />
+                  <DepositLogo size={40} className="text-white/85" />
                 </Link>
                 <div className="flex items-center gap-6">
                   <Link href="/about" className={linkClass}>
@@ -167,7 +167,7 @@ export function Header() {
                 aria-label="deposit.now home"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <DepositLogo size={48} />
+                <DepositLogo size={40} className="text-white/85" />
               </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
