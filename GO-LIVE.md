@@ -51,7 +51,7 @@ falls back to Base Sepolia testnet via `x402.org/facilitator`. Local dev always 
 
 1. End-to-end mainnet test with a real payment (~$0.01) using the JS client from /docs.
 2. Register additional merchants via admin API.
-3. MCP server for Cursor/Claude tool integration (in progress).
+3. MCP server: `mcp-server/` — add to Cursor MCP config (see mcp-server/README.md).
 4. x402scan listing (browse at https://www.x402scan.com after Bazaar indexing).
 
 ## Testing on testnet (local dev, free)

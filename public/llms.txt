@@ -80,4 +80,5 @@ Built for machine consumption: any x402 v2 client can read the payment requireme
 - Mainnet live on Base (eip155:8453) via CDP facilitator; verifiable receipts at /receipt/<id>
 - Bazaar: indexed by CDP after first mainnet settlement; search via CDP discovery/search
 - Merchant webhooks: POST deposit.settled to merchant webhookUrl after settlement (optional)
+- MCP: mcp-server/ package — deposit_now_describe, deposit_now_list_merchants, deposit_now_trigger_deposit, deposit_now_get_receipt
 - Contact: form at https://deposit.now
