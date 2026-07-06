@@ -41,6 +41,11 @@ export const metadata: Metadata = {
     description: 'The first public API for AI agents to autonomously deposit funds',
     images: ['/og.png'],
   },
+  icons: {
+    icon: [{ url: '/icon', type: 'image/png', sizes: '32x32' }],
+    apple: [{ url: '/apple-icon', type: 'image/png', sizes: '180x180' }],
+    shortcut: ['/icon'],
+  },
 };
 
 export default function RootLayout({
