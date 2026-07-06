@@ -33,11 +33,26 @@ Verify: `curl -i https://deposit.now/api/deposit` → the base64 in the
 The middleware auto-switches: mainnet requires all three CDP env vars; anything else
 falls back to Base Sepolia testnet via `x402.org/facilitator`. Local dev always runs testnet.
 
+## Phase 2 shipped (2026-07-06): merchant endpoints
+
+- `GET /api/merchants` — public catalog of merchant deposit routes
+- `POST /api/merchants/{slug}/deposit` — x402-protected; USDC settles to merchant `payTo`
+- Optional `deposit.settled` webhooks (HMAC-signed when `webhookSecret` is set)
+- Register merchants: `POST /api/merchants` with `Authorization: Bearer $MERCHANT_ADMIN_SECRET`
+
+## Phase 3 shipped (2026-07-06): discovery flywheel
+
+- `GET /.well-known/x402` and `GET /api/discovery` — machine-readable manifest
+- Bazaar extension on all deposit routes (already in middleware)
+- CDP Bazaar indexes after first mainnet settlement — no separate registration
+- OpenAPI + llms.txt updated with merchant paths
+
 ## Next steps
 
 1. End-to-end mainnet test with a real payment (~$0.01) using the JS client from /docs.
-2. x402scan registration (requires mainnet — now unblocked).
-3. Bazaar indexing (happens automatically on first mainnet settlement).
+2. Register additional merchants via admin API.
+3. MCP server for Cursor/Claude tool integration (in progress).
+4. x402scan listing (browse at https://www.x402scan.com after Bazaar indexing).
 
 ## Testing on testnet (local dev, free)
 

@@ -99,6 +99,66 @@
           }
         }
       }
+    },
+    "/api/merchants": {
+      "get": {
+        "operationId": "listMerchants",
+        "summary": "List active merchant deposit endpoints",
+        "tags": ["Merchants"],
+        "responses": {
+          "200": {
+            "description": "Public merchant catalog for agent discovery."
+          }
+        }
+      }
+    },
+    "/api/merchants/{slug}/deposit": {
+      "post": {
+        "operationId": "triggerMerchantDeposit",
+        "summary": "Trigger a merchant-scoped deposit",
+        "tags": ["Merchants", "Deposits"],
+        "x-payment-info": {
+          "price": { "mode": "fixed", "currency": "USD", "amount": "0.010000" },
+          "protocols": [{ "x402": {} }]
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Merchant slug from GET /api/merchants"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": { "type": "string", "examples": ["100.00"] },
+                  "account": { "type": "string", "examples": ["agent-wallet-123"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Merchant deposit triggered. USDC settles to merchant payTo." },
+          "402": { "description": "Payment required (0.01 USDC API fee)." }
+        }
+      }
+    },
+    "/api/discovery": {
+      "get": {
+        "operationId": "getDiscoveryManifest",
+        "summary": "Machine-readable discovery manifest",
+        "tags": ["Discovery"],
+        "responses": {
+          "200": { "description": "x402 discovery manifest with endpoints, OpenAPI, and Bazaar pointers." }
+        }
+      }
     }
   }
 }

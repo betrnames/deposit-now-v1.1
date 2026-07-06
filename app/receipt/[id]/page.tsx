@@ -74,7 +74,16 @@ export default async function ReceiptPage({
             </p>
 
             <Row label="Receipt ID">{receipt.id}</Row>
-            <Row label="Amount">
+            {receipt.merchantSlug ? (
+              <Row label="Merchant">
+                {receipt.merchantName ?? receipt.merchantSlug}
+              </Row>
+            ) : null}
+            {receipt.depositAmount ? (
+              <Row label="Deposit intent">{receipt.depositAmount} USDC</Row>
+            ) : null}
+            {receipt.account ? <Row label="Account">{receipt.account}</Row> : null}
+            <Row label="API fee">
               {receipt.amountUsdc ? `${receipt.amountUsdc} USDC` : '—'}
             </Row>
             <Row label="Payer">{receipt.payer ?? '—'}</Row>

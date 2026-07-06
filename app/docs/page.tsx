@@ -495,6 +495,72 @@ asyncio.run(main())`,
                 </Tabs>
               </div>
 
+              {/* Merchants Section */}
+              <div id="merchants" className="space-y-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Terminal className="h-6 w-6 text-blue-400" />
+                  <h2 className="text-2xl font-bold text-white">Merchant endpoints (Phase 2)</h2>
+                </div>
+                <p className="text-gray-400">
+                  Merchant-scoped routes let agents fund a specific business or integration. The
+                  0.01 USDC x402 fee still applies, but settlement lands on the merchant&apos;s{' '}
+                  <code className="text-blue-400">payTo</code> address instead of the platform wallet.
+                  After settlement, deposit.now writes a public receipt and optionally POSTs a{' '}
+                  <code className="text-blue-400">deposit.settled</code> webhook.
+                </p>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="outline" className="text-white border-white/20">GET</Badge>
+                      <code className="text-sm text-blue-400">/api/merchants</code>
+                    </div>
+                    <p className="text-sm text-gray-400">
+                      Public catalog of active merchants with deposit URLs and payTo addresses.
+                    </p>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="outline" className="text-white border-white/20">POST</Badge>
+                      <code className="text-sm text-blue-400">/api/merchants/&#123;slug&#125;/deposit</code>
+                    </div>
+                    <p className="text-sm text-gray-400 mb-2">
+                      Same x402 flow as the platform endpoint. Example slug:{' '}
+                      <code className="text-blue-400">deposit-now</code>.
+                    </p>
+                    <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                      <code>
+                        <span className="text-yellow-300">POST</span>{' '}
+                        <span className="text-orange-400">https://deposit.now/api/merchants/acme-corp/deposit</span>
+                        {'\n'}
+                        <span className="text-white">{'{'}</span>{'\n'}
+                        {'  '}<span className="text-green-400">&quot;amount&quot;</span>
+                        <span className="text-white">: </span>
+                        <span className="text-orange-400">&quot;250.00&quot;</span>
+                        <span className="text-white">,</span>{'\n'}
+                        {'  '}<span className="text-green-400">&quot;account&quot;</span>
+                        <span className="text-white">: </span>
+                        <span className="text-orange-400">&quot;agent-wallet-123&quot;</span>
+                        {'\n'}
+                        <span className="text-white">{'}'}</span>
+                      </code>
+                    </pre>
+                  </div>
+                </div>
+                <div className="bg-slate-950 rounded-lg p-4 border border-white/10 text-sm text-gray-400">
+                  <div className="font-semibold text-white mb-2">Discovery (Phase 3)</div>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li>
+                      Manifest:{' '}
+                      <a href="/.well-known/x402" className="text-blue-400 hover:underline">
+                        /.well-known/x402
+                      </a>
+                    </li>
+                    <li>Bazaar indexing via CDP facilitator after first mainnet settlement</li>
+                    <li>OpenAPI + llms.txt for agent crawlers</li>
+                  </ul>
+                </div>
+              </div>
+
               {/* FAQ Section */}
               <div id="faq" className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">

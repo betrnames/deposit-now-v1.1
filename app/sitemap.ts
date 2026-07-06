@@ -6,6 +6,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '',
     '/docs',
     '/ecosystem',
+    '/api/discovery',
+    '/api/merchants',
 
     '/about',
     '/litepaper',

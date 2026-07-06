@@ -130,13 +130,13 @@ export default function LitepaperPage() {
           </tr>
           <tr>
             <td>2</td>
-            <td>Planned</td>
-            <td>Merchant-scoped deposit endpoints, webhooks</td>
+            <td>Live</td>
+            <td>Merchant-scoped deposit endpoints, catalog API, webhooks</td>
           </tr>
           <tr>
             <td>3</td>
-            <td>Planned</td>
-            <td>x402scan + Bazaar discovery flywheel</td>
+            <td>Live</td>
+            <td>Bazaar extension, /.well-known/x402 manifest, OpenAPI + llms.txt</td>
           </tr>
         </tbody>
       </table>

@@ -11,6 +11,10 @@ export interface DepositReceipt {
   txHash: string | null;
   resource: string;
   settledAt: string;
+  merchantSlug?: string | null;
+  merchantName?: string | null;
+  depositAmount?: string | null;
+  account?: string | null;
 }
 
 // The receipt id is derived deterministically from the payment's unique

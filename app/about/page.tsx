@@ -71,12 +71,14 @@ export default function AboutPage() {
           receipts after every settlement.
         </li>
         <li>
-          <strong>Phase 2 — Merchant endpoints:</strong> Per-merchant deposit routes so
-          agents fund real accounts, not just a generic signal.
+          <strong>Phase 2 — Merchant endpoints (live):</strong> Per-merchant deposit routes
+          at <code>/api/merchants/&#123;slug&#125;/deposit</code> with merchant payTo
+          settlement, public catalog, and optional webhooks.
         </li>
         <li>
-          <strong>Phase 3 — Discovery flywheel:</strong> x402 Bazaar + x402scan listings,
-          OpenAPI contract, and agent marketplace distribution.
+          <strong>Phase 3 — Discovery flywheel (live):</strong> Bazaar extension,{' '}
+          <code>/.well-known/x402</code> manifest, OpenAPI + llms.txt, and CDP Bazaar
+          indexing after mainnet settlement.
         </li>
       </ol>
 
