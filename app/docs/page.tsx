@@ -6,8 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { NodeExchangeIcon } from '@/components/icons';
-import { ExternalLink, Github, Mail, Sun, ChevronRight, Copy, CheckCircle2, Terminal } from 'lucide-react';
+import { SiteFooter } from '@/components/SiteFooter';
+import { ChevronRight, Copy, CheckCircle2, Terminal } from 'lucide-react';
 
 export default function DocsPage() {
   const [activeSection, setActiveSection] = useState('introduction');
@@ -564,94 +564,7 @@ asyncio.run(main())`,
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800 bg-black/40 backdrop-blur py-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="grid md:grid-cols-3 gap-12 mb-12">
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <NodeExchangeIcon className="text-blue-500" size={32} />
-                    <span className="font-black tracking-tight text-xl">
-                      <span className="text-white">Deposit</span>
-                      <span className="text-blue-500">.</span>
-                      <span className="text-white">now</span>
-                    </span>
-                  </div>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                    The programmable funding gateway for autonomous agents. Scaling the machine-to-machine economy with instant x402 deposits.
-                  </p>
-                  <a href="https://x402.org" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-blue-500 hover:text-blue-400 transition-colors text-sm font-bold uppercase tracking-wider">
-                    Powered by x402 Protocol
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                  <div className="text-gray-500 text-xs mt-2 uppercase tracking-wider">
-                    Deployment: bolt.new • Base Sepolia USDC
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Protocol</h3>
-                  <ul className="space-y-3">
-                    <li>
-                      <a href="/docs" className="text-gray-400 hover:text-white transition-colors text-sm">
-                        Documentation
-                      </a>
-                    </li>
-                    <li>
-                      <a href="/ecosystem" className="text-gray-400 hover:text-white transition-colors text-sm">
-                        Ecosystem
-                      </a>
-                    </li>
-                    <li>
-                      <a href="https://x402.org" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors text-sm inline-flex items-center gap-1">
-                        x402 Standard
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">
-                        Network Status
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Connect</h3>
-                  <div className="flex items-center gap-4">
-                    <a href="https://x.com/Deposit_Now" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                      </svg>
-                    </a>
-                    <a href="https://github.com/DepositNow" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                      <Github className="h-5 w-5" />
-                    </a>
-                    <a href="mailto:support@deposit.now" className="text-gray-400 hover:text-white transition-colors">
-                      <Mail className="h-5 w-5" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-slate-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div className="text-gray-500 text-sm">
-                  © 2026 Deposit.now. Built for the agentic future.
-                </div>
-                <div className="flex items-center gap-6">
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">
-                    Privacy
-                  </a>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">
-                    Terms
-                  </a>
-                  <button className="text-gray-400 hover:text-white transition-colors">
-                    <Sun className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </footer>
+      <SiteFooter />
     </div>
   );
 }

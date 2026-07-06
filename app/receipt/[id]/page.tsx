@@ -12,7 +12,7 @@ import {
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Deposit Receipt — deposit.now',
+  title: 'Deposit Receipt',
   description:
     'Verifiable x402 deposit receipt: payer, amount, and on-chain settlement transaction.',
   robots: { index: false },

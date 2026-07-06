@@ -9,9 +9,9 @@ Built for machine consumption: any x402 v2 client can read the payment requireme
 - POST https://deposit.now/api/deposit — trigger a deposit. JSON body (optional): {"amount": "100.00", "account": "agent-wallet-123"}
 - GET https://deposit.now/api/deposit — deposit info, same payment flow
 - Price: 0.01 USDC (10000 atomic units), x402 v2 `exact` scheme
-- Network: Base Sepolia (eip155:84532) today; Base mainnet (eip155:8453) at general availability
+- Network: Base mainnet (eip155:8453); testnet (eip155:84532) for local dev
 - Unpaid request → HTTP 402 with `Payment-Required` header (base64 JSON: scheme, network, asset, payTo)
-- Paid request → 200 JSON with transactionId + `X-Payment-Response` settlement receipt header
+- Paid request → 200 JSON with receiptId, receiptUrl, transactionId + payment-response settlement header
 - Bazaar discovery extension included in the 402 payload (input/output schemas)
 
 ## Pay with JavaScript (@x402/fetch)
@@ -60,13 +60,18 @@ Built for machine consumption: any x402 v2 client can read the payment requireme
 ## Docs
 
 - https://deposit.now/docs — endpoints, 402 flow, JS/Python/curl examples, FAQ
+- https://deposit.now/litepaper — technical and economic overview (litepaper)
+- https://deposit.now/about — mission, roadmap, investor contact
 - https://deposit.now/openapi.json — OpenAPI 3.1 contract with x-payment-info pricing
 - https://deposit.now/ecosystem — related x402 tooling
-- https://deposit.now/brand — brand assets
+
+- https://deposit.now/privacy — privacy policy
+- https://deposit.now/disclosures — crypto and API risk disclosures
+- https://deposit.now/terms — terms of service
 
 ## Facts
 
 - Payments verified and settled by an x402 facilitator before the API responds
 - Settlement address: 0x3f7a25Dc7307F5662489686e5A457DAD4879F685 (Base)
-- Mainnet launch: pending CDP facilitator keys; testnet integration works today for free with Base Sepolia test USDC (faucet.circle.com)
+- Mainnet live on Base (eip155:8453) via CDP facilitator; verifiable receipts at /receipt/<id>
 - Contact: form at https://deposit.now

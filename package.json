@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:v1": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test:deposit": "node scripts/test-deposit.mjs"
+    "test:deposit": "node scripts/test-deposit.mjs",
+    "check:payer": "node scripts/check-payer.mjs"
   },
   "dependencies": {
     "@coinbase/x402": "^2.1.0",

@@ -2,7 +2,17 @@ import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://deposit.now';
-  return ['', '/docs', '/ecosystem', '/brand'].map((path) => ({
+  return [
+    '',
+    '/docs',
+    '/ecosystem',
+
+    '/about',
+    '/litepaper',
+    '/privacy',
+    '/disclosures',
+    '/terms',
+  ].map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',

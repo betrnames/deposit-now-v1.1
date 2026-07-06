@@ -4,7 +4,10 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://deposit.now'),
-  title: 'deposit.now - AI Agent Deposits via x402',
+  title: {
+    default: 'Deposit Now | The Funding Layer for AI Agents',
+    template: '%s | Deposit Now',
+  },
   description: 'The first public API for AI agents to autonomously deposit funds using x402 payment protocol. Instant stablecoin payments, no accounts required.',
   keywords: [
     'x402',
@@ -20,10 +23,10 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://deposit.now' },
   openGraph: {
-    title: 'deposit.now - AI Agent Deposits via x402',
+    title: 'Deposit Now | The Funding Layer for AI Agents',
     description: 'Let AI agents deposit funds autonomously via x402 — no accounts, instant stablecoin payments',
     url: 'https://deposit.now',
-    siteName: 'deposit.now',
+    siteName: 'Deposit Now',
     images: [
       {
         url: '/og.png',
@@ -34,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'deposit.now - AI Agent Deposits via x402',
+    title: 'Deposit Now | The Funding Layer for AI Agents',
     description: 'The first public API for AI agents to autonomously deposit funds',
     images: ['/og.png'],
   },
