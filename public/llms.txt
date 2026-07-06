@@ -64,6 +64,7 @@ Built for machine consumption: any x402 v2 client can read the payment requireme
 ## Docs
 
 - https://deposit.now/docs — endpoints, 402 flow, JS/Python/curl examples, FAQ
+- https://deposit.now/pricing — merchant tiers (Catalog / Rail / Network), settlement fees, webhook automation, referral rev-share
 - https://deposit.now/litepaper — technical and economic overview (litepaper)
 - https://deposit.now/about — mission, roadmap, investor contact
 - https://deposit.now/openapi.json — OpenAPI 3.1 contract with x-payment-info pricing

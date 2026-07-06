@@ -3,6 +3,7 @@ import { DepositLogo } from '@/components/DepositLogo';
 import { ExternalLink, Github, Mail } from 'lucide-react';
 import Link from 'next/link';
 
+
 const linkClass =
   'text-gray-400 hover:text-white transition-colors text-xs sm:text-sm py-1 inline-block leading-snug';
 const socialClass =
@@ -77,6 +78,11 @@ function FooterLinks() {
         <li>
           <Link href="/litepaper" className={linkClass}>
             Litepaper
+          </Link>
+        </li>
+        <li>
+          <Link href="/pricing" className={linkClass}>
+            Pricing
           </Link>
         </li>
       </FooterColumn>

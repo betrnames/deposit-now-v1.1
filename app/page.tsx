@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Zap, Coins, CheckCircle2, Code, Sparkles, Bolt } from 'lucide-react';
+import { Zap, Coins, CheckCircle2, Sparkles } from 'lucide-react';
 import { SiteFooter } from '@/components/SiteFooter';
 import { Header } from '@/components/Header';
+import { WhyDepositNow } from '@/components/WhyDepositNow';
+
 
 export default function Home() {
   const [email, setEmail] = useState('');
@@ -82,7 +84,7 @@ export default function Home() {
             </p>
 
             {!isSubmitted ? (
-              <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-12">
+              <form id="waitlist" onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-12">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-2">
                   <Input
                     type="email"
@@ -129,6 +131,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <WhyDepositNow />
 
       <section className="py-20 bg-slate-950/50 border-t border-blue-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

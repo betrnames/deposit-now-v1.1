@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { ContentPage } from '@/components/ContentPage';
+import { GuidePage } from '@/components/GuidePage';
+import { ComparisonTable } from '@/components/ComparisonTable';
 import { pageGraph } from '@/lib/seo';
 
 export const metadata: Metadata = {
@@ -39,14 +40,28 @@ const jsonLd = pageGraph(
   'Litepaper'
 );
 
+const nav = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'problem', label: 'Problem' },
+  { id: 'solution', label: 'Solution' },
+  { id: 'architecture', label: 'Architecture' },
+  { id: 'why-compare', label: 'vs direct transfer' },
+  { id: 'economics', label: 'Economics' },
+  { id: 'roadmap', label: 'Roadmap' },
+  { id: 'live-facts', label: 'Live facts' },
+  { id: 'risk', label: 'Risk summary' },
+];
+
 export default function LitepaperPage() {
   return (
-    <ContentPage
+    <GuidePage
+      kicker="Technical overview"
       title="Litepaper"
       subtitle="Programmable agent deposits over HTTP 402 — technical overview and roadmap."
+      nav={nav}
       jsonLd={jsonLd}
     >
-      <p>
+      <p id="overview">
         <strong>deposit.now</strong> is programmable funding infrastructure for autonomous
         AI agents. Agents call a single HTTP endpoint, receive{' '}
         <strong>402 Payment Required</strong>, pay in USDC on Base mainnet via the{' '}
@@ -54,7 +69,7 @@ export default function LitepaperPage() {
         <strong>verifiable public receipt</strong> linked to the settlement transaction.
       </p>
 
-      <h2>Problem</h2>
+      <h2 id="problem">Problem</h2>
       <p>
         Agents need to move money without human checkout flows, OAuth, or custodial accounts.
         Traditional APIs assume identity-first billing. Agentic commerce needs{' '}
@@ -62,7 +77,7 @@ export default function LitepaperPage() {
         triggers an action.
       </p>
 
-      <h2>Solution</h2>
+      <h2 id="solution">Solution</h2>
       <ul>
         <li>
           <strong>x402 v2 exact scheme</strong> — USDC micropayment per API call, facilitator
@@ -82,7 +97,7 @@ export default function LitepaperPage() {
         </li>
       </ul>
 
-      <h2>Architecture</h2>
+      <h2 id="architecture">Architecture</h2>
       <ol>
         <li>Agent → <code>POST /api/deposit</code> → HTTP 402 + <code>Payment-Required</code></li>
         <li>Agent SDK signs payment → retry with <code>payment-signature</code> header</li>
@@ -94,26 +109,44 @@ export default function LitepaperPage() {
         </li>
       </ol>
 
-      <h2>Economics</h2>
-      <p>Two distinct amounts exist in the protocol:</p>
+      <h2 id="why-compare">Why not a direct on-chain transfer?</h2>
+      <p>
+        Direct USDC transfers give agents a tx hash. deposit.now gives{' '}
+        <strong>verifiable public receipts</strong>, <strong>merchant webhooks</strong> (
+        <code>deposit.settled</code>), <strong>Bazaar discovery</strong>, and a{' '}
+        <strong>standardized x402 client flow</strong> with retries and idempotency. Direct
+        transfers are raw plumbing; deposit.now is the production rail for agent-to-merchant
+        commerce.
+      </p>
+      <ComparisonTable compact />
+
+      <h2 id="economics">Economics</h2>
+      <p>Three distinct amounts exist in the protocol:</p>
       <ul>
         <li>
-          <strong>API fee (real):</strong> 0.01 USDC per call — the x402 <code>price</code>{' '}
-          in middleware. This is what agents pay to use the rail today.
+          <strong>Agent rail (real today):</strong> 0.01 USDC per call — the x402{' '}
+          <code>price</code> in middleware. Paid by the agent, not the merchant. Covers
+          facilitator settlement, receipt storage, and discovery indexing.
         </li>
         <li>
-          <strong>Deposit intent (metadata today, settlement tomorrow):</strong> JSON body{' '}
-          <code>amount</code> / <code>account</code> describes the deposit to trigger. Phase 2
-          routes this to merchant-specific settlement.
+          <strong>Merchant settlement fee (usage-based):</strong> a small % of each deposit
+          settled to the merchant&apos;s <code>payTo</code> address. Non-custodial — funds
+          never touch deposit.now wallets. See{' '}
+          <a href="/pricing">pricing tiers</a>.
+        </li>
+        <li>
+          <strong>Deposit intent (metadata):</strong> JSON body <code>amount</code> /{' '}
+          <code>account</code> describes the deposit to trigger on the merchant endpoint.
         </li>
       </ul>
       <p>
-        Long-term revenue: <strong>merchant integration fees</strong>, volume-based settlement
-        share, and <strong>lead routing</strong> — not high per-call tolls that block
-        autonomous discovery.
+        <strong>Merchant tiers:</strong> Catalog (free, 0.30% settlement), Rail ($49/mo, 0.15% +
+        webhooks), Network (custom volume rates). Rail+ includes{' '}
+        <strong>5% referral rev-share</strong> on first deposits from Bazaar-routed agents.
+        Full breakdown: <a href="/pricing">deposit.now/pricing</a>.
       </p>
 
-      <h2>Roadmap</h2>
+      <h2 id="roadmap">Roadmap</h2>
       <table>
         <thead>
           <tr>
@@ -141,7 +174,7 @@ export default function LitepaperPage() {
         </tbody>
       </table>
 
-      <h2>Live facts (mainnet)</h2>
+      <h2 id="live-facts">Live facts (mainnet)</h2>
       <ul>
         <li>Endpoint: <code>https://deposit.now/api/deposit</code></li>
         <li>Network: Base mainnet (<code>eip155:8453</code>)</li>
@@ -150,12 +183,12 @@ export default function LitepaperPage() {
         <li>OpenAPI: <a href="/openapi.json">/openapi.json</a></li>
       </ul>
 
-      <h2>Risk summary</h2>
+      <h2 id="risk">Risk summary</h2>
       <p>
         See full <a href="/disclosures">disclosures</a>. deposit.now is experimental
         infrastructure, not a money transmitter, bank, or investment product. On-chain
         payments are irreversible.
       </p>
-    </ContentPage>
+    </GuidePage>
   );
 }

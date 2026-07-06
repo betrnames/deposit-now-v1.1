@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { DepositLogo } from '@/components/DepositLogo';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -146,6 +147,9 @@ export function Header() {
                   <Link href="/docs" className={linkClass}>
                     API
                   </Link>
+                  <Link href="/pricing" className={linkClass}>
+                    Pricing
+                  </Link>
                 </div>
               </div>
               <div className="flex items-center gap-3 shrink-0">{waitlistForm(false)}</div>
@@ -183,6 +187,7 @@ export function Header() {
                 ['Litepaper', '/litepaper'],
                 ['Ecosystem', '/ecosystem'],
                 ['API Documentation', '/docs'],
+                ['Pricing', '/pricing'],
               ].map(([label, href]) => (
                 <Link
                   key={href}

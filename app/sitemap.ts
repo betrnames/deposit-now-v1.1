@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/api/merchants',
 
     '/about',
+    '/pricing',
     '/litepaper',
     '/privacy',
     '/disclosures',

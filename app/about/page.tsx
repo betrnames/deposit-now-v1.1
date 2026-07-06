@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ContentPage } from '@/components/ContentPage';
+import { GuidePage } from '@/components/GuidePage';
 import { pageGraph } from '@/lib/seo';
 
 export const metadata: Metadata = {
@@ -34,21 +34,31 @@ const jsonLd = pageGraph(
   'About'
 );
 
+const nav = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'what-we-are', label: 'What we are' },
+  { id: 'roadmap', label: 'Roadmap' },
+  { id: 'business-model', label: 'Business model' },
+  { id: 'contact', label: 'Contact' },
+];
+
 export default function AboutPage() {
   return (
-    <ContentPage
+    <GuidePage
+      kicker="deposit.now"
       title="About"
       subtitle="Programmable, non-custodial deposit infrastructure for autonomous agents."
+      nav={nav}
       jsonLd={jsonLd}
     >
-      <p>
+      <p id="overview">
         <strong>deposit.now</strong> is the first public x402 API that lets AI agents
         autonomously trigger deposits over HTTP. Agents pay a micropayment in USDC on Base mainnet;
         the facilitator settles on-chain; deposit.now returns a verifiable public receipt
         bound to the transaction.
       </p>
 
-      <h2>What we are</h2>
+      <h2 id="what-we-are">What we are</h2>
       <ul>
         <li>
           <strong>Payment rail, not a bank.</strong> We do not custody user or merchant
@@ -64,7 +74,7 @@ export default function AboutPage() {
         </li>
       </ul>
 
-      <h2>What we are building toward</h2>
+      <h2 id="roadmap">What we are building toward</h2>
       <ol>
         <li>
           <strong>Phase 1 — Receipts (live):</strong> Public, on-chain-verifiable deposit
@@ -82,14 +92,15 @@ export default function AboutPage() {
         </li>
       </ol>
 
-      <h2>Business model</h2>
+      <h2 id="business-model">Business model</h2>
       <p>
-        We monetize at the <strong>merchant and volume layer</strong> (settlement fees,
-        lead routing, platform integrations), not by blocking agents with high per-call
-        tolls. The API micropayment covers discovery and receipt infrastructure.
+        We monetize at the <strong>merchant and volume layer</strong> — usage-based settlement
+        fees, webhook automation, and referral revenue share — not by blocking agents with
+        account gates. Agents pay 0.01 USDC per x402 call for the rail; merchants choose a{' '}
+        <a href="/pricing">pricing tier</a> for endpoints, webhooks, and Bazaar discovery.
       </p>
 
-      <h2>Contact</h2>
+      <h2 id="contact">Contact</h2>
       <ul>
         <li>
           <a href="mailto:support@deposit.now">support@deposit.now</a>
@@ -101,6 +112,6 @@ export default function AboutPage() {
           Technical spec: <a href="/litepaper">litepaper</a>
         </li>
       </ul>
-    </ContentPage>
+    </GuidePage>
   );
 }
