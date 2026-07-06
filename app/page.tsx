@@ -77,7 +77,7 @@ export default function Home() {
 
             <p className="text-base sm:text-lg text-gray-400 max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed">
               deposit.now is the first public x402 API that lets AI agents deposit funds
-              autonomously — 0.01 USDC per call on Base, paid over HTTP 402.
+              autonomously — 0.01 USDC per call on Base mainnet, paid over HTTP 402.
               No accounts, no API keys, no humans in the loop.
             </p>
 
@@ -119,11 +119,11 @@ export default function Home() {
             <div className="flex justify-center items-center gap-4 sm:gap-8 text-xs sm:text-sm text-gray-500 uppercase tracking-wider font-medium py-4 sm:py-0">
               <div className="flex items-center gap-2 whitespace-nowrap">
                 <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
-                <span>Early Access Open</span>
+                <span>Live on Base Mainnet</span>
               </div>
               <div className="flex items-center gap-2 whitespace-nowrap">
                 <Coins className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
-                <span>Base Sepolia USDC</span>
+                <span>0.01 USDC per call</span>
               </div>
             </div>
           </div>

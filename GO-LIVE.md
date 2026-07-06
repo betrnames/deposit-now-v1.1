@@ -8,50 +8,53 @@
   API response can include `receiptId`/`receiptUrl` before settlement lands.
 - Public page: `https://deposit.now/receipt/<id>` — payer, amount, payTo,
   settlement time, and a Basescan link to the settlement transaction.
-- Mainnet relaunch was intentionally rolled back until Phase 1 was live;
-  X402_NETWORK was removed from production (CDP keys remain stored).
-- HELD until mainnet relaunch: x402scan registration (rejects testnet) and
-  Bazaar indexing (happens automatically on first mainnet settlement).
 
-## Current state (2026-07-04)
+## Current state (2026-07-06)
 
 - Real x402 v2 payment verification is live via `middleware.ts` (`@x402/next` `paymentProxy`).
-- Network: **Base Sepolia testnet** (`eip155:84532`), facilitator: free `x402.org/facilitator`.
+- **Production network: Base mainnet** (`eip155:8453`), facilitator: Coinbase Developer Platform (CDP).
 - Payments settle to `0x3f7a25Dc7307F5662489686e5A457DAD4879F685` (MetaMask account "deposit.now").
+- Asset: USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`.
 - Price: $0.01 USDC per call to `/api/deposit` (GET or POST).
-- The old fake `X-Payment-Proof` header check is gone — the facilitator verifies and
-  settles every payment before the route handler runs.
+- Site copy, docs, OpenAPI, and `llms.txt` all reference Base mainnet.
 
-## Switching to Base mainnet (real money)
+## Production env (required for mainnet)
 
-1. Create a Coinbase Developer Platform account at portal.cdp.coinbase.com (free;
-   CDP facilitator settles USDC on Base with no fees).
-2. Create an API key → you get an id and a secret. Do NOT paste them into chat.
-3. In your terminal:
-   ```
-   vercel env add CDP_API_KEY_ID production      # paste id when prompted
-   vercel env add CDP_API_KEY_SECRET production  # paste secret when prompted
-   vercel env add X402_NETWORK production        # type: mainnet
-   ```
-4. Redeploy: `vercel deploy --prod --yes`
-5. Verify: `curl -i https://deposit.now/api/deposit` → the base64 in the
-   `Payment-Required` header should contain `eip155:8453` (mainnet) and the
-   mainnet USDC asset address.
-6. End-to-end test with a real payment (~$0.01) using the JS client from /docs
-   before announcing.
+```
+CDP_API_KEY_ID       # set via: vercel env add CDP_API_KEY_ID production
+CDP_API_KEY_SECRET   # set via: vercel env add CDP_API_KEY_SECRET production
+X402_NETWORK=mainnet # set via: vercel env add X402_NETWORK production
+BLOB_READ_WRITE_TOKEN
+```
 
-The middleware auto-switches: mainnet requires all three env vars, anything else
-stays on testnet. Local dev always runs testnet.
+Verify: `curl -i https://deposit.now/api/deposit` → the base64 in the
+`Payment-Required` header should contain `eip155:8453` and the mainnet USDC asset.
 
-## Testing on testnet (optional, free)
+The middleware auto-switches: mainnet requires all three CDP env vars; anything else
+falls back to Base Sepolia testnet via `x402.org/facilitator`. Local dev always runs testnet.
+
+## Next steps
+
+1. End-to-end mainnet test with a real payment (~$0.01) using the JS client from /docs.
+2. x402scan registration (requires mainnet — now unblocked).
+3. Bazaar indexing (happens automatically on first mainnet settlement).
+
+## Testing on testnet (local dev, free)
 
 Fund a throwaway wallet with Base Sepolia test USDC (Circle faucet:
 faucet.circle.com), then from the project root:
 
 ```
 $env:EVM_PRIVATE_KEY="0x..."   # throwaway key only — never paste into chat
-npm run test:deposit           # hits production by default
+$env:DEPOSIT_API_URL="http://localhost:3000/api/deposit"
+npm run test:deposit
 ```
 
-Use `DEPOSIT_API_URL=http://localhost:3000/api/deposit` for local dev.
+## Testing on mainnet (production, real USDC)
+
+```
+$env:EVM_PRIVATE_KEY="0x..."   # wallet with ~0.01 USDC on Base mainnet
+npm run test:deposit           # hits https://deposit.now/api/deposit by default
+```
+
 This proves the full loop: 402 → settle → receipt blob → `/receipt/<id>` page.

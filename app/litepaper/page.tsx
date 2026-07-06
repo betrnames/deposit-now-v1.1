@@ -5,7 +5,7 @@ import { pageGraph } from '@/lib/seo';
 export const metadata: Metadata = {
   title: 'Litepaper',
   description:
-    'Technical and economic overview of deposit.now: x402 micropayments, verifiable receipts, non-custodial USDC settlement on Base, and the three-phase roadmap for agentic commerce.',
+    'Technical and economic overview of deposit.now: x402 micropayments, verifiable receipts, non-custodial USDC settlement on Base mainnet, and the three-phase roadmap for agentic commerce.',
   alternates: { canonical: 'https://deposit.now/litepaper' },
   keywords: [
     'deposit.now litepaper',
@@ -29,7 +29,7 @@ const jsonLd = pageGraph(
     '@type': 'TechArticle',
     headline: 'deposit.now Litepaper — Programmable Agent Deposits via x402',
     description:
-      'Non-custodial deposit infrastructure for AI agents using x402, USDC on Base, and public on-chain receipts.',
+      'Non-custodial deposit infrastructure for AI agents using x402, USDC on Base mainnet, and public on-chain receipts.',
     author: { '@type': 'Organization', name: 'deposit.now' },
     publisher: { '@type': 'Organization', name: 'deposit.now' },
     url: 'https://deposit.now/litepaper',
@@ -49,7 +49,7 @@ export default function LitepaperPage() {
       <p>
         <strong>deposit.now</strong> is programmable funding infrastructure for autonomous
         AI agents. Agents call a single HTTP endpoint, receive{' '}
-        <strong>402 Payment Required</strong>, pay in USDC on Base via the{' '}
+        <strong>402 Payment Required</strong>, pay in USDC on Base mainnet via the{' '}
         <strong>x402</strong> protocol, and receive a JSON response plus a{' '}
         <strong>verifiable public receipt</strong> linked to the settlement transaction.
       </p>

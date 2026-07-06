@@ -139,7 +139,7 @@ export function SiteFooter() {
             </Link>
             <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
               Programmable funding gateway for autonomous AI agents. Verifiable x402 deposits on
-              Base — non-custodial USDC.
+              Base mainnet — non-custodial USDC.
             </p>
           </div>
 
@@ -173,7 +173,7 @@ export function SiteFooter() {
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-4 max-w-sm">
               Programmable funding gateway for autonomous AI agents. Verifiable x402 deposits on
-              Base — non-custodial USDC.
+              Base mainnet — non-custodial USDC.
             </p>
             <a
               href="https://x402.org"

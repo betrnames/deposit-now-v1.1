@@ -5,12 +5,12 @@ import { pageGraph } from '@/lib/seo';
 export const metadata: Metadata = {
   title: 'About',
   description:
-    'deposit.now is a non-custodial x402 payment rail that lets AI agents trigger verifiable USDC deposits on Base.',
+    'deposit.now is a non-custodial x402 payment rail that lets AI agents trigger verifiable USDC deposits on Base mainnet.',
   alternates: { canonical: 'https://deposit.now/about' },
   openGraph: {
     title: 'About',
     description:
-      'Non-custodial programmable deposit infrastructure for autonomous AI agents on Base.',
+      'Non-custodial programmable deposit infrastructure for autonomous AI agents on Base mainnet.',
     url: 'https://deposit.now/about',
     siteName: 'Deposit Now',
   },
@@ -23,7 +23,7 @@ const jsonLd = pageGraph(
     name: 'About deposit.now',
     url: 'https://deposit.now/about',
     description:
-      'Programmable funding gateway for autonomous AI agents using the x402 HTTP payment protocol and USDC on Base.',
+      'Programmable funding gateway for autonomous AI agents using the x402 HTTP payment protocol and USDC on Base mainnet.',
     mainEntity: {
       '@type': 'Organization',
       name: 'deposit.now',
@@ -43,7 +43,7 @@ export default function AboutPage() {
     >
       <p>
         <strong>deposit.now</strong> is the first public x402 API that lets AI agents
-        autonomously trigger deposits over HTTP. Agents pay a micropayment in USDC on Base;
+        autonomously trigger deposits over HTTP. Agents pay a micropayment in USDC on Base mainnet;
         the facilitator settles on-chain; deposit.now returns a verifiable public receipt
         bound to the transaction.
       </p>

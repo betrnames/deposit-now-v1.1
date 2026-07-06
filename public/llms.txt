@@ -1,6 +1,6 @@
 # deposit.now
 
-> deposit.now is the first public x402 API that lets AI agents deposit funds autonomously — 0.01 USDC per call on Base, paid over HTTP 402. No accounts, no API keys, no human sign-up.
+> deposit.now is the first public x402 API that lets AI agents deposit funds autonomously — 0.01 USDC per call on Base mainnet, paid over HTTP 402. No accounts, no API keys, no human sign-up.
 
 Built for machine consumption: any x402 v2 client can read the payment requirements from the HTTP 402 response and pay programmatically. Machine contract: https://deposit.now/openapi.json
 
@@ -9,7 +9,7 @@ Built for machine consumption: any x402 v2 client can read the payment requireme
 - POST https://deposit.now/api/deposit — trigger a deposit. JSON body (optional): {"amount": "100.00", "account": "agent-wallet-123"}
 - GET https://deposit.now/api/deposit — deposit info, same payment flow
 - Price: 0.01 USDC (10000 atomic units), x402 v2 `exact` scheme
-- Network: Base mainnet (eip155:8453); testnet (eip155:84532) for local dev
+- Network: Base mainnet (eip155:8453) in production; Base Sepolia (eip155:84532) for local dev only
 - Unpaid request → HTTP 402 with `Payment-Required` header (base64 JSON: scheme, network, asset, payTo)
 - Paid request → 200 JSON with receiptId, receiptUrl, transactionId + payment-response settlement header
 - Bazaar discovery extension included in the 402 payload (input/output schemas)

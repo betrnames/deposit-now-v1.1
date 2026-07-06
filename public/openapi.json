@@ -3,8 +3,8 @@
   "info": {
     "title": "deposit.now x402 Deposit API",
     "version": "2.0.0",
-    "description": "Public x402 API for AI agents to autonomously deposit funds. Pay 0.01 USDC per call over HTTP via the x402 protocol (v2, exact scheme) on Base. No accounts or API keys required.",
-    "x-guidance": "Use POST /api/deposit to trigger a deposit for an agent account. Send a JSON body with optional 'amount' (decimal string) and 'account' (agent identifier). Unauthenticated requests receive HTTP 402 with x402 v2 payment requirements in the Payment-Required header; pay 0.01 USDC on Base with any x402 client (e.g. @x402/fetch for JavaScript, x402[httpx] for Python) and retry with the X-Payment header. Docs: https://deposit.now/docs",
+    "description": "Public x402 API for AI agents to autonomously deposit funds. Pay 0.01 USDC per call over HTTP via the x402 protocol (v2, exact scheme) on Base mainnet (eip155:8453). No accounts or API keys required.",
+    "x-guidance": "Use POST /api/deposit to trigger a deposit for an agent account. Send a JSON body with optional 'amount' (decimal string) and 'account' (agent identifier). Unauthenticated requests receive HTTP 402 with x402 v2 payment requirements in the Payment-Required header; pay 0.01 USDC on Base mainnet with any x402 client (e.g. @x402/fetch for JavaScript, x402[httpx] for Python) and retry with the X-Payment header. Docs: https://deposit.now/docs",
     "contact": { "email": "contact@gabemariscal.com" }
   },
   "servers": [{ "url": "https://deposit.now" }],
@@ -62,7 +62,7 @@
             }
           },
           "402": {
-            "description": "Payment required. The Payment-Required response header contains base64-encoded x402 v2 payment requirements (scheme exact, network Base, asset USDC, amount 10000 atomic units)."
+            "description": "Payment required. The Payment-Required response header contains base64-encoded x402 v2 payment requirements (scheme exact, network Base mainnet eip155:8453, asset USDC 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, amount 10000 atomic units)."
           }
         }
       },

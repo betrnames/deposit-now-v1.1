@@ -1,7 +1,8 @@
 /**
- * End-to-end testnet payment against deposit.now (or local dev).
- * Requires: EVM_PRIVATE_KEY for a wallet funded with Base Sepolia USDC.
- * Optional: DEPOSIT_API_URL (default https://deposit.now/api/deposit)
+ * End-to-end x402 payment against deposit.now (or local dev).
+ * Production (default): wallet needs Base mainnet USDC (~0.01).
+ * Local dev: set DEPOSIT_API_URL=http://localhost:3000/api/deposit and fund Base Sepolia USDC.
+ * Requires: EVM_PRIVATE_KEY
  */
 import { x402Client } from '@x402/core/client';
 import { wrapFetchWithPayment } from '@x402/fetch';
@@ -11,7 +12,7 @@ import { privateKeyToAccount } from 'viem/accounts';
 const apiUrl = process.env.DEPOSIT_API_URL ?? 'https://deposit.now/api/deposit';
 const key = process.env.EVM_PRIVATE_KEY;
 if (!key) {
-  console.error('Set EVM_PRIVATE_KEY to a funded Base Sepolia wallet.');
+  console.error('Set EVM_PRIVATE_KEY to a wallet funded with USDC on the target network.');
   process.exit(1);
 }
 

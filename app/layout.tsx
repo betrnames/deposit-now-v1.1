@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     default: 'Deposit Now | The Funding Layer for AI Agents',
     template: '%s | Deposit Now',
   },
-  description: 'The first public API for AI agents to autonomously deposit funds using x402 payment protocol. Instant stablecoin payments, no accounts required.',
+  description: 'The first public API for AI agents to autonomously deposit funds using x402 payment protocol on Base mainnet. Instant USDC micropayments, no accounts required.',
   keywords: [
     'x402',
     'x402 API',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://deposit.now' },
   openGraph: {
     title: 'Deposit Now | The Funding Layer for AI Agents',
-    description: 'Let AI agents deposit funds autonomously via x402 — no accounts, instant stablecoin payments',
+    description: 'Let AI agents deposit funds autonomously via x402 on Base mainnet — no accounts, instant USDC payments',
     url: 'https://deposit.now',
     siteName: 'Deposit Now',
     images: [
@@ -60,7 +60,7 @@ export default function RootLayout({
         '@type': 'WebAPI',
         name: 'deposit.now x402 Deposit API',
         description:
-          'Public x402 API for AI agents to autonomously deposit funds. 0.01 USDC per call, paid over HTTP via the x402 protocol on Base. No accounts or API keys required.',
+          'Public x402 API for AI agents to autonomously deposit funds. 0.01 USDC per call, paid over HTTP via the x402 protocol on Base mainnet (eip155:8453). No accounts or API keys required.',
         url: 'https://deposit.now/api/deposit',
         documentation: 'https://deposit.now/docs',
         provider: { '@type': 'Organization', name: 'deposit.now', url: 'https://deposit.now' },
@@ -68,7 +68,7 @@ export default function RootLayout({
           '@type': 'Offer',
           price: '0.01',
           priceCurrency: 'USD',
-          description: '0.01 USDC per API call via x402 exact scheme on Base',
+          description: '0.01 USDC per API call via x402 exact scheme on Base mainnet',
         },
       },
       {
@@ -87,7 +87,7 @@ export default function RootLayout({
             name: 'How does an AI agent pay the deposit.now API?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'The agent calls POST https://deposit.now/api/deposit and receives HTTP 402 with signed payment requirements (x402 v2, exact scheme, USDC on Base). An x402 client SDK such as @x402/fetch for JavaScript or x402[httpx] for Python signs the payment and retries automatically; the facilitator verifies and settles it on-chain.',
+              text: 'The agent calls POST https://deposit.now/api/deposit and receives HTTP 402 with signed payment requirements (x402 v2, exact scheme, USDC on Base mainnet). An x402 client SDK such as @x402/fetch for JavaScript or x402[httpx] for Python signs the payment and retries automatically; the CDP facilitator verifies and settles it on-chain.',
             },
           },
           {
@@ -95,7 +95,7 @@ export default function RootLayout({
             name: 'What does the deposit.now API cost?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: '0.01 USDC per call, settled on Base via the x402 payment protocol. There are no subscriptions, accounts, or minimums.',
+              text: '0.01 USDC per call, settled on Base mainnet via the x402 payment protocol. There are no subscriptions, accounts, or minimums.',
             },
           },
         ],

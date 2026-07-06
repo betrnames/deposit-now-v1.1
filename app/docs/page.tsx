@@ -154,7 +154,7 @@ export default function DocsPage() {
                 </div>
                 <p className="text-gray-400">
                   The deposit.now API enables AI agents to trigger deposits autonomously using the x402 payment protocol.
-                  Each API call requires a micropayment of 0.01 USDC on Base Sepolia testnet.
+                  Each API call requires a micropayment of 0.01 USDC on Base mainnet.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                   <div className="border border-white/10 rounded-lg p-4 bg-slate-950">
@@ -167,7 +167,7 @@ export default function DocsPage() {
                   </div>
                   <div className="border border-white/10 rounded-lg p-4 bg-slate-950">
                     <div className="text-sm text-gray-500 mb-1">Network</div>
-                    <div className="font-mono text-sm text-white">Base Sepolia</div>
+                    <div className="font-mono text-sm text-white">Base mainnet</div>
                   </div>
                 </div>
               </div>
@@ -186,9 +186,9 @@ export default function DocsPage() {
                   <div className="font-semibold text-white">x402 Requirements:</div>
                   <ul className="list-disc list-inside space-y-1 text-sm text-gray-400">
                     <li>Payment amount: 10000 atomic units (0.01 USDC)</li>
-                    <li>Currency: USDC</li>
-                    <li>Network: base-sepolia</li>
-                    <li>Facilitator: https://x402.org/facilitator</li>
+                    <li>Currency: USDC (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)</li>
+                    <li>Network: Base mainnet (eip155:8453)</li>
+                    <li>Facilitator: Coinbase Developer Platform (CDP) x402 facilitator</li>
                   </ul>
                 </div>
               </div>
@@ -232,7 +232,7 @@ export default function DocsPage() {
                             {'  '}<span className="text-green-400">"account"</span><span className="text-white">:</span> <span className="text-orange-400">"agent-wallet-123"</span><span className="text-white">,</span>{'\n'}
                             {'  '}<span className="text-green-400">"message"</span><span className="text-white">:</span> <span className="text-orange-400">"Deposit of 100.00 triggered for agent account: agent-wallet-123"</span><span className="text-white">,</span>{'\n'}
                             {'  '}<span className="text-green-400">"timestamp"</span><span className="text-white">:</span> <span className="text-orange-400">"2025-12-30T12:00:00.000Z"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"network"</span><span className="text-white">:</span> <span className="text-orange-400">"base-sepolia"</span><span className="text-white">,</span>{'\n'}
+                            {'  '}<span className="text-green-400">"network"</span><span className="text-white">:</span> <span className="text-orange-400">"eip155:8453"</span><span className="text-white">,</span>{'\n'}
                             {'  '}<span className="text-green-400">"paymentReceived"</span><span className="text-white">:</span> <span className="text-yellow-300">true</span><span className="text-white">,</span>{'\n'}
                             {'  '}<span className="text-green-400">"transactionId"</span><span className="text-white">:</span> <span className="text-orange-400">"txn_1735563600000_abc123xyz"</span><span className="text-white">,</span>{'\n'}
                             {'  '}<span className="text-green-400">"receiptId"</span><span className="text-white">:</span> <span className="text-orange-400">"a1b2c3d4e5f60718"</span><span className="text-white">,</span>{'\n'}
@@ -253,7 +253,7 @@ export default function DocsPage() {
                             {'  '}<span className="text-green-400">"error"</span><span className="text-white">:</span> <span className="text-orange-400">"Payment required"</span><span className="text-white">,</span>{'\n'}
                             {'  '}<span className="text-green-400">"accepts"</span><span className="text-white">:</span> <span className="text-yellow-400">[{'{'}</span>{'\n'}
                             {'    '}<span className="text-green-400">"scheme"</span><span className="text-white">:</span> <span className="text-orange-400">"exact"</span><span className="text-white">,</span>{'\n'}
-                            {'    '}<span className="text-green-400">"network"</span><span className="text-white">:</span> <span className="text-orange-400">"eip155:84532"</span><span className="text-white">,</span>{'\n'}
+                            {'    '}<span className="text-green-400">"network"</span><span className="text-white">:</span> <span className="text-orange-400">"eip155:8453"</span><span className="text-white">,</span>{'\n'}
                             {'    '}<span className="text-green-400">"payTo"</span><span className="text-white">:</span> <span className="text-orange-400">"0x3f7a...F685"</span><span className="text-white">,</span>{'\n'}
                             {'    '}<span className="text-green-400">"asset"</span><span className="text-white">:</span> <span className="text-orange-400">"USDC"</span><span className="text-white">,</span>{'\n'}
                             {'    '}<span className="text-green-400">"maxAmountRequired"</span><span className="text-white">:</span> <span className="text-orange-400">"10000"</span>{'\n'}
@@ -514,7 +514,7 @@ asyncio.run(main())`,
                     <h3 className="font-semibold mb-2 text-white">How does an AI agent pay the deposit.now API?</h3>
                     <p className="text-sm text-gray-400 leading-relaxed">
                       The agent calls POST https://deposit.now/api/deposit and receives HTTP 402
-                      with signed payment requirements (x402 v2, exact scheme, USDC on Base). An
+                      with signed payment requirements (x402 v2, exact scheme, USDC on Base mainnet). An
                       x402 client SDK such as @x402/fetch for JavaScript or x402[httpx] for Python
                       signs the payment and retries automatically; the facilitator verifies and
                       settles it on-chain.
@@ -523,7 +523,7 @@ asyncio.run(main())`,
                   <div>
                     <h3 className="font-semibold mb-2 text-white">What does the deposit.now API cost?</h3>
                     <p className="text-sm text-gray-400 leading-relaxed">
-                      0.01 USDC per call, settled on Base via the x402 payment protocol. There are
+                      0.01 USDC per call, settled on Base mainnet via the x402 payment protocol. There are
                       no subscriptions, accounts, or minimums.
                     </p>
                   </div>
