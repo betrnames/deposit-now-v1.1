@@ -36,7 +36,7 @@ export default function DocsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900">
+    <div className="min-h-screen page-shell">
       <Header />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-8 py-16">
@@ -44,7 +44,7 @@ export default function DocsPage() {
           {/* Left Sidebar */}
           <aside className="w-56 flex-shrink-0 hidden md:block">
             <div className="sticky top-24 py-6">
-              <h2 className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-6 px-4">
+              <h2 className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-6 px-4">
                 DOCUMENTATION
               </h2>
               <nav className="space-y-1">
@@ -52,8 +52,8 @@ export default function DocsPage() {
                   onClick={() => scrollToSection('introduction')}
                   className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                     activeSection === 'introduction'
-                      ? 'bg-blue-600/20 text-blue-400'
-                      : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                      ? 'bg-primary/20 text-primary'
+                      : 'text-muted-foreground hover:text-white hover:bg-muted/50'
                   }`}
                 >
                   <ChevronRight className="h-4 w-4" />
@@ -63,8 +63,8 @@ export default function DocsPage() {
                   onClick={() => scrollToSection('authentication')}
                   className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
                     activeSection === 'authentication'
-                      ? 'bg-blue-600/20 text-blue-400 rounded-lg'
-                      : 'text-gray-400 hover:text-white hover:bg-slate-800/50 rounded-lg'
+                      ? 'bg-primary/20 text-primary rounded-lg'
+                      : 'text-muted-foreground hover:text-white hover:bg-muted/50 rounded-lg'
                   }`}
                 >
                   Authentication
@@ -73,8 +73,8 @@ export default function DocsPage() {
                   onClick={() => scrollToSection('endpoints')}
                   className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
                     activeSection === 'endpoints'
-                      ? 'bg-blue-600/20 text-blue-400 rounded-lg'
-                      : 'text-gray-400 hover:text-white hover:bg-slate-800/50 rounded-lg'
+                      ? 'bg-primary/20 text-primary rounded-lg'
+                      : 'text-muted-foreground hover:text-white hover:bg-muted/50 rounded-lg'
                   }`}
                 >
                   Endpoints
@@ -83,8 +83,8 @@ export default function DocsPage() {
                   onClick={() => scrollToSection('examples')}
                   className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
                     activeSection === 'examples'
-                      ? 'bg-blue-600/20 text-blue-400 rounded-lg'
-                      : 'text-gray-400 hover:text-white hover:bg-slate-800/50 rounded-lg'
+                      ? 'bg-primary/20 text-primary rounded-lg'
+                      : 'text-muted-foreground hover:text-white hover:bg-muted/50 rounded-lg'
                   }`}
                 >
                   Code Examples
@@ -93,8 +93,8 @@ export default function DocsPage() {
                   onClick={() => scrollToSection('billing')}
                   className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
                     activeSection === 'billing'
-                      ? 'bg-blue-600/20 text-blue-400 rounded-lg'
-                      : 'text-gray-400 hover:text-white hover:bg-slate-800/50 rounded-lg'
+                      ? 'bg-primary/20 text-primary rounded-lg'
+                      : 'text-muted-foreground hover:text-white hover:bg-muted/50 rounded-lg'
                   }`}
                 >
                   Billing
@@ -108,7 +108,7 @@ export default function DocsPage() {
             <div className="max-w-4xl">
             {/* Header */}
             <div className="mb-6">
-              <h1 className="text-sm font-medium text-gray-400">x402 documentation</h1>
+              <h1 className="text-sm font-medium text-muted-foreground">x402 documentation</h1>
             </div>
 
             {/* Mobile Navigation Pills */}
@@ -118,8 +118,8 @@ export default function DocsPage() {
                   onClick={() => scrollToSection('introduction')}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     activeSection === 'introduction'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-800/50 text-gray-400 hover:text-white hover:bg-slate-800'
+                      ? 'bg-primary text-white'
+                      : 'bg-muted/50 text-muted-foreground hover:text-white hover:bg-muted'
                   }`}
                 >
                   Introduction
@@ -128,8 +128,8 @@ export default function DocsPage() {
                   onClick={() => scrollToSection('authentication')}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     activeSection === 'authentication'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-800/50 text-gray-400 hover:text-white hover:bg-slate-800'
+                      ? 'bg-primary text-white'
+                      : 'bg-muted/50 text-muted-foreground hover:text-white hover:bg-muted'
                   }`}
                 >
                   Authentication
@@ -138,8 +138,8 @@ export default function DocsPage() {
                   onClick={() => scrollToSection('endpoints')}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     activeSection === 'endpoints'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-800/50 text-gray-400 hover:text-white hover:bg-slate-800'
+                      ? 'bg-primary text-white'
+                      : 'bg-muted/50 text-muted-foreground hover:text-white hover:bg-muted'
                   }`}
                 >
                   Endpoints
@@ -148,8 +148,8 @@ export default function DocsPage() {
                   onClick={() => scrollToSection('examples')}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     activeSection === 'examples'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-800/50 text-gray-400 hover:text-white hover:bg-slate-800'
+                      ? 'bg-primary text-white'
+                      : 'bg-muted/50 text-muted-foreground hover:text-white hover:bg-muted'
                   }`}
                 >
                   Examples
@@ -158,8 +158,8 @@ export default function DocsPage() {
                   onClick={() => scrollToSection('billing')}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     activeSection === 'billing'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-800/50 text-gray-400 hover:text-white hover:bg-slate-800'
+                      ? 'bg-primary text-white'
+                      : 'bg-muted/50 text-muted-foreground hover:text-white hover:bg-muted'
                   }`}
                 >
                   Billing
@@ -173,21 +173,21 @@ export default function DocsPage() {
                 <div className="flex items-center gap-3 mb-4">
                   <h2 className="text-2xl font-bold text-white">Overview</h2>
                 </div>
-                <p className="text-gray-400">
+                <p className="text-muted-foreground">
                   The deposit.now API enables AI agents to trigger deposits autonomously using the x402 payment protocol.
                   Each API call requires a micropayment of 0.01 USDC on Base mainnet.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                  <div className="border border-white/10 rounded-lg p-4 bg-slate-950">
-                    <div className="text-sm text-gray-500 mb-1">Base URL</div>
+                  <div className="border border-border/60 rounded-lg p-4 bg-background">
+                    <div className="text-sm text-muted-foreground/70 mb-1">Base URL</div>
                     <div className="font-mono text-sm text-white">https://deposit.now</div>
                   </div>
-                  <div className="border border-white/10 rounded-lg p-4 bg-slate-950">
-                    <div className="text-sm text-gray-500 mb-1">Price per call</div>
+                  <div className="border border-border/60 rounded-lg p-4 bg-background">
+                    <div className="text-sm text-muted-foreground/70 mb-1">Price per call</div>
                     <div className="font-mono text-sm text-white">0.01 USDC</div>
                   </div>
-                  <div className="border border-white/10 rounded-lg p-4 bg-slate-950">
-                    <div className="text-sm text-gray-500 mb-1">Network</div>
+                  <div className="border border-border/60 rounded-lg p-4 bg-background">
+                    <div className="text-sm text-muted-foreground/70 mb-1">Network</div>
                     <div className="font-mono text-sm text-white">Base mainnet</div>
                   </div>
                 </div>
@@ -196,16 +196,16 @@ export default function DocsPage() {
               {/* Authentication Section */}
               <div id="authentication" className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-blue-400" />
+                  <Terminal className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-bold text-white">Authentication</h2>
                 </div>
-                <p className="text-gray-400">
+                <p className="text-muted-foreground">
                   The API uses x402 payment protocol for authentication. No API keys or accounts required.
                   The payment itself serves as both authentication and authorization.
                 </p>
-                <div className="bg-slate-950 rounded-lg p-4 space-y-2 border border-white/10">
+                <div className="bg-background rounded-lg p-4 space-y-2 border border-border/60">
                   <div className="font-semibold text-white">x402 Requirements:</div>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-400">
+                  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                     <li>Payment amount: 10000 atomic units (0.01 USDC)</li>
                     <li className="break-words">
                       Currency: USDC (
@@ -223,23 +223,23 @@ export default function DocsPage() {
               {/* Endpoints Section */}
               <div id="endpoints" className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-blue-400" />
+                  <Terminal className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-bold text-white">Endpoints</h2>
                 </div>
                 <div className="space-y-6">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline" className="text-white border-white/20">POST</Badge>
-                      <code className="text-sm text-blue-400">/api/deposit</code>
+                      <code className="text-sm text-primary">/api/deposit</code>
                     </div>
-                    <p className="text-sm text-gray-400 mb-4">
+                    <p className="text-sm text-muted-foreground mb-4">
                       Trigger a deposit for an AI agent account. Requires x402 payment.
                     </p>
 
                     <div className="space-y-4">
                       <div>
                         <div className="text-sm font-semibold mb-2 text-white">Request Body</div>
-                        <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                        <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
                           <code>
                             <span className="text-yellow-400">{'{'}</span>{'\n'}
                             {'  '}<span className="text-green-400">"amount"</span><span className="text-white">:</span> <span className="text-orange-400">"100.00"</span><span className="text-white">,</span>{'\n'}
@@ -251,7 +251,7 @@ export default function DocsPage() {
 
                       <div>
                         <div className="text-sm font-semibold mb-2 text-white">Success Response (200)</div>
-                        <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                        <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
                           <code>
                             <span className="text-yellow-400">{'{'}</span>{'\n'}
                             {'  '}<span className="text-green-400">"status"</span><span className="text-white">:</span> <span className="text-orange-400">"success"</span><span className="text-white">,</span>{'\n'}
@@ -271,7 +271,7 @@ export default function DocsPage() {
 
                       <div>
                         <div className="text-sm font-semibold mb-2 text-white">Payment Required Response (402)</div>
-                        <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                        <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
                           <code>
                             <span className="text-yellow-300">HTTP/1.1 402 Payment Required</span>{'\n'}
                             <span className="text-green-400">Payment-Required:</span> <span className="text-white">&lt;base64 of the JSON below&gt;</span>{'\n\n'}
@@ -286,8 +286,8 @@ export default function DocsPage() {
                             {'    '}<span className="text-green-400">"maxAmountRequired"</span><span className="text-white">:</span> <span className="text-orange-400">"10000"</span>{'\n'}
                             {'  '}<span className="text-yellow-400">{'}'}]</span>{'\n'}
                             <span className="text-yellow-400">{'}'}</span>{'\n\n'}
-                            <span className="text-gray-500"># Retry the request with a signed X-Payment header —</span>{'\n'}
-                            <span className="text-gray-500"># the x402 client SDKs handle this automatically.</span>
+                            <span className="text-muted-foreground/70"># Retry the request with a signed X-Payment header —</span>{'\n'}
+                            <span className="text-muted-foreground/70"># the x402 client SDKs handle this automatically.</span>
                           </code>
                         </pre>
                       </div>
@@ -297,9 +297,9 @@ export default function DocsPage() {
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline" className="text-white border-white/20">GET</Badge>
-                      <code className="text-sm text-blue-400">/api/deposit</code>
+                      <code className="text-sm text-primary">/api/deposit</code>
                     </div>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       Get deposit information. Also protected by x402 payment.
                     </p>
                   </div>
@@ -309,7 +309,7 @@ export default function DocsPage() {
               {/* Code Examples Section */}
               <div id="examples" className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-blue-400" />
+                  <Terminal className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-bold text-white">Code Examples</h2>
                 </div>
                 <Tabs defaultValue="javascript">
@@ -322,7 +322,7 @@ export default function DocsPage() {
                   <TabsContent value="javascript" className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm text-gray-400">Install the x402 client</p>
+                        <p className="text-sm text-muted-foreground">Install the x402 client</p>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -335,14 +335,14 @@ export default function DocsPage() {
                           )}
                         </Button>
                       </div>
-                      <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
                         <code><span className="text-yellow-300">npm</span> <span className="text-green-400">install</span> <span className="text-white">@x402/fetch @x402/core @x402/evm viem</span></code>
                       </pre>
                     </div>
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm text-gray-400">Make a payment-protected request</p>
+                        <p className="text-sm text-muted-foreground">Make a payment-protected request</p>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -378,7 +378,7 @@ console.log('Transaction ID:', result.transactionId);`,
                           )}
                         </Button>
                       </div>
-                      <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
                         <code>
                           <span className="text-yellow-300">import</span> <span className="text-white">{'{'} wrapFetchWithPayment {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">'@x402/fetch'</span><span className="text-white">;</span>{'\n'}
                           <span className="text-yellow-300">import</span> <span className="text-white">{'{'} x402Client {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">'@x402/core/client'</span><span className="text-white">;</span>{'\n'}
@@ -404,7 +404,7 @@ console.log('Transaction ID:', result.transactionId);`,
                   <TabsContent value="python" className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm text-gray-400">Install the x402 client</p>
+                        <p className="text-sm text-muted-foreground">Install the x402 client</p>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -417,14 +417,14 @@ console.log('Transaction ID:', result.transactionId);`,
                           )}
                         </Button>
                       </div>
-                      <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
                         <code><span className="text-yellow-300">pip</span> <span className="text-green-400">install</span> <span className="text-white">"x402[httpx]" eth-account</span></code>
                       </pre>
                     </div>
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm text-gray-400">Make a payment-protected request</p>
+                        <p className="text-sm text-muted-foreground">Make a payment-protected request</p>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -461,7 +461,7 @@ asyncio.run(main())`,
                           )}
                         </Button>
                       </div>
-                      <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
                         <code>
                           <span className="text-yellow-300">import</span> <span className="text-white">asyncio, os</span>{'\n'}
                           <span className="text-yellow-300">from</span> <span className="text-white">eth_account</span> <span className="text-yellow-300">import</span> <span className="text-green-400">Account</span>{'\n'}
@@ -487,34 +487,34 @@ asyncio.run(main())`,
 
                   <TabsContent value="curl" className="space-y-4">
                     <div className="space-y-2">
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-muted-foreground">
                         First request returns 402 with payment details
                       </p>
-                      <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
                         <code>
                           <span className="text-yellow-300">curl</span> <span className="text-green-400">-i -X</span> <span className="text-white">POST</span> <span className="text-orange-400">https://deposit.now/api/deposit</span> <span className="text-white">\</span>{'\n'}
                           {'  '}<span className="text-green-400">-H</span> <span className="text-orange-400">"Content-Type: application/json"</span> <span className="text-white">\</span>{'\n'}
                           {'  '}<span className="text-green-400">-d</span> <span className="text-orange-400">'{`{`}"amount": "100.00", "account": "agent-wallet-123"{`}`}'</span>{'\n\n'}
-                          <span className="text-gray-500"># Response: HTTP 402 Payment Required with a Payment-Required</span>{'\n'}
-                          <span className="text-gray-500"># header listing accepted payment methods (scheme, network, payTo)</span>
+                          <span className="text-muted-foreground/70"># Response: HTTP 402 Payment Required with a Payment-Required</span>{'\n'}
+                          <span className="text-muted-foreground/70"># header listing accepted payment methods (scheme, network, payTo)</span>
                         </code>
                       </pre>
                     </div>
 
                     <div className="space-y-2">
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-muted-foreground">
                         The retry carries an X-Payment header — a signed payment payload
                         (EIP-712), not a plain string. Generate it with an x402 SDK
                         (JavaScript or Python above); it cannot be hand-written in curl.
                       </p>
-                      <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
                         <code>
                           <span className="text-yellow-300">curl</span> <span className="text-green-400">-X</span> <span className="text-white">POST</span> <span className="text-orange-400">https://deposit.now/api/deposit</span> <span className="text-white">\</span>{'\n'}
                           {'  '}<span className="text-green-400">-H</span> <span className="text-orange-400">"Content-Type: application/json"</span> <span className="text-white">\</span>{'\n'}
                           {'  '}<span className="text-green-400">-H</span> <span className="text-orange-400">"X-Payment: &lt;base64 signed payment payload from SDK&gt;"</span> <span className="text-white">\</span>{'\n'}
                           {'  '}<span className="text-green-400">-d</span> <span className="text-orange-400">'{`{`}"amount": "100.00", "account": "agent-wallet-123"{`}`}'</span>{'\n\n'}
-                          <span className="text-gray-500"># Response: HTTP 200 OK with deposit confirmation +</span>{'\n'}
-                          <span className="text-gray-500"># X-Payment-Response header containing the settlement receipt</span>
+                          <span className="text-muted-foreground/70"># Response: HTTP 200 OK with deposit confirmation +</span>{'\n'}
+                          <span className="text-muted-foreground/70"># X-Payment-Response header containing the settlement receipt</span>
                         </code>
                       </pre>
                     </div>
@@ -525,36 +525,36 @@ asyncio.run(main())`,
               {/* Merchants Section */}
               <div id="merchants" className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-blue-400" />
+                  <Terminal className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-bold text-white">Merchant endpoints (Phase 2)</h2>
                 </div>
-                <p className="text-gray-400">
+                <p className="text-muted-foreground">
                   Merchant-scoped routes let agents fund a specific business or integration. The
                   0.01 USDC x402 fee still applies, but settlement lands on the merchant&apos;s{' '}
-                  <code className="text-blue-400">payTo</code> address instead of the platform wallet.
+                  <code className="text-primary">payTo</code> address instead of the platform wallet.
                   After settlement, deposit.now writes a public receipt and optionally POSTs a{' '}
-                  <code className="text-blue-400">deposit.settled</code> webhook.
+                  <code className="text-primary">deposit.settled</code> webhook.
                 </p>
                 <div className="space-y-4">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline" className="text-white border-white/20">GET</Badge>
-                      <code className="text-sm text-blue-400">/api/merchants</code>
+                      <code className="text-sm text-primary">/api/merchants</code>
                     </div>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       Public catalog of active merchants with deposit URLs and payTo addresses.
                     </p>
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline" className="text-white border-white/20">POST</Badge>
-                      <code className="text-sm text-blue-400">/api/merchants/&#123;slug&#125;/deposit</code>
+                      <code className="text-sm text-primary">/api/merchants/&#123;slug&#125;/deposit</code>
                     </div>
-                    <p className="text-sm text-gray-400 mb-2">
+                    <p className="text-sm text-muted-foreground mb-2">
                       Same x402 flow as the platform endpoint. Example slug:{' '}
-                      <code className="text-blue-400">deposit-now</code>.
+                      <code className="text-primary">deposit-now</code>.
                     </p>
-                    <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                    <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
                       <code>
                         <span className="text-yellow-300">POST</span>{' '}
                         <span className="text-orange-400">https://deposit.now/api/merchants/acme-corp/deposit</span>
@@ -573,12 +573,12 @@ asyncio.run(main())`,
                     </pre>
                   </div>
                 </div>
-                <div className="bg-slate-950 rounded-lg p-4 border border-white/10 text-sm text-gray-400">
+                <div className="bg-background rounded-lg p-4 border border-border/60 text-sm text-muted-foreground">
                   <div className="font-semibold text-white mb-2">Discovery (Phase 3)</div>
                   <ul className="list-disc list-inside space-y-1">
                     <li>
                       Manifest:{' '}
-                      <a href="/.well-known/x402" className="text-blue-400 hover:underline">
+                      <a href="/.well-known/x402" className="text-primary hover:underline">
                         /.well-known/x402
                       </a>
                     </li>
@@ -590,10 +590,10 @@ asyncio.run(main())`,
 
               <div id="billing" className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-blue-400" />
+                  <Terminal className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-bold text-white">Merchant billing (on-chain)</h2>
                 </div>
-                <p className="text-gray-400">
+                <p className="text-muted-foreground">
                   Merchant charges are collected via x402 USDC on Base — no invoices or card billing.
                   Settlement fees debit from a prepaid balance; Rail tier renews with a fixed 49 USDC
                   payment to the platform wallet.
@@ -602,31 +602,31 @@ asyncio.run(main())`,
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline" className="text-white border-white/20">GET</Badge>
-                      <code className="text-sm text-blue-400">/api/merchants/&#123;slug&#125;</code>
+                      <code className="text-sm text-primary">/api/merchants/&#123;slug&#125;</code>
                     </div>
-                    <p className="text-sm text-gray-400">
-                      Returns merchant details plus a <code className="text-blue-400">billing</code>{' '}
+                    <p className="text-sm text-muted-foreground">
+                      Returns merchant details plus a <code className="text-primary">billing</code>{' '}
                       object: tier, prepaid balance, renew/topup URLs, and settlement fee bps.
                     </p>
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline" className="text-white border-white/20">POST</Badge>
-                      <code className="text-sm text-blue-400">/api/merchants/&#123;slug&#125;/renew</code>
+                      <code className="text-sm text-primary">/api/merchants/&#123;slug&#125;/renew</code>
                     </div>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       Pay 49 USDC via x402 to extend Rail webhooks and automation for 30 days.
                     </p>
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline" className="text-white border-white/20">POST</Badge>
-                      <code className="text-sm text-blue-400">/api/merchants/&#123;slug&#125;/topup</code>
+                      <code className="text-sm text-primary">/api/merchants/&#123;slug&#125;/topup</code>
                     </div>
-                    <p className="text-sm text-gray-400 mb-2">
+                    <p className="text-sm text-muted-foreground mb-2">
                       Top up prepaid USDC for settlement-fee debits. Minimum 10 USDC.
                     </p>
-                    <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                    <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
                       <code>
                         <span className="text-yellow-300">POST</span>{' '}
                         <span className="text-orange-400">https://deposit.now/api/merchants/acme-corp/topup</span>
@@ -641,23 +641,23 @@ asyncio.run(main())`,
                     </pre>
                   </div>
                 </div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground/70">
                   After each settled deposit, the tier settlement fee (e.g. 0.15% on Rail) debits
                   automatically from your prepaid balance. Agent rail fees (0.01 USDC/call) still
-                  settle to your <code className="text-blue-400">payTo</code> address.
+                  settle to your <code className="text-primary">payTo</code> address.
                 </p>
               </div>
 
               {/* FAQ Section */}
               <div id="faq" className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-blue-400" />
+                  <Terminal className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-bold text-white">FAQ</h2>
                 </div>
                 <div className="space-y-6">
                   <div>
                     <h3 className="font-semibold mb-2 text-white">What is deposit.now?</h3>
-                    <p className="text-sm text-gray-400 leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       deposit.now is the first public x402 API that lets AI agents autonomously
                       deposit funds. Agents pay 0.01 USDC per call over HTTP — no accounts, API
                       keys, or human sign-up required.
@@ -665,7 +665,7 @@ asyncio.run(main())`,
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2 text-white">How does an AI agent pay the deposit.now API?</h3>
-                    <p className="text-sm text-gray-400 leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       The agent calls POST https://deposit.now/api/deposit and receives HTTP 402
                       with signed payment requirements (x402 v2, exact scheme, USDC on Base mainnet). An
                       x402 client SDK such as @x402/fetch for JavaScript or x402[httpx] for Python
@@ -675,7 +675,7 @@ asyncio.run(main())`,
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2 text-white">What does the deposit.now API cost?</h3>
-                    <p className="text-sm text-gray-400 leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       0.01 USDC per call, settled on Base mainnet via the x402 payment protocol. There are
                       no subscriptions, accounts, or minimums.
                     </p>
@@ -686,25 +686,25 @@ asyncio.run(main())`,
               {/* Error Handling Section */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-blue-400" />
+                  <Terminal className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-bold text-white">Error Handling</h2>
                 </div>
                 <div className="space-y-4">
                   <div className="border-l-4 border-yellow-500 pl-4">
                     <div className="font-semibold mb-1 text-white">402 Payment Required</div>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       No payment provided or payment invalid. Decode the Payment-Required header (base64 JSON) for the payment requirements.
                     </p>
                   </div>
                   <div className="border-l-4 border-red-500 pl-4">
                     <div className="font-semibold mb-1 text-white">400 Bad Request</div>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       Invalid request body or parameters.
                     </p>
                   </div>
                   <div className="border-l-4 border-red-500 pl-4">
                     <div className="font-semibold mb-1 text-white">500 Internal Server Error</div>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       Server error processing the request. Retry with exponential backoff.
                     </p>
                   </div>

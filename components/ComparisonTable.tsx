@@ -4,14 +4,14 @@ import { comparisonRows } from '@/lib/pricing';
 
 function BrowserChrome({ children, title = 'compare' }: { children: ReactNode; title?: string }) {
   return (
-    <div className="bg-slate-900/60 border border-slate-700/50 rounded-2xl overflow-hidden backdrop-blur-sm transition-all duration-300 hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:scale-[1.02]">
-      <div className="bg-slate-800/80 px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-700/50 flex items-center gap-3">
+    <div className="bg-card/80 border border-border/60 rounded-2xl overflow-hidden backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02]">
+      <div className="bg-muted/80 px-4 sm:px-6 py-3 sm:py-4 border-b border-border/60 flex items-center gap-3">
         <div className="flex items-center gap-2 shrink-0">
           <div className="w-3 h-3 rounded-full bg-red-500" />
           <div className="w-3 h-3 rounded-full bg-yellow-500" />
           <div className="w-3 h-3 rounded-full bg-green-500" />
         </div>
-        <span className="text-[10px] sm:text-xs font-mono text-gray-500 truncate">{title}</span>
+        <span className="text-[10px] sm:text-xs font-mono text-muted-foreground/70 truncate">{title}</span>
       </div>
       <div className="overflow-x-auto">{children}</div>
     </div>
@@ -26,8 +26,8 @@ function CellValue({ value, positive }: { value: string; positive?: boolean }) {
         positive
           ? 'text-emerald-400 font-medium'
           : isNone
-            ? 'text-gray-500'
-            : 'text-gray-300'
+            ? 'text-muted-foreground/70'
+            : 'text-foreground/80'
       }
     >
       {value}
@@ -37,19 +37,19 @@ function CellValue({ value, positive }: { value: string; positive?: boolean }) {
 
 function SidebarComparison() {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur divide-y divide-white/5">
-      <div className="px-3 py-2.5 border-b border-white/10">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">vs direct transfer</p>
+    <div className="rounded-2xl border border-border/60 bg-card/60 backdrop-blur divide-y divide-white/5">
+      <div className="px-3 py-2.5 border-b border-border/60">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">vs direct transfer</p>
       </div>
       {comparisonRows.map((row) => (
         <div
           key={row.feature}
-          className={`px-3 py-3 ${row.highlight ? 'bg-blue-500/[0.04]' : ''}`}
+          className={`px-3 py-3 ${row.highlight ? 'bg-primary/[0.04]' : ''}`}
         >
           <p className="text-xs font-bold text-white mb-2 leading-snug">{row.feature}</p>
           <div className="flex items-start gap-1.5 mb-1.5">
-            <Minus className="h-3 w-3 text-gray-600 shrink-0 mt-0.5" />
-            <span className="text-[11px] text-gray-500 leading-snug">{row.direct}</span>
+            <Minus className="h-3 w-3 text-muted-foreground/60 shrink-0 mt-0.5" />
+            <span className="text-[11px] text-muted-foreground/70 leading-snug">{row.direct}</span>
           </div>
           <div className="flex items-start gap-1.5">
             <Check className="h-3 w-3 text-emerald-500 shrink-0 mt-0.5" />
@@ -86,19 +86,19 @@ export function ComparisonTable({
         className={`w-full ${compact ? 'text-xs sm:text-sm' : 'text-sm sm:text-base min-w-[640px]'}`}
       >
         <thead>
-          <tr className="border-b border-white/10">
+          <tr className="border-b border-border/60">
             <th
-              className={`text-left ${cellPad} text-gray-400 font-semibold uppercase tracking-wider text-[10px] sm:text-xs`}
+              className={`text-left ${cellPad} text-muted-foreground font-semibold uppercase tracking-wider text-[10px] sm:text-xs`}
             >
               Feature
             </th>
             <th
-              className={`text-left ${cellPad} text-gray-400 font-semibold uppercase tracking-wider text-[10px] sm:text-xs`}
+              className={`text-left ${cellPad} text-muted-foreground font-semibold uppercase tracking-wider text-[10px] sm:text-xs`}
             >
               {compact ? 'Direct transfer' : 'Direct On-Chain Transfer'}
             </th>
             <th
-              className={`text-left ${cellPad} text-blue-400 font-bold uppercase tracking-wider text-[10px] sm:text-xs bg-blue-500/5`}
+              className={`text-left ${cellPad} text-primary font-bold uppercase tracking-wider text-[10px] sm:text-xs bg-primary/5`}
             >
               deposit.now + x402
             </th>
@@ -109,17 +109,17 @@ export function ComparisonTable({
             <tr
               key={row.feature}
               className={`border-b border-white/5 last:border-0 ${
-                row.highlight ? 'bg-blue-500/[0.03]' : ''
+                row.highlight ? 'bg-primary/[0.03]' : ''
               }`}
             >
               <td className={`${cellPad} text-white font-medium leading-snug`}>{row.feature}</td>
               <td className={cellPad}>
                 <div className="flex items-start gap-2">
-                  <Minus className="h-4 w-4 text-gray-600 shrink-0 mt-0.5" />
+                  <Minus className="h-4 w-4 text-muted-foreground/60 shrink-0 mt-0.5" />
                   <CellValue value={row.direct} />
                 </div>
               </td>
-              <td className={`${cellPad} bg-blue-500/[0.03]`}>
+              <td className={`${cellPad} bg-primary/[0.03]`}>
                 <div className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                   <CellValue value={row.depositNow} positive />
@@ -140,7 +140,7 @@ export function ComparisonTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/40 backdrop-blur">
+    <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card/60 backdrop-blur">
       <div className="px-3 py-2 sm:px-4 sm:py-3">{table}</div>
     </div>
   );

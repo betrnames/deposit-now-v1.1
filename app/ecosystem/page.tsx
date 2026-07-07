@@ -131,14 +131,14 @@ export default function EcosystemPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900">
+    <div className="min-h-screen page-shell">
       <Header />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-8 py-16">
         <div className="flex gap-8">
           <aside className="w-56 flex-shrink-0 hidden md:block">
             <div className="sticky top-24 py-6">
-              <h2 className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-6 px-4">Categories</h2>
+              <h2 className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-6 px-4">Categories</h2>
               <nav className="space-y-1">
                 {categories.map((category) => (
                   <button
@@ -146,8 +146,8 @@ export default function EcosystemPage() {
                     onClick={() => scrollToSection(category.id)}
                     className={`w-full text-left px-4 py-2.5 rounded-lg transition-colors flex items-center justify-between group ${
                       activeSection === category.id
-                        ? 'bg-blue-600/20 text-blue-400'
-                        : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                        ? 'bg-primary/20 text-primary'
+                        : 'text-muted-foreground hover:text-white hover:bg-muted/50'
                     }`}
                   >
                     <span className="text-sm font-medium">{category.label}</span>
@@ -155,8 +155,8 @@ export default function EcosystemPage() {
                       variant="secondary"
                       className={`${
                         activeSection === category.id
-                          ? 'bg-blue-700 text-white'
-                          : 'bg-slate-800 text-gray-400 group-hover:bg-slate-700'
+                          ? 'bg-primary text-white'
+                          : 'bg-muted text-muted-foreground group-hover:bg-muted'
                       }`}
                     >
                       {category.count}
@@ -170,11 +170,11 @@ export default function EcosystemPage() {
           <main className="flex-1 min-w-0">
             <div className="max-w-4xl">
             <div className="mb-12">
-              <h1 className="text-sm font-medium text-gray-400 mb-2">x402 ecosystem</h1>
+              <h1 className="text-sm font-medium text-muted-foreground mb-2">x402 ecosystem</h1>
               <h2 className="text-2xl font-bold text-white mb-4">
                 Ecosystem Directory
               </h2>
-              <p className="text-xl text-gray-400 leading-relaxed">
+              <p className="text-xl text-muted-foreground leading-relaxed">
                 Discover innovative projects, tools, and applications built by our growing community of partners and developers.
               </p>
             </div>
@@ -188,16 +188,16 @@ export default function EcosystemPage() {
                   {ecosystemData.clients.map((project, index) => (
                     <Card
                       key={index}
-                      className="bg-slate-900/50 border-slate-800 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 group"
+                      className="bg-card/70 border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group"
                     >
                       <CardHeader>
                         <div className="flex items-start justify-between mb-2">
-                          <CardTitle className="text-white group-hover:text-blue-400 transition-colors text-lg">
+                          <CardTitle className="text-white group-hover:text-primary transition-colors text-lg">
                             {project.name}
                           </CardTitle>
-                          <ExternalLink className="h-4 w-4 text-gray-500 group-hover:text-blue-400 transition-colors flex-shrink-0 ml-2" />
+                          <ExternalLink className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
                         </div>
-                        <CardDescription className="text-gray-400 leading-relaxed text-sm">
+                        <CardDescription className="text-muted-foreground leading-relaxed text-sm">
                           {project.description}
                         </CardDescription>
                       </CardHeader>
@@ -206,7 +206,7 @@ export default function EcosystemPage() {
                           asChild
                           variant="outline"
                           size="sm"
-                          className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+                          className="w-full border-primary/30 text-primary hover:bg-primary/10 hover:text-primary/80"
                         >
                           <a href={project.link} target="_blank" rel="noopener noreferrer">
                             View Project
@@ -226,16 +226,16 @@ export default function EcosystemPage() {
                   {ecosystemData.services.map((project, index) => (
                     <Card
                       key={index}
-                      className="bg-slate-900/50 border-slate-800 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 group"
+                      className="bg-card/70 border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group"
                     >
                       <CardHeader>
                         <div className="flex items-start justify-between mb-2">
-                          <CardTitle className="text-white group-hover:text-blue-400 transition-colors text-lg">
+                          <CardTitle className="text-white group-hover:text-primary transition-colors text-lg">
                             {project.name}
                           </CardTitle>
-                          <ExternalLink className="h-4 w-4 text-gray-500 group-hover:text-blue-400 transition-colors flex-shrink-0 ml-2" />
+                          <ExternalLink className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
                         </div>
-                        <CardDescription className="text-gray-400 leading-relaxed text-sm">
+                        <CardDescription className="text-muted-foreground leading-relaxed text-sm">
                           {project.description}
                         </CardDescription>
                       </CardHeader>
@@ -244,7 +244,7 @@ export default function EcosystemPage() {
                           asChild
                           variant="outline"
                           size="sm"
-                          className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+                          className="w-full border-primary/30 text-primary hover:bg-primary/10 hover:text-primary/80"
                         >
                           <a href={project.link} target="_blank" rel="noopener noreferrer">
                             View Project
@@ -264,16 +264,16 @@ export default function EcosystemPage() {
                   {ecosystemData.infrastructure.map((project, index) => (
                     <Card
                       key={index}
-                      className="bg-slate-900/50 border-slate-800 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 group"
+                      className="bg-card/70 border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group"
                     >
                       <CardHeader>
                         <div className="flex items-start justify-between mb-2">
-                          <CardTitle className="text-white group-hover:text-blue-400 transition-colors text-lg">
+                          <CardTitle className="text-white group-hover:text-primary transition-colors text-lg">
                             {project.name}
                           </CardTitle>
-                          <ExternalLink className="h-4 w-4 text-gray-500 group-hover:text-blue-400 transition-colors flex-shrink-0 ml-2" />
+                          <ExternalLink className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
                         </div>
-                        <CardDescription className="text-gray-400 leading-relaxed text-sm">
+                        <CardDescription className="text-muted-foreground leading-relaxed text-sm">
                           {project.description}
                         </CardDescription>
                       </CardHeader>
@@ -282,7 +282,7 @@ export default function EcosystemPage() {
                           asChild
                           variant="outline"
                           size="sm"
-                          className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+                          className="w-full border-primary/30 text-primary hover:bg-primary/10 hover:text-primary/80"
                         >
                           <a href={project.link} target="_blank" rel="noopener noreferrer">
                             View Project
@@ -302,16 +302,16 @@ export default function EcosystemPage() {
                   {ecosystemData.resources.map((project, index) => (
                     <Card
                       key={index}
-                      className="bg-slate-900/50 border-slate-800 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 group"
+                      className="bg-card/70 border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group"
                     >
                       <CardHeader>
                         <div className="flex items-start justify-between mb-2">
-                          <CardTitle className="text-white group-hover:text-blue-400 transition-colors text-lg">
+                          <CardTitle className="text-white group-hover:text-primary transition-colors text-lg">
                             {project.name}
                           </CardTitle>
-                          <ExternalLink className="h-4 w-4 text-gray-500 group-hover:text-blue-400 transition-colors flex-shrink-0 ml-2" />
+                          <ExternalLink className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
                         </div>
-                        <CardDescription className="text-gray-400 leading-relaxed text-sm">
+                        <CardDescription className="text-muted-foreground leading-relaxed text-sm">
                           {project.description}
                         </CardDescription>
                       </CardHeader>
@@ -320,7 +320,7 @@ export default function EcosystemPage() {
                           asChild
                           variant="outline"
                           size="sm"
-                          className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+                          className="w-full border-primary/30 text-primary hover:bg-primary/10 hover:text-primary/80"
                         >
                           <a href={project.link} target="_blank" rel="noopener noreferrer">
                             View Project
@@ -340,16 +340,16 @@ export default function EcosystemPage() {
                   {ecosystemData.facilitators.map((project, index) => (
                     <Card
                       key={index}
-                      className="bg-slate-900/50 border-slate-800 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 group"
+                      className="bg-card/70 border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group"
                     >
                       <CardHeader>
                         <div className="flex items-start justify-between mb-2">
-                          <CardTitle className="text-white group-hover:text-blue-400 transition-colors text-lg">
+                          <CardTitle className="text-white group-hover:text-primary transition-colors text-lg">
                             {project.name}
                           </CardTitle>
-                          <ExternalLink className="h-4 w-4 text-gray-500 group-hover:text-blue-400 transition-colors flex-shrink-0 ml-2" />
+                          <ExternalLink className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
                         </div>
-                        <CardDescription className="text-gray-400 leading-relaxed text-sm">
+                        <CardDescription className="text-muted-foreground leading-relaxed text-sm">
                           {project.description}
                         </CardDescription>
                       </CardHeader>
@@ -358,7 +358,7 @@ export default function EcosystemPage() {
                           asChild
                           variant="outline"
                           size="sm"
-                          className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+                          className="w-full border-primary/30 text-primary hover:bg-primary/10 hover:text-primary/80"
                         >
                           <a href={project.link} target="_blank" rel="noopener noreferrer">
                             View Project

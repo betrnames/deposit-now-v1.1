@@ -5,11 +5,11 @@ import Link from 'next/link';
 
 
 const linkClass =
-  'text-gray-400 hover:text-white transition-colors text-xs sm:text-sm py-1 inline-block leading-snug';
+  'text-muted-foreground hover:text-white transition-colors text-xs sm:text-sm py-1 inline-block leading-snug';
 const socialClass =
-  'text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5';
+  'text-muted-foreground hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5';
 const desktopSocialClass =
-  'text-gray-400 hover:text-white transition-colors p-2 -m-2 rounded-lg hover:bg-white/5';
+  'text-muted-foreground hover:text-white transition-colors p-2 -m-2 rounded-lg hover:bg-white/5';
 
 function FooterColumn({
   title,
@@ -135,7 +135,7 @@ function FooterLinks() {
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-slate-800 bg-black/40 backdrop-blur py-10 sm:py-16">
+    <footer className="border-t border-border bg-card/60 backdrop-blur py-10 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Mobile */}
         <div className="md:hidden mb-8 flex flex-col items-start text-left w-full">
@@ -143,7 +143,7 @@ export function SiteFooter() {
             <Link href="/" className="shrink-0" aria-label="deposit.now home">
               <DepositLogo size={40} />
             </Link>
-            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
+            <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
               Programmable funding gateway for autonomous AI agents. Verifiable x402 deposits on
               Base mainnet — non-custodial USDC.
             </p>
@@ -154,7 +154,7 @@ export function SiteFooter() {
               href="https://x402.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-blue-500 hover:text-blue-400 transition-colors text-xs sm:text-sm font-bold uppercase tracking-wider"
+              className="inline-flex items-center gap-2 text-primary hover:text-primary transition-colors text-xs sm:text-sm font-bold uppercase tracking-wider"
             >
               Powered by x402
               <ExternalLink className="h-3 w-3" />
@@ -177,7 +177,7 @@ export function SiteFooter() {
                 <SocialIcons className={desktopSocialClass} iconClassName="h-5 w-5" />
               </div>
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed mb-4 max-w-sm">
+            <p className="text-muted-foreground text-sm leading-relaxed mb-4 max-w-sm">
               Programmable funding gateway for autonomous AI agents. Verifiable x402 deposits on
               Base mainnet — non-custodial USDC.
             </p>
@@ -185,7 +185,7 @@ export function SiteFooter() {
               href="https://x402.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-blue-500 hover:text-blue-400 transition-colors text-sm font-bold uppercase tracking-wider"
+              className="inline-flex items-center gap-2 text-primary hover:text-primary transition-colors text-sm font-bold uppercase tracking-wider"
             >
               Powered by x402
               <ExternalLink className="h-3 w-3" />
@@ -198,13 +198,13 @@ export function SiteFooter() {
         </div>
 
         {/* Mobile bottom */}
-        <div className="md:hidden border-t border-slate-800 pt-6 flex flex-col items-start gap-3">
+        <div className="md:hidden border-t border-border pt-6 flex flex-col items-start gap-3">
           <div className="flex items-center gap-1 -ml-2">
             <SocialIcons />
           </div>
-          <p className="text-gray-500 text-xs sm:text-sm text-left">
+          <p className="text-muted-foreground/70 text-xs sm:text-sm text-left">
             © 2026{' '}
-            <a href="https://deposit.now" className="hover:text-gray-300 transition-colors">
+            <a href="https://deposit.now" className="hover:text-foreground/80 transition-colors">
               deposit.now
             </a>{' '}
             · Built for the agentic future
@@ -212,10 +212,10 @@ export function SiteFooter() {
         </div>
 
         {/* Desktop bottom */}
-        <div className="hidden md:block border-t border-slate-800 pt-8">
-          <p className="text-gray-500 text-sm text-left">
+        <div className="hidden md:block border-t border-border pt-8">
+          <p className="text-muted-foreground/70 text-sm text-left">
             © 2026{' '}
-            <a href="https://deposit.now" className="hover:text-gray-300 transition-colors">
+            <a href="https://deposit.now" className="hover:text-foreground/80 transition-colors">
               deposit.now
             </a>{' '}
             · Built for the agentic future

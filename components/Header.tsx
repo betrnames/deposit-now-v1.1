@@ -53,15 +53,15 @@ export function Header() {
   };
 
   const navShell = isScrolled
-    ? 'bg-slate-900/60 border-blue-500/20'
-    : 'bg-slate-900/40 border-blue-500/10';
+    ? 'bg-card/80 border-primary/25'
+    : 'bg-background/40 border-primary/15';
 
-  const navBg = isScrolled ? 'bg-slate-900/95' : 'bg-slate-900/0';
+  const navBg = isScrolled ? 'bg-background/95' : 'bg-transparent';
 
-  const linkClass = 'text-sm font-medium text-white hover:text-blue-400 transition-colors';
+  const linkClass = 'text-sm font-medium text-white hover:text-primary transition-colors';
 
   const getStartedClass =
-    'bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-wider px-3 h-9 rounded-lg inline-flex items-center shrink-0';
+    'bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-3 h-9 rounded-lg inline-flex items-center shrink-0';
 
   const waitlistForm = (compact: boolean) =>
     isSubmitted ? (
@@ -77,14 +77,14 @@ export function Header() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className={`bg-slate-800/60 border-blue-400/30 text-white placeholder:text-gray-400 h-10 text-sm focus-visible:ring-blue-500 ${
+          className={`bg-muted/60 border-primary/30 text-white placeholder:text-muted-foreground h-10 text-sm focus-visible:ring-ring ${
             compact ? 'flex-1' : 'w-36 lg:w-44'
           }`}
         />
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-wider px-4 lg:px-5 h-10 rounded-lg whitespace-nowrap shrink-0"
+          className="bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-4 lg:px-5 h-10 rounded-lg whitespace-nowrap shrink-0"
         >
           {isSubmitting ? 'Joining...' : 'Join waitlist'}
         </Button>
@@ -162,9 +162,9 @@ export function Header() {
       </nav>
 
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-slate-900/98 backdrop-blur-xl z-[60] md:hidden">
+        <div className="fixed inset-0 bg-background/98 backdrop-blur-xl z-[60] md:hidden">
           <div className="flex flex-col h-full">
-            <div className="flex justify-between items-center p-6 border-b border-blue-500/20">
+            <div className="flex justify-between items-center p-6 border-b border-primary/25">
               <Link
                 href="/"
                 className="flex items-center"
@@ -192,7 +192,7 @@ export function Header() {
                 <Link
                   key={href}
                   href={href}
-                  className="text-lg font-semibold text-white py-4 border-b border-blue-500/10"
+                  className="text-lg font-semibold text-white py-4 border-b border-primary/15"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {label}

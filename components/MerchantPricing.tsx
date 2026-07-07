@@ -22,7 +22,7 @@ function BillingBadge({ mode }: { mode: 'automated' | 'manual' | 'free' }) {
   }
   if (mode === 'automated') {
     return (
-      <span className={`${badgeClass} bg-blue-500/10 text-blue-300 border-blue-500/20`}>
+      <span className={`${badgeClass} bg-primary/10 text-primary/80 border-primary/25`}>
         Onchain
       </span>
     );
@@ -65,13 +65,13 @@ function TierCard({ tier }: { tier: PricingTier }) {
       id={tier.id}
       className={`relative flex flex-col rounded-2xl border h-full transition-colors scroll-mt-28 ${
         tier.featured
-          ? 'border-blue-500/40 bg-gradient-to-br from-blue-950/50 via-slate-900/80 to-black/60 shadow-[0_0_32px_rgba(59,130,246,0.12)]'
-          : 'border-white/10 bg-black/35 hover:border-white/20'
+          ? 'border-primary/40 bg-gradient-to-br from-primary/10 via-card/80 to-black/60 shadow-[0_0_32px_color-mix(in_oklch,var(--primary)_30%,transparent)]'
+          : 'border-border/60 bg-black/35 hover:border-white/20'
       }`}
     >
       {tier.featured && (
         <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
-          <span className="inline-flex items-center gap-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full">
+          <span className="inline-flex items-center gap-1 bg-primary text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full">
             <Zap className="h-2.5 w-2.5" />
             Popular
           </span>
@@ -80,7 +80,7 @@ function TierCard({ tier }: { tier: PricingTier }) {
 
       <div className="p-5 sm:p-6 border-b border-white/5">
         <h3 className="text-xl font-black text-white">{tier.name}</h3>
-        <p className="text-xs text-gray-500 mt-0.5">{tier.tagline}</p>
+        <p className="text-xs text-muted-foreground/70 mt-0.5">{tier.tagline}</p>
         <div className="flex items-center gap-2 mt-4 flex-wrap">
           <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             {tier.monthly}
@@ -90,8 +90,8 @@ function TierCard({ tier }: { tier: PricingTier }) {
         <div
           className={`mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 max-w-full rounded-lg px-2.5 py-1 text-xs font-semibold ${
             tier.featured
-              ? 'bg-blue-500/15 text-blue-300 border border-blue-500/25'
-              : 'bg-white/5 text-gray-300 border border-white/10'
+              ? 'bg-primary/15 text-primary/80 border border-primary/25'
+              : 'bg-white/5 text-foreground/80 border border-border/60'
           }`}
         >
           <Coins className="h-3 w-3 shrink-0" />
@@ -104,15 +104,15 @@ function TierCard({ tier }: { tier: PricingTier }) {
         {features.map((f) => (
           <li key={f.text} className="flex items-start gap-2 text-sm">
             {f.muted ? (
-              <Minus className="h-3.5 w-3.5 text-gray-600 shrink-0 mt-0.5" />
+              <Minus className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0 mt-0.5" />
             ) : (
               <Check
                 className={`h-3.5 w-3.5 shrink-0 mt-0.5 ${
-                  tier.featured ? 'text-blue-400' : 'text-emerald-500'
+                  tier.featured ? 'text-primary' : 'text-emerald-500'
                 }`}
               />
             )}
-            <span className={f.muted ? 'text-gray-500' : 'text-gray-300'}>{f.text}</span>
+            <span className={f.muted ? 'text-muted-foreground/70' : 'text-foreground/80'}>{f.text}</span>
           </li>
         ))}
       </ul>
@@ -122,8 +122,8 @@ function TierCard({ tier }: { tier: PricingTier }) {
           href={tier.ctaHref}
           className={`inline-flex w-full items-center justify-center h-10 rounded-xl font-black text-[10px] uppercase tracking-wider transition-colors ${
             tier.featured
-              ? 'bg-blue-600 hover:bg-blue-700 text-white'
-              : 'bg-white/8 hover:bg-white/12 text-white border border-white/10'
+              ? 'bg-primary hover:bg-primary/90 text-white'
+              : 'bg-white/8 hover:bg-white/12 text-white border border-border/60'
           }`}
         >
           {tier.cta}
@@ -137,13 +137,13 @@ export function MerchantPricing() {
   return (
     <div>
       <div id="overview" className="mb-10 sm:mb-12 scroll-mt-28">
-        <p className="text-gray-300 leading-relaxed mb-4">
+        <p className="text-foreground/80 leading-relaxed mb-4">
           Merchants pay for <strong className="text-white">settlement volume</strong> and{' '}
           <strong className="text-white">automation</strong> — webhooks, retries, discovery —
           not per-agent account fees. Everything billable runs{' '}
           <strong className="text-white">on-chain via x402</strong>; we do not send invoices.
         </p>
-        <p className="text-sm text-gray-500 leading-relaxed">{agentRailNote}</p>
+        <p className="text-sm text-muted-foreground/70 leading-relaxed">{agentRailNote}</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6 items-stretch">
@@ -154,11 +154,11 @@ export function MerchantPricing() {
 
       <div
         id="billing-automation"
-        className="mt-12 sm:mt-16 rounded-2xl border border-white/10 bg-black/30 overflow-hidden scroll-mt-28"
+        className="mt-12 sm:mt-16 rounded-2xl border border-border/60 bg-black/30 overflow-hidden scroll-mt-28"
       >
         <div className="p-5 sm:p-6 border-b border-white/5">
           <h2 className="text-lg font-bold text-white">Automated vs manual billing</h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-muted-foreground/70 mt-1">
             On-chain badges mean USDC collected automatically through x402. Custom setup is only
             for Network volume deals.
           </p>
@@ -170,11 +170,11 @@ export function MerchantPricing() {
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-semibold text-white">{row.charge}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{row.whoPays}</p>
+                  <p className="text-xs text-muted-foreground/70 mt-0.5">{row.whoPays}</p>
                 </div>
                 <BillingBadge mode={row.mode} />
               </div>
-              <p className="text-sm text-gray-400 mt-2 break-words">{row.howCollected}</p>
+              <p className="text-sm text-muted-foreground mt-2 break-words">{row.howCollected}</p>
             </div>
           ))}
         </div>
@@ -182,7 +182,7 @@ export function MerchantPricing() {
         <div className="hidden md:block overflow-x-auto pb-5 sm:pb-6">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/5 text-left text-[10px] uppercase tracking-wider text-gray-500">
+              <tr className="border-b border-white/5 text-left text-[10px] uppercase tracking-wider text-muted-foreground/70">
                 <th className="px-5 sm:px-6 py-3 font-bold align-middle">Charge</th>
                 <th className="px-5 sm:px-6 py-3 font-bold align-middle">Who pays</th>
                 <th className="px-5 sm:px-6 py-3 font-bold align-middle">How it works</th>
@@ -197,8 +197,8 @@ export function MerchantPricing() {
                   <td className="px-5 sm:px-6 py-4 align-middle font-semibold text-white">
                     {row.charge}
                   </td>
-                  <td className="px-5 sm:px-6 py-4 align-middle text-gray-400">{row.whoPays}</td>
-                  <td className="px-5 sm:px-6 py-4 align-middle text-gray-400">
+                  <td className="px-5 sm:px-6 py-4 align-middle text-muted-foreground">{row.whoPays}</td>
+                  <td className="px-5 sm:px-6 py-4 align-middle text-muted-foreground">
                     {row.howCollected}
                   </td>
                   <td className="px-5 sm:px-6 py-4 align-middle w-[5.5rem] min-w-[5.5rem]">
@@ -211,19 +211,19 @@ export function MerchantPricing() {
         </div>
 
         <div className="px-5 sm:px-6 pt-7 pb-8 sm:pt-8 sm:pb-10 bg-white/[0.02] border-t border-white/5 space-y-4">
-          <p className="text-xs text-gray-500">Rail merchants renew and top up via x402:</p>
-          <ul className="text-[11px] sm:text-xs font-mono space-y-2.5 text-blue-300/90 pb-1">
+          <p className="text-xs text-muted-foreground/70">Rail merchants renew and top up via x402:</p>
+          <ul className="text-[11px] sm:text-xs font-mono space-y-2.5 text-primary/80/90 pb-1">
             <li className="break-all">
-              <span className="text-gray-500 font-sans">Renew </span>
+              <span className="text-muted-foreground/70 font-sans">Renew </span>
               POST /api/merchants/&#123;slug&#125;/renew
-              <span className="text-gray-500 font-sans"> (49 USDC)</span>
+              <span className="text-muted-foreground/70 font-sans"> (49 USDC)</span>
             </li>
             <li className="break-all">
-              <span className="text-gray-500 font-sans">Top up </span>
+              <span className="text-muted-foreground/70 font-sans">Top up </span>
               POST /api/merchants/&#123;slug&#125;/topup
             </li>
             <li className="break-all">
-              <span className="text-gray-500 font-sans">Balance </span>
+              <span className="text-muted-foreground/70 font-sans">Balance </span>
               GET /api/merchants/&#123;slug&#125;
             </li>
           </ul>
@@ -232,10 +232,10 @@ export function MerchantPricing() {
 
       <div
         id="revenue-share"
-        className="mt-12 sm:mt-16 rounded-2xl border border-white/10 bg-black/30 p-6 sm:p-8 scroll-mt-28"
+        className="mt-12 sm:mt-16 rounded-2xl border border-border/60 bg-black/30 p-6 sm:p-8 scroll-mt-28"
       >
         <h2 className="text-lg font-bold text-white mb-4">How charges settle</h2>
-        <ul className="space-y-3 text-sm text-gray-400">
+        <ul className="space-y-3 text-sm text-muted-foreground">
           <li>
             <strong className="text-white">Settlement fee</strong> — a small % of each declared
             deposit volume, debited from your prepaid USDC balance after every settled deposit.

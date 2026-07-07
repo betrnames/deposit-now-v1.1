@@ -321,3 +321,36 @@
     display: none;
   }
 }
+
+@utility page-shell {
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--foreground);
+  background-image:
+    radial-gradient(
+      ellipse 90% 55% at 50% -15%,
+      color-mix(in oklch, var(--primary) 22%, transparent),
+      transparent
+    ),
+    linear-gradient(
+      to bottom right,
+      var(--background),
+      color-mix(in oklch, var(--secondary) 45%, var(--background)),
+      var(--background)
+    );
+}
+
+@utility hero-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklch, var(--primary) 14%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--primary) 14%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 60px 60px;
+}
