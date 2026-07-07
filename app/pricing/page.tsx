@@ -41,7 +41,8 @@ const nav = [
   { id: 'catalog', label: 'Catalog' },
   { id: 'rail', label: 'Rail' },
   { id: 'network', label: 'Network' },
-  { id: 'revenue-share', label: 'Revenue share' },
+  { id: 'billing-automation', label: 'Billing' },
+  { id: 'revenue-share', label: 'Charges' },
 ];
 
 export default function PricingPage() {
@@ -49,7 +50,7 @@ export default function PricingPage() {
     <GuidePage
       kicker="Merchants"
       title="Merchant Pricing"
-      subtitle="Usage-based settlement fees + automation. Agents pay the rail; merchants pay for webhooks, discovery, and scale."
+      subtitle="On-chain USDC billing via x402 — no invoices. Agents pay the rail; merchants top up and renew automatically."
       nav={nav}
       jsonLd={jsonLd}
       wideContent

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { SiteFooter } from '@/components/SiteFooter';
+
 import { ChevronRight, Copy, CheckCircle2, Terminal } from 'lucide-react';
 
 export default function DocsPage() {
@@ -88,6 +89,16 @@ export default function DocsPage() {
                 >
                   Code Examples
                 </button>
+                <button
+                  onClick={() => scrollToSection('billing')}
+                  className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
+                    activeSection === 'billing'
+                      ? 'bg-blue-600/20 text-blue-400 rounded-lg'
+                      : 'text-gray-400 hover:text-white hover:bg-slate-800/50 rounded-lg'
+                  }`}
+                >
+                  Billing
+                </button>
               </nav>
             </div>
           </aside>
@@ -143,6 +154,16 @@ export default function DocsPage() {
                 >
                   Examples
                 </button>
+                <button
+                  onClick={() => scrollToSection('billing')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    activeSection === 'billing'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-800/50 text-gray-400 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  Billing
+                </button>
               </div>
             </div>
 
@@ -186,7 +207,13 @@ export default function DocsPage() {
                   <div className="font-semibold text-white">x402 Requirements:</div>
                   <ul className="list-disc list-inside space-y-1 text-sm text-gray-400">
                     <li>Payment amount: 10000 atomic units (0.01 USDC)</li>
-                    <li>Currency: USDC (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)</li>
+                    <li className="break-words">
+                      Currency: USDC (
+                      <code className="break-all">
+                        0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+                      </code>
+                      )
+                    </li>
                     <li>Network: Base mainnet (eip155:8453)</li>
                     <li>Facilitator: Coinbase Developer Platform (CDP) x402 facilitator</li>
                   </ul>
@@ -559,6 +586,66 @@ asyncio.run(main())`,
                     <li>OpenAPI + llms.txt for agent crawlers</li>
                   </ul>
                 </div>
+              </div>
+
+              <div id="billing" className="space-y-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Terminal className="h-6 w-6 text-blue-400" />
+                  <h2 className="text-2xl font-bold text-white">Merchant billing (on-chain)</h2>
+                </div>
+                <p className="text-gray-400">
+                  Merchant charges are collected via x402 USDC on Base — no invoices or card billing.
+                  Settlement fees debit from a prepaid balance; Rail tier renews with a fixed 49 USDC
+                  payment to the platform wallet.
+                </p>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="outline" className="text-white border-white/20">GET</Badge>
+                      <code className="text-sm text-blue-400">/api/merchants/&#123;slug&#125;</code>
+                    </div>
+                    <p className="text-sm text-gray-400">
+                      Returns merchant details plus a <code className="text-blue-400">billing</code>{' '}
+                      object: tier, prepaid balance, renew/topup URLs, and settlement fee bps.
+                    </p>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="outline" className="text-white border-white/20">POST</Badge>
+                      <code className="text-sm text-blue-400">/api/merchants/&#123;slug&#125;/renew</code>
+                    </div>
+                    <p className="text-sm text-gray-400">
+                      Pay 49 USDC via x402 to extend Rail webhooks and automation for 30 days.
+                    </p>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="outline" className="text-white border-white/20">POST</Badge>
+                      <code className="text-sm text-blue-400">/api/merchants/&#123;slug&#125;/topup</code>
+                    </div>
+                    <p className="text-sm text-gray-400 mb-2">
+                      Top up prepaid USDC for settlement-fee debits. Minimum 10 USDC.
+                    </p>
+                    <pre className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm border border-white/10">
+                      <code>
+                        <span className="text-yellow-300">POST</span>{' '}
+                        <span className="text-orange-400">https://deposit.now/api/merchants/acme-corp/topup</span>
+                        {'\n'}
+                        <span className="text-white">{'{'}</span>{'\n'}
+                        {'  '}<span className="text-green-400">&quot;amount&quot;</span>
+                        <span className="text-white">: </span>
+                        <span className="text-orange-400">&quot;50&quot;</span>
+                        {'\n'}
+                        <span className="text-white">{'}'}</span>
+                      </code>
+                    </pre>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500">
+                  After each settled deposit, the tier settlement fee (e.g. 0.15% on Rail) debits
+                  automatically from your prepaid balance. Agent rail fees (0.01 USDC/call) still
+                  settle to your <code className="text-blue-400">payTo</code> address.
+                </p>
               </div>
 
               {/* FAQ Section */}

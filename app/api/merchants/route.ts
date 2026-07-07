@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { normalizeTier } from '@/lib/billing';
 import {
   isValidEvmAddress,
   isValidMerchantSlug,
@@ -78,6 +79,7 @@ export async function POST(request: NextRequest) {
       description: typeof body.description === 'string' ? body.description : undefined,
       webhookUrl: typeof body.webhookUrl === 'string' ? body.webhookUrl : undefined,
       webhookSecret: typeof body.webhookSecret === 'string' ? body.webhookSecret : undefined,
+      tier: typeof body.tier === 'string' ? normalizeTier(body.tier) : undefined,
       active: body.active !== false,
     });
   } catch (error) {

@@ -9,7 +9,10 @@ import { wrapFetchWithPayment } from '@x402/fetch';
 import { ExactEvmScheme } from '@x402/evm/exact/client';
 import { privateKeyToAccount } from 'viem/accounts';
 
-const apiUrl = process.env.DEPOSIT_API_URL ?? 'https://deposit.now/api/deposit';
+const testnet = process.argv.includes('--testnet');
+const apiUrl =
+  process.env.DEPOSIT_API_URL ??
+  (testnet ? 'http://127.0.0.1:3000/api/deposit' : 'https://deposit.now/api/deposit');
 const key = process.env.EVM_PRIVATE_KEY;
 if (!key) {
   console.error('Set EVM_PRIVATE_KEY to a wallet funded with USDC on the target network.');

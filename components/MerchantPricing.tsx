@@ -1,6 +1,35 @@
 import Link from 'next/link';
-import { ArrowRight, Check, Coins, Minus, Zap } from 'lucide-react';
-import { agentRailNote, pricingTiers, type PricingTier } from '@/lib/pricing';
+import { ArrowRight, Check, Coins, Minus, Zap, Bot, HandCoins } from 'lucide-react';
+import {
+  agentRailNote,
+  billingAutomationRows,
+  pricingTiers,
+  type PricingTier,
+} from '@/lib/pricing';
+
+function BillingBadge({ mode }: { mode: 'automated' | 'manual' | 'free' }) {
+  if (mode === 'free') {
+    return (
+      <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-400 border border-emerald-500/20">
+        Free
+      </span>
+    );
+  }
+  if (mode === 'automated') {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-blue-300 border border-blue-500/20">
+        <Bot className="h-2.5 w-2.5" />
+        On-chain
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-300 border border-amber-500/20">
+      <HandCoins className="h-2.5 w-2.5" />
+      Custom
+    </span>
+  );
+}
 
 function tierFeatures(tier: PricingTier): { text: string; muted?: boolean }[] {
   const items: { text: string; muted?: boolean }[] = [
@@ -49,21 +78,22 @@ function TierCard({ tier }: { tier: PricingTier }) {
       <div className="p-5 sm:p-6 border-b border-white/5">
         <h3 className="text-xl font-black text-white">{tier.name}</h3>
         <p className="text-xs text-gray-500 mt-0.5">{tier.tagline}</p>
-        <p className="text-2xl sm:text-3xl font-black text-white mt-4 tracking-tight">
-          {tier.monthly}
-          {tier.monthly === '$49 / mo' && (
-            <span className="text-sm font-medium text-gray-500 ml-1">+ usage</span>
-          )}
-        </p>
+        <div className="flex items-center gap-2 mt-4 flex-wrap">
+          <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            {tier.monthly}
+          </p>
+          <BillingBadge mode={tier.monthlyBilling} />
+        </div>
         <div
-          className={`mt-3 inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold ${
+          className={`mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 max-w-full rounded-lg px-2.5 py-1 text-xs font-semibold ${
             tier.featured
               ? 'bg-blue-500/15 text-blue-300 border border-blue-500/25'
               : 'bg-white/5 text-gray-300 border border-white/10'
           }`}
         >
           <Coins className="h-3 w-3 shrink-0" />
-          {tier.settlementFee}
+          <span className="min-w-0">{tier.settlementFee}</span>
+          <BillingBadge mode={tier.settlementBilling} />
         </div>
       </div>
 
@@ -108,7 +138,8 @@ export function MerchantPricing() {
         <p className="text-gray-300 leading-relaxed mb-4">
           Merchants pay for <strong className="text-white">settlement volume</strong> and{' '}
           <strong className="text-white">automation</strong> — webhooks, retries, discovery —
-          not per-agent account fees.
+          not per-agent account fees. Everything billable runs{' '}
+          <strong className="text-white">on-chain via x402</strong>; we do not send invoices.
         </p>
         <p className="text-sm text-gray-500 leading-relaxed">{agentRailNote}</p>
       </div>
@@ -120,29 +151,108 @@ export function MerchantPricing() {
       </div>
 
       <div
+        id="billing-automation"
+        className="mt-12 sm:mt-16 rounded-2xl border border-white/10 bg-black/30 overflow-hidden scroll-mt-28"
+      >
+        <div className="p-5 sm:p-6 border-b border-white/5">
+          <h2 className="text-lg font-bold text-white">Automated vs manual billing</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            On-chain badges mean USDC collected automatically through x402. Custom setup is only
+            for Network volume deals.
+          </p>
+        </div>
+
+        <div className="md:hidden divide-y divide-white/5">
+          {billingAutomationRows.map((row) => (
+            <div key={row.charge} className="px-5 py-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-semibold text-white">{row.charge}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{row.whoPays}</p>
+                </div>
+                <BillingBadge mode={row.mode} />
+              </div>
+              <p className="text-sm text-gray-400 mt-2 break-words">{row.howCollected}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/5 text-left text-[10px] uppercase tracking-wider text-gray-500">
+                <th className="px-5 sm:px-6 py-3 font-bold">Charge</th>
+                <th className="px-5 sm:px-6 py-3 font-bold">Who pays</th>
+                <th className="px-5 sm:px-6 py-3 font-bold">How it works</th>
+                <th className="px-5 sm:px-6 py-3 font-bold">Mode</th>
+              </tr>
+            </thead>
+            <tbody>
+              {billingAutomationRows.map((row) => (
+                <tr key={row.charge} className="border-b border-white/5 last:border-0">
+                  <td className="px-5 sm:px-6 py-4 font-semibold text-white">{row.charge}</td>
+                  <td className="px-5 sm:px-6 py-4 text-gray-400">{row.whoPays}</td>
+                  <td className="px-5 sm:px-6 py-4 text-gray-400">{row.howCollected}</td>
+                  <td className="px-5 sm:px-6 py-4">
+                    <BillingBadge mode={row.mode} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="px-5 sm:px-6 py-4 bg-white/[0.02] border-t border-white/5 space-y-2">
+          <p className="text-xs text-gray-500">Rail merchants renew and top up via x402:</p>
+          <ul className="text-[11px] sm:text-xs font-mono space-y-1.5 text-blue-300/90">
+            <li className="break-all">
+              <span className="text-gray-500 font-sans">Renew </span>
+              POST /api/merchants/&#123;slug&#125;/renew
+              <span className="text-gray-500 font-sans"> (49 USDC)</span>
+            </li>
+            <li className="break-all">
+              <span className="text-gray-500 font-sans">Top up </span>
+              POST /api/merchants/&#123;slug&#125;/topup
+            </li>
+            <li className="break-all">
+              <span className="text-gray-500 font-sans">Balance </span>
+              GET /api/merchants/&#123;slug&#125;
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div
         id="revenue-share"
         className="mt-12 sm:mt-16 rounded-2xl border border-white/10 bg-black/30 p-6 sm:p-8 scroll-mt-28"
       >
-        <h2 className="text-lg font-bold text-white mb-4">How revenue share works</h2>
+        <h2 className="text-lg font-bold text-white mb-4">How charges settle</h2>
         <ul className="space-y-3 text-sm text-gray-400">
           <li>
-            <strong className="text-white">Settlement fee</strong> — a small % of each USDC deposit
-            that settles to your <code className="text-blue-300">payTo</code> address. Non-custodial:
-            funds never touch deposit.now wallets.
+            <strong className="text-white">Settlement fee</strong> — a small % of each declared
+            deposit volume, debited from your prepaid USDC balance after every settled deposit.
+            Top up anytime via the x402 top-up endpoint. Non-custodial: deposit funds still settle
+            directly to your merchant wallet.
           </li>
           <li>
             <strong className="text-white">Agent rail</strong> — 0.01 USDC per x402 call, always paid
-            by the agent. Keeps discovery open and avoids merchant-side friction.
+            by the agent to your merchant wallet. Keeps discovery open
+            and avoids merchant-side friction.
+          </li>
+          <li>
+            <strong className="text-white">Rail renewal</strong> — pay 49 USDC through the renew
+            endpoint to extend webhooks and automation for 30 days. No invoices, no card on file.
           </li>
           <li>
             <strong className="text-white">Referral rev-share (Rail+)</strong> — when Bazaar or catalog
-            discovery routes a new agent to your endpoint, deposit.now shares{' '}
-            <span className="text-white">5% of the first settled deposit</span> back to you as a
-            discovery credit on your monthly invoice.
+            discovery routes a new agent to your endpoint, deposit.now credits{' '}
+            <span className="text-white">5% of the first settled deposit</span> back to your prepaid
+            balance automatically.
           </li>
           <li>
-            <strong className="text-white">Automation overage</strong> — Rail includes 10k webhook
-            deliveries/month; Network tier is unlimited. Extra deliveries billed at $0.001 each.
+            <strong className="text-white">Webhook overage</strong> — Rail includes 10k webhook
+            deliveries/month; Network tier is unlimited. Extra deliveries debited at $0.001 each from
+            prepaid balance.
           </li>
         </ul>
       </div>

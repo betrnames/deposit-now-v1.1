@@ -42,3 +42,4 @@ next-env.d.ts
 # throwaway testnet payer wallet (generated locally, never commit)
 .test-wallet.json
 .test-wallet.key
+.deposit-watch-state.json

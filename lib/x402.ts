@@ -9,9 +9,19 @@ import { facilitator as cdpFacilitator } from '@coinbase/x402';
 import { put } from '@vercel/blob';
 import {
   getMerchant,
+  merchantRouteFromPath,
   merchantSlugFromPath,
+  patchMerchantBilling,
   ensureDefaultMerchants,
 } from '@/lib/merchants';
+import {
+  TIER_BILLING,
+  canUseWebhooks,
+  clampTopupUsdc,
+  extendTierExpiry,
+  normalizeTier,
+  settlementFeeMicro,
+} from '@/lib/billing';
 import { buildWebhookPayload, deliverMerchantWebhook } from '@/lib/webhooks';
 import { receiptIdFromPayload, receiptBlobPath } from '@/lib/receipts';
 import type { HTTPRequestContext } from '@x402/core/server';
@@ -117,6 +127,61 @@ async function parseDepositBody(context: HTTPRequestContext) {
   }
 }
 
+async function resolveTopupPrice(context: HTTPRequestContext): Promise<string> {
+  try {
+    if (!context.adapter.getBody) return '$10';
+    const body = (await context.adapter.getBody()) as { amount?: string | number } | undefined;
+    const usdc = clampTopupUsdc(body?.amount);
+    return `$${usdc}`;
+  } catch {
+    return '$10';
+  }
+}
+
+async function applyBillingAfterSettle(
+  requestPath: string,
+  merchantSlug: string | null,
+  paymentAmountAtomic: string,
+  depositBody: { amount: string | null; account: string | null }
+) {
+  if (!merchantSlug || !process.env.BLOB_READ_WRITE_TOKEN) return;
+
+  const route = merchantRouteFromPath(requestPath);
+  if (!route) return;
+
+  const merchant = await getMerchant(merchantSlug);
+  if (!merchant) return;
+
+  const paidMicro = Number(paymentAmountAtomic);
+  if (!Number.isFinite(paidMicro) || paidMicro <= 0) return;
+
+  if (route.action === 'renew') {
+    const config = TIER_BILLING.rail;
+    await patchMerchantBilling(merchantSlug, {
+      tier: 'rail',
+      tierExpiresAt: extendTierExpiry(merchant.tierExpiresAt, config.renewDays),
+    });
+    return;
+  }
+
+  if (route.action === 'topup') {
+    const current = merchant.billingBalanceMicro ?? 0;
+    await patchMerchantBilling(merchantSlug, {
+      billingBalanceMicro: current + paidMicro,
+    });
+    return;
+  }
+
+  if (route.action === 'deposit') {
+    const fee = settlementFeeMicro(depositBody.amount, merchant.tier);
+    if (fee <= 0) return;
+    const current = merchant.billingBalanceMicro ?? 0;
+    await patchMerchantBilling(merchantSlug, {
+      billingBalanceMicro: Math.max(0, current - fee),
+    });
+  }
+}
+
 const server = new x402ResourceServer(facilitatorClient)
   .register(X402_NETWORK, new ExactEvmScheme())
   .registerExtension(bazaarResourceServerExtension)
@@ -134,7 +199,8 @@ const server = new x402ResourceServer(facilitatorClient)
       const resource = requestPath.startsWith('http')
         ? requestPath
         : `https://deposit.now${requestPath}`;
-      const merchantSlug = merchantSlugFromPath(requestPath);
+      const route = merchantRouteFromPath(requestPath);
+      const merchantSlug = route?.slug ?? merchantSlugFromPath(requestPath);
       const merchant = merchantSlug ? await getMerchant(merchantSlug) : null;
       const depositBody = transport?.request
         ? await parseDepositBody(transport.request)
@@ -179,7 +245,16 @@ const server = new x402ResourceServer(facilitatorClient)
         contentType: 'application/json',
       });
 
-      if (merchant?.webhookUrl) {
+      if (merchantSlug) {
+        await applyBillingAfterSettle(
+          requestPath,
+          merchantSlug,
+          amountAtomic,
+          depositBody
+        );
+      }
+
+      if (merchant?.webhookUrl && canUseWebhooks(merchant)) {
         const webhookPayload = buildWebhookPayload(merchant, receipt, depositBody);
         await deliverMerchantWebhook(merchant, webhookPayload);
       }
@@ -237,6 +312,79 @@ export const middleware = paymentProxy(
           };
         }
         return { contentType: 'application/json', body: {} };
+      },
+    },
+    '/api/merchants/:slug/renew': {
+      accepts: [
+        {
+          scheme: 'exact',
+          price: '$49',
+          network: X402_NETWORK,
+          payTo: PLATFORM_PAY_TO,
+        },
+      ],
+      description:
+        'Renew Rail tier for 30 days. Pays 49 USDC to deposit.now — no invoices, no manual billing.',
+      mimeType: 'application/json',
+      unpaidResponseBody: async (context) => {
+        const slug = merchantSlugFromPath(context.path);
+        const merchant = slug ? await getMerchant(slug) : null;
+        if (!merchant?.active) {
+          return {
+            contentType: 'application/json',
+            body: {
+              error: 'merchant_not_found',
+              slug,
+              message: 'No active merchant matches this slug. See GET /api/merchants.',
+            },
+          };
+        }
+        return {
+          contentType: 'application/json',
+          body: {
+            action: 'renew',
+            monthlyFeeUsdc: TIER_BILLING.rail.monthlyFeeUsdc,
+            renewDays: TIER_BILLING.rail.renewDays,
+            tier: normalizeTier(merchant.tier),
+            tierExpiresAt: merchant.tierExpiresAt ?? null,
+          },
+        };
+      },
+    },
+    '/api/merchants/:slug/topup': {
+      accepts: [
+        {
+          scheme: 'exact',
+          price: resolveTopupPrice,
+          network: X402_NETWORK,
+          payTo: PLATFORM_PAY_TO,
+        },
+      ],
+      description:
+        'Top up prepaid USDC balance for automated settlement-fee debits. POST body: { "amount": "50" } (min 10 USDC).',
+      mimeType: 'application/json',
+      unpaidResponseBody: async (context) => {
+        const slug = merchantSlugFromPath(context.path);
+        const merchant = slug ? await getMerchant(slug) : null;
+        if (!merchant?.active) {
+          return {
+            contentType: 'application/json',
+            body: {
+              error: 'merchant_not_found',
+              slug,
+              message: 'No active merchant matches this slug. See GET /api/merchants.',
+            },
+          };
+        }
+        return {
+          contentType: 'application/json',
+          body: {
+            action: 'topup',
+            balanceUsdc: ((merchant.billingBalanceMicro ?? 0) / 1_000_000).toFixed(6),
+            minUsdc: 10,
+            hint: 'POST { "amount": "50" } then pay the quoted USDC via x402.',
+          },
+        };
       },
     },
   },

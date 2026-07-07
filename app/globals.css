@@ -36,6 +36,140 @@
   }
 }
 
+/* deposit logo cycle: 3s deposit → 0.5s fade → 5s bot → 0.5s fade → repeat */
+:root {
+  --deposit-logo-cycle: 9s;
+}
+
+@keyframes deposit-logo-wallet-fade {
+  0%,
+  30% {
+    opacity: 1;
+    visibility: visible;
+  }
+  31%,
+  96% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  97%,
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@keyframes deposit-logo-bot-enter {
+  0%,
+  31.5% {
+    opacity: 0;
+    transform: translateX(22px);
+    visibility: hidden;
+  }
+  32% {
+    opacity: 1;
+    transform: translateX(20px);
+    visibility: visible;
+  }
+  34.5% {
+    transform: translateX(-8px);
+  }
+  36% {
+    transform: translateX(3px);
+  }
+  37%,
+  94% {
+    opacity: 1;
+    transform: translateX(0);
+    visibility: visible;
+  }
+  95%,
+  100% {
+    opacity: 0;
+    transform: translateX(18px);
+    visibility: hidden;
+  }
+}
+
+@keyframes deposit-logo-coin-drop {
+  /* hidden during bot phase, crossfades, and until wallet cycle restarts */
+  0%,
+  3% {
+    transform: translateY(-7px);
+    opacity: 0;
+    visibility: hidden;
+  }
+  /* single drop while wallet is fully visible */
+  5%,
+  7% {
+    transform: translateY(-7px);
+    opacity: 1;
+    visibility: visible;
+  }
+  27% {
+    transform: translateY(6.75px);
+    opacity: 1;
+    visibility: visible;
+  }
+  30% {
+    transform: translateY(6.35px);
+    opacity: 0;
+    visibility: hidden;
+  }
+  31%,
+  100% {
+    transform: translateY(-7px);
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.deposit-logo-wallet {
+  animation: deposit-logo-wallet-fade var(--deposit-logo-cycle) ease-in-out infinite;
+}
+
+.deposit-logo-bot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: deposit-logo-bot-enter var(--deposit-logo-cycle) linear infinite;
+}
+
+.deposit-logo-coin {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: deposit-logo-coin-drop var(--deposit-logo-cycle) cubic-bezier(0.45, 0, 0.25, 1)
+    infinite;
+}
+
+.deposit-logo-coin-static {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: translateY(6.35px);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deposit-logo-wallet,
+  .deposit-logo-bot,
+  .deposit-logo-coin {
+    animation: none;
+  }
+
+  .deposit-logo-wallet {
+    opacity: 1;
+  }
+
+  .deposit-logo-bot {
+    opacity: 0;
+    transform: none;
+  }
+
+  .deposit-logo-coin {
+    transform: translateY(6.35px);
+    opacity: 1;
+  }
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;

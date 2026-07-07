@@ -23,7 +23,7 @@ interface GuidePageProps {
 }
 
 const articleClassName =
-  'space-y-6 text-gray-300 leading-relaxed [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-white [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:scroll-mt-28 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-6 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2 [&_a]:text-blue-400 [&_a]:hover:underline [&_strong]:text-white [&_code]:text-blue-300 [&_code]:bg-white/5 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_table]:w-full [&_th]:text-left [&_th]:text-white [&_th]:pb-2 [&_td]:py-2 [&_tr]:border-b [&_tr]:border-white/5';
+  'space-y-6 min-w-0 text-gray-300 leading-relaxed [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-white [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:scroll-mt-28 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-6 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ul]:min-w-0 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2 [&_ol]:min-w-0 [&_li]:min-w-0 [&_a]:text-blue-400 [&_a]:hover:underline [&_strong]:text-white [&_code]:text-blue-300 [&_code]:bg-white/5 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:break-all [&_code]:max-w-full [&_table]:w-full [&_th]:text-left [&_th]:text-white [&_th]:pb-2 [&_td]:py-2 [&_tr]:border-b [&_tr]:border-white/5';
 
 export function GuidePage({
   kicker,

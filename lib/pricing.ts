@@ -41,7 +41,9 @@ export interface PricingTier {
   name: string;
   tagline: string;
   monthly: string;
+  monthlyBilling: 'automated' | 'free' | 'manual';
   settlementFee: string;
+  settlementBilling: 'automated' | 'free';
   agentRail: string;
   endpoints: string;
   webhooks: string;
@@ -53,8 +55,43 @@ export interface PricingTier {
   featured?: boolean;
 }
 
+export interface BillingAutomationRow {
+  charge: string;
+  whoPays: string;
+  howCollected: string;
+  mode: 'automated' | 'manual';
+}
+
+export const billingAutomationRows: BillingAutomationRow[] = [
+  {
+    charge: 'Agent rail',
+    whoPays: 'Agent',
+    howCollected: '0.01 USDC via x402 on every deposit call — settles to your merchant wallet',
+    mode: 'automated',
+  },
+  {
+    charge: 'Settlement fee',
+    whoPays: 'Merchant',
+    howCollected:
+      'Debited from prepaid USDC balance after each settled deposit — top up via the top-up endpoint',
+    mode: 'automated',
+  },
+  {
+    charge: 'Rail monthly',
+    whoPays: 'Merchant',
+    howCollected: '49 USDC via x402 renew endpoint — extends Rail tier 30 days per payment',
+    mode: 'automated',
+  },
+  {
+    charge: 'Network tier',
+    whoPays: 'Merchant',
+    howCollected: 'Custom terms — one-time onboarding call, then on-chain renew + top-up',
+    mode: 'manual',
+  },
+];
+
 export const agentRailNote =
-  'Agents pay 0.01 USDC per x402 call on every deposit — covers facilitator settlement, receipt storage, and discovery indexing. Merchants never block agent access with account gates.';
+  'Agents pay 0.01 USDC per x402 call on every deposit — covers facilitator settlement, receipt storage, and discovery indexing. Merchants never block agent access with account gates. All merchant charges run on-chain via x402 — no invoices.';
 
 export const pricingTiers: PricingTier[] = [
   {
@@ -62,7 +99,9 @@ export const pricingTiers: PricingTier[] = [
     name: 'Catalog',
     tagline: 'List once, get discovered',
     monthly: '$0',
+    monthlyBilling: 'free',
     settlementFee: '0.30% per settled deposit',
+    settlementBilling: 'automated',
     agentRail: '0.01 USDC / call (agent-paid)',
     endpoints: '1 merchant endpoint',
     webhooks: '—',
@@ -77,15 +116,17 @@ export const pricingTiers: PricingTier[] = [
     name: 'Rail',
     tagline: 'Production webhooks + automation',
     monthly: '$49 / mo',
+    monthlyBilling: 'automated',
     settlementFee: '0.15% per settled deposit',
+    settlementBilling: 'automated',
     agentRail: '0.01 USDC / call (agent-paid)',
     endpoints: 'Up to 5 endpoints',
     webhooks: 'deposit.settled — 10k deliveries / mo included',
     automation: 'Retries, idempotency keys, HMAC signing',
     discovery: 'Bazaar extension + priority catalog',
     revenueShare: '5% on referred agent first deposit',
-    cta: 'Get started',
-    ctaHref: 'mailto:support@deposit.now?subject=deposit.now%20Rail%20tier',
+    cta: 'View billing API',
+    ctaHref: '/docs#billing',
     featured: true,
   },
   {
@@ -93,7 +134,9 @@ export const pricingTiers: PricingTier[] = [
     name: 'Network',
     tagline: 'Volume rails at scale',
     monthly: 'Custom',
+    monthlyBilling: 'manual',
     settlementFee: '0.05–0.10% at volume',
+    settlementBilling: 'automated',
     agentRail: '0.01 USDC / call (agent-paid)',
     endpoints: 'Unlimited endpoints',
     webhooks: 'Unlimited + custom payloads',

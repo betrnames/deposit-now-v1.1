@@ -175,10 +175,18 @@ export default function LitepaperPage() {
       </table>
 
       <h2 id="live-facts">Live facts (mainnet)</h2>
-      <ul>
-        <li>Endpoint: <code>https://deposit.now/api/deposit</code></li>
+      <ul className="min-w-0">
+        <li className="break-words">
+          Endpoint:{' '}
+          <code className="break-all">https://deposit.now/api/deposit</code>
+        </li>
         <li>Network: Base mainnet (<code>eip155:8453</code>)</li>
-        <li>Asset: USDC <code>0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913</code></li>
+        <li className="break-words">
+          Asset: USDC
+          <code className="block sm:inline sm:ml-1 mt-0.5 sm:mt-0 break-all">
+            0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+          </code>
+        </li>
         <li>Price: 10,000 atomic units (0.01 USDC)</li>
         <li>OpenAPI: <a href="/openapi.json">/openapi.json</a></li>
       </ul>

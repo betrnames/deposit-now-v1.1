@@ -1,4 +1,10 @@
 import { head, put } from '@vercel/blob';
+import {
+  normalizeTier,
+  toBillingPublic,
+  type MerchantBillingPublic,
+  type MerchantTier,
+} from '@/lib/billing';
 
 export interface Merchant {
   slug: string;
@@ -7,6 +13,9 @@ export interface Merchant {
   description?: string;
   webhookUrl?: string;
   webhookSecret?: string;
+  tier?: MerchantTier;
+  tierExpiresAt?: string;
+  billingBalanceMicro?: number;
   active: boolean;
   createdAt: string;
 }
@@ -18,7 +27,10 @@ export interface MerchantPublic {
   description?: string;
   depositUrl: string;
   active: boolean;
+  billing: MerchantBillingPublic;
 }
+
+export type MerchantBillingAction = 'deposit' | 'renew' | 'topup';
 
 const SLUG_RE = /^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$/;
 const EVM_ADDRESS_RE = /^0x[a-fA-F0-9]{40}$/;
@@ -32,11 +44,20 @@ export function isValidEvmAddress(address: string): boolean {
   return EVM_ADDRESS_RE.test(address);
 }
 
-export function merchantSlugFromPath(path: string): string | null {
-  const match = path.match(/^\/api\/merchants\/([a-z0-9][a-z0-9-]*)\/deposit\/?$/i);
+export function merchantRouteFromPath(
+  path: string
+): { slug: string; action: MerchantBillingAction } | null {
+  const match = path.match(
+    /^\/api\/merchants\/([a-z0-9][a-z0-9-]*)\/(deposit|renew|topup)\/?$/i
+  );
   if (!match) return null;
   const slug = match[1].toLowerCase();
-  return isValidMerchantSlug(slug) ? slug : null;
+  if (!isValidMerchantSlug(slug)) return null;
+  return { slug, action: match[2].toLowerCase() as MerchantBillingAction };
+}
+
+export function merchantSlugFromPath(path: string): string | null {
+  return merchantRouteFromPath(path)?.slug ?? null;
 }
 
 function merchantBlobPath(slug: string) {
@@ -51,6 +72,7 @@ export function toPublicMerchant(merchant: Merchant): MerchantPublic {
     description: merchant.description,
     depositUrl: `https://deposit.now/api/merchants/${merchant.slug}/deposit`,
     active: merchant.active,
+    billing: toBillingPublic(merchant),
   };
 }
 
@@ -118,6 +140,9 @@ export async function upsertMerchant(input: Omit<Merchant, 'createdAt'> & { crea
     description: input.description?.trim() || undefined,
     webhookUrl: input.webhookUrl?.trim() || undefined,
     webhookSecret: input.webhookSecret?.trim() || undefined,
+    tier: input.tier ? normalizeTier(input.tier) : existing?.tier ?? 'catalog',
+    tierExpiresAt: input.tierExpiresAt ?? existing?.tierExpiresAt,
+    billingBalanceMicro: input.billingBalanceMicro ?? existing?.billingBalanceMicro ?? 0,
     active: input.active,
     createdAt: existing?.createdAt ?? input.createdAt ?? new Date().toISOString(),
   };
@@ -145,6 +170,30 @@ export async function ensureDefaultMerchants(platformPayTo: string) {
     name: 'deposit.now Platform',
     payTo: platformPayTo,
     description: 'Default platform deposit endpoint — funds settle to deposit.now.',
+    tier: 'catalog',
     active: true,
   });
+}
+
+export async function patchMerchantBilling(
+  slug: string,
+  patch: Partial<Pick<Merchant, 'tier' | 'tierExpiresAt' | 'billingBalanceMicro'>>
+): Promise<Merchant | null> {
+  const existing = await getMerchant(slug);
+  if (!existing) return null;
+
+  const merchant: Merchant = {
+    ...existing,
+    tier: patch.tier ?? existing.tier,
+    tierExpiresAt: patch.tierExpiresAt ?? existing.tierExpiresAt,
+    billingBalanceMicro: patch.billingBalanceMicro ?? existing.billingBalanceMicro ?? 0,
+  };
+
+  await put(merchantBlobPath(slug), JSON.stringify(merchant), {
+    access: 'public',
+    addRandomSuffix: false,
+    contentType: 'application/json',
+  });
+
+  return merchant;
 }

@@ -10,7 +10,11 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test:deposit": "node scripts/test-deposit.mjs",
-    "check:payer": "node scripts/check-payer.mjs"
+    "test:deposit:sepolia": "node scripts/test-deposit.mjs --testnet",
+    "check:payer": "node scripts/check-payer.mjs",
+    "check:payer:sepolia": "node scripts/check-payer-sepolia.mjs",
+    "faucet:sepolia-eth": "node scripts/faucet-sepolia-eth.mjs",
+    "watch:deposits": "node scripts/watch-deposits.mjs"
   },
   "dependencies": {
     "@coinbase/x402": "^2.1.0",

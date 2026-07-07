@@ -32,9 +32,9 @@ async function loadReceipt(id: string): Promise<DepositReceipt | null> {
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 py-3 border-b border-white/5 last:border-0">
-      <span className="text-sm text-gray-500">{label}</span>
-      <span className="text-sm text-gray-200 font-mono break-all sm:text-right">{children}</span>
+    <div className="grid grid-cols-1 gap-1 py-3 border-b border-white/5 last:border-0 min-w-0 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-4 sm:items-start">
+      <span className="text-sm text-gray-500 shrink-0">{label}</span>
+      <span className="text-sm text-gray-200 font-mono break-all min-w-0">{children}</span>
     </div>
   );
 }
