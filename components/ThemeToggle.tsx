@@ -1,7 +1,7 @@
 'use client';
 
 import { useLayoutEffect, useState } from 'react';
-import { Palette } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import {
   applyTheme,
   getStoredTheme,
@@ -23,6 +23,7 @@ export function ThemeToggle() {
   };
 
   const nextTheme = toggleTheme(theme);
+  const ThemeIcon = nextTheme === 'cloudflare' ? Sun : Moon;
 
   return (
     <button
@@ -32,7 +33,7 @@ export function ThemeToggle() {
       title={`Switch to ${nextTheme} theme`}
       className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border/60 bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors shrink-0"
     >
-      <Palette className="h-4 w-4" aria-hidden />
+      <ThemeIcon className="h-4 w-4" aria-hidden />
     </button>
   );
 }
