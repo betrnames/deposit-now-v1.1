@@ -70,7 +70,7 @@ export default function Home() {
             </h1>
 
             <p className="text-lg sm:text-2xl text-primary font-medium mb-4 sm:mb-8 mt-4 sm:mt-8">
-              Enable machines to manage capital autonomously.
+              The first live x402 API. No waitlist. No vendor lock-in.
             </p>
 
             <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed">
@@ -126,6 +126,24 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section
+        aria-label="Positioning statement"
+        className="border-y border-primary/30 bg-gradient-to-r from-primary/15 via-primary/10 to-primary/15"
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+          <blockquote className="text-center text-lg sm:text-2xl lg:text-3xl italic text-white/90 leading-snug tracking-tight">
+            <span className="text-primary not-italic text-3xl sm:text-4xl lg:text-5xl leading-none align-top">
+              &ldquo;
+            </span>
+            Agent commerce infrastructure that works on any stack. Webhooks, receipts, and merchant
+            discovery — not just a payment gate.
+            <span className="text-primary not-italic text-3xl sm:text-4xl lg:text-5xl leading-none align-bottom">
+              &rdquo;
+            </span>
+          </blockquote>
         </div>
       </section>
 
