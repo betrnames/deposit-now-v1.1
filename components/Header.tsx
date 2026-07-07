@@ -6,6 +6,7 @@ import { DepositLogo } from '@/components/DepositLogo';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -152,7 +153,10 @@ export function Header() {
                   </Link>
                 </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0">{subscribeForm(false)}</div>
+              <div className="flex items-center gap-3 shrink-0">
+                <ThemeToggle />
+                {subscribeForm(false)}
+              </div>
             </div>
             {error && (
               <p className="px-6 pb-3 text-xs text-red-400 hidden md:block">{error}</p>
@@ -198,7 +202,13 @@ export function Header() {
                   {label}
                 </Link>
               ))}
-              <div className="pt-6">
+              <div className="pt-6 space-y-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                    Color theme
+                  </p>
+                  <ThemeToggle compact />
+                </div>
                 {subscribeForm(true)}
                 {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
               </div>

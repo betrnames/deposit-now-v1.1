@@ -62,7 +62,9 @@
   --deposit-logo-cycle: 9s;
 }
 
-.dark {
+/* Cloudflare palette (default dark theme) */
+.dark,
+.dark[data-theme='cloudflare'] {
   --background: oklch(0.1776 0 0);
   --foreground: oklch(0.9846 0.0017 247.8389);
   --card: oklch(0.2264 0 0);
@@ -113,6 +115,57 @@
   --shadow-lg: 0px 4px 10px 0px hsl(0 0% 0% / 0.50), 0px 4px 6px -1px hsl(0 0% 0% / 0.50);
   --shadow-xl: 0px 4px 10px 0px hsl(0 0% 0% / 0.50), 0px 8px 10px -1px hsl(0 0% 0% / 0.50);
   --shadow-2xl: 0px 4px 10px 0px hsl(0 0% 0% / 1.25);
+}
+
+/* Original deposit.now blue / slate palette */
+.dark[data-theme='classic'] {
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.9846 0.0017 247.8389);
+  --card: oklch(0.18 0.04 264);
+  --card-foreground: oklch(0.9846 0.0017 247.8389);
+  --popover: oklch(0.18 0.04 264);
+  --popover-foreground: oklch(0.9846 0.0017 247.8389);
+  --primary: oklch(0.546 0.245 262.881);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.22 0.045 264);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.25 0.04 264);
+  --muted-foreground: oklch(0.65 0.03 264);
+  --accent: oklch(0.546 0.245 262.881);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.28 0.04 264);
+  --input: oklch(0.22 0.04 264);
+  --ring: oklch(0.546 0.245 262.881);
+  --chart-1: oklch(0.546 0.245 262.881);
+  --chart-2: oklch(0.4882 0.2172 264.3763);
+  --chart-3: oklch(0.6474 0.1842 258.6478);
+  --chart-4: oklch(0.62 0.16 200);
+  --chart-5: oklch(0.72 0.14 180);
+  --sidebar: oklch(0.129 0.042 264.695);
+  --sidebar-foreground: oklch(0.9846 0.0017 247.8389);
+  --sidebar-primary: oklch(0.546 0.245 262.881);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.22 0.045 264);
+  --sidebar-accent-foreground: oklch(0.546 0.245 262.881);
+  --sidebar-border: oklch(0.28 0.04 264);
+  --sidebar-ring: oklch(0.546 0.245 262.881);
+}
+
+.dark[data-theme='classic'] .page-shell {
+  background-image:
+    radial-gradient(
+      ellipse 90% 55% at 50% -15%,
+      color-mix(in oklch, var(--primary) 20%, transparent),
+      transparent
+    ),
+    linear-gradient(
+      to bottom right,
+      var(--background),
+      oklch(0.17 0.065 264),
+      var(--background)
+    );
 }
 
 @theme inline {

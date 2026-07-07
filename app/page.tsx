@@ -117,7 +117,7 @@ export default function Home() {
 
             <div className="flex justify-center items-center gap-4 sm:gap-8 text-xs sm:text-sm text-muted-foreground/70 uppercase tracking-wider font-medium py-4 sm:py-0">
               <div className="flex items-center gap-2 whitespace-nowrap">
-                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
+                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                 <span>Live on Base Mainnet</span>
               </div>
               <div className="flex items-center gap-2 whitespace-nowrap">
