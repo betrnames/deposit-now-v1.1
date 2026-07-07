@@ -125,7 +125,8 @@ export function Header() {
                   <DepositLogo size={40} className="text-white/85" />
                 </Link>
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-end items-center gap-2">
+                <ThemeToggle />
                 <Link href="/docs" className={getStartedClass}>
                   Get started
                 </Link>
@@ -202,13 +203,7 @@ export function Header() {
                   {label}
                 </Link>
               ))}
-              <div className="pt-6 space-y-4">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                    Color theme
-                  </p>
-                  <ThemeToggle compact />
-                </div>
+              <div className="pt-6">
                 {subscribeForm(true)}
                 {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
               </div>

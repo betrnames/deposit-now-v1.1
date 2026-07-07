@@ -62,9 +62,8 @@
   --deposit-logo-cycle: 9s;
 }
 
-/* Cloudflare palette (default dark theme) */
-.dark,
-.dark[data-theme='cloudflare'] {
+/* Cloudflare palette */
+html.dark[data-theme='cloudflare'] {
   --background: oklch(0.1776 0 0);
   --foreground: oklch(0.9846 0.0017 247.8389);
   --card: oklch(0.2264 0 0);
@@ -118,7 +117,7 @@
 }
 
 /* Original deposit.now blue / slate palette */
-.dark[data-theme='classic'] {
+html.dark[data-theme='classic'] {
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.9846 0.0017 247.8389);
   --card: oklch(0.18 0.04 264);
@@ -153,7 +152,7 @@
   --sidebar-ring: oklch(0.546 0.245 262.881);
 }
 
-.dark[data-theme='classic'] .page-shell {
+html.dark[data-theme='classic'] .page-shell {
   background-image:
     radial-gradient(
       ellipse 90% 55% at 50% -15%,

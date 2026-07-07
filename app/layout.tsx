@@ -1,6 +1,7 @@
 import './globals.css';
 import Script from 'next/script';
 import type { Metadata } from 'next';
+import { ThemeInit } from '@/components/ThemeInit';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://deposit.now'),
@@ -104,11 +105,11 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className="dark" data-theme="cloudflare" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('deposit-now-theme');if(t==='classic'||t==='cloudflare'){document.documentElement.setAttribute('data-theme',t)}}catch(e){}})();`,
+            __html: `(function(){try{var k='deposit-now-theme';var t=localStorage.getItem(k);var d=(t==='classic'||t==='cloudflare')?t:'cloudflare';document.documentElement.classList.add('dark');document.documentElement.setAttribute('data-theme',d)}catch(e){document.documentElement.classList.add('dark');document.documentElement.setAttribute('data-theme','cloudflare')}})();`,
           }}
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -120,6 +121,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <ThemeInit />
         {children}
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-HQB6Y3W5ER" strategy="afterInteractive" />
         <Script id="ga4" strategy="afterInteractive">

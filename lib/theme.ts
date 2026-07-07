@@ -38,8 +38,14 @@ export function getStoredTheme(): SiteTheme {
   return DEFAULT_THEME;
 }
 
+export function toggleTheme(current: SiteTheme): SiteTheme {
+  return current === 'cloudflare' ? 'classic' : 'cloudflare';
+}
+
 export function applyTheme(theme: SiteTheme) {
-  document.documentElement.setAttribute('data-theme', theme);
+  const root = document.documentElement;
+  root.classList.add('dark');
+  root.setAttribute('data-theme', theme);
   try {
     localStorage.setItem(THEME_STORAGE_KEY, theme);
   } catch {
