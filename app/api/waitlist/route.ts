@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         email,
         site: 'deposit.now',
-        form: 'waitlist',
+        form: 'subscribe',
       }),
     });
 
@@ -32,13 +32,13 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: true, message: 'Successfully joined waitlist' },
+      { success: true, message: 'Successfully subscribed' },
       { status: 200 }
     );
   } catch (error) {
-    console.error('Waitlist signup error:', error);
+    console.error('Subscribe signup error:', error);
     return NextResponse.json(
-      { error: 'Failed to join waitlist' },
+      { error: 'Failed to subscribe' },
       { status: 500 }
     );
   }

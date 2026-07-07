@@ -28,7 +28,7 @@ export function Header() {
     };
   }, [isMobileMenuOpen]);
 
-  const handleWaitlistSubmit = async (e: React.FormEvent) => {
+  const handleSubscribeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
@@ -43,7 +43,7 @@ export function Header() {
         setEmail('');
       } else {
         const data = await response.json();
-        setError(data.error || 'Failed to join waitlist');
+        setError(data.error || 'Failed to subscribe');
       }
     } catch {
       setError('Something went wrong. Please try again.');
@@ -63,12 +63,12 @@ export function Header() {
   const getStartedClass =
     'bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-3 h-9 rounded-lg inline-flex items-center shrink-0';
 
-  const waitlistForm = (compact: boolean) =>
+  const subscribeForm = (compact: boolean) =>
     isSubmitted ? (
-      <span className="text-sm text-green-400 font-medium whitespace-nowrap">You&apos;re on the list</span>
+      <span className="text-sm text-green-400 font-medium whitespace-nowrap">Subscribed</span>
     ) : (
       <form
-        onSubmit={handleWaitlistSubmit}
+        onSubmit={handleSubscribeSubmit}
         className={`flex items-center gap-2 ${compact ? 'w-full' : ''}`}
       >
         <Input
@@ -86,7 +86,7 @@ export function Header() {
           disabled={isSubmitting}
           className="bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-4 lg:px-5 h-10 rounded-lg whitespace-nowrap shrink-0"
         >
-          {isSubmitting ? 'Joining...' : 'Join waitlist'}
+          {isSubmitting ? 'Subscribing...' : 'Subscribe'}
         </Button>
       </form>
     );
@@ -152,7 +152,7 @@ export function Header() {
                   </Link>
                 </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0">{waitlistForm(false)}</div>
+              <div className="flex items-center gap-3 shrink-0">{subscribeForm(false)}</div>
             </div>
             {error && (
               <p className="px-6 pb-3 text-xs text-red-400 hidden md:block">{error}</p>
@@ -199,7 +199,7 @@ export function Header() {
                 </Link>
               ))}
               <div className="pt-6">
-                {waitlistForm(true)}
+                {subscribeForm(true)}
                 {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
               </div>
             </div>

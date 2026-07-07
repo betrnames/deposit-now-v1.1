@@ -5,7 +5,7 @@ import { pageGraph } from '@/lib/seo';
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description:
-    'How deposit.now handles data: waitlist emails, public on-chain receipt data, analytics, and third-party infrastructure. Non-custodial — we do not hold funds or wallet keys.',
+    'How deposit.now handles data: newsletter emails, public on-chain receipt data, analytics, and third-party infrastructure. Non-custodial — we do not hold funds or wallet keys.',
   alternates: { canonical: 'https://deposit.now/privacy' },
   openGraph: {
     title: 'Privacy Policy',
@@ -60,7 +60,7 @@ export default function PrivacyPage() {
       </ul>
 
       <h2 id="collected">Information we may collect</h2>
-      <h3>Waitlist and contact</h3>
+      <h3>Newsletter and contact</h3>
       <p>
         If you submit your email on our website or contact us, we store that address to
         respond or send product updates. You can request deletion via{' '}
@@ -104,7 +104,7 @@ export default function PrivacyPage() {
 
       <h2 id="retention">Data retention</h2>
       <p>
-        Waitlist emails are kept until you unsubscribe or request deletion. Public receipts
+        Newsletter emails are kept until you unsubscribe or request deletion. Public receipts
         persist until we remove them for abuse or legal compliance. On-chain transactions
         cannot be deleted.
       </p>

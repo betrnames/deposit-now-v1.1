@@ -33,7 +33,7 @@ export default function Home() {
         setEmail('');
       } else {
         const data = await response.json();
-        setError(data.error || 'Failed to join waitlist');
+        setError(data.error || 'Failed to subscribe');
       }
     } catch (err) {
       setError('Something went wrong. Please try again.');
@@ -80,7 +80,8 @@ export default function Home() {
             </p>
 
             {!isSubmitted ? (
-              <form id="waitlist" onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-12">
+              <form id="subscribe" onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-12">
+                <p className="text-sm text-muted-foreground mb-3">Subscribe for the latest updates</p>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-2">
                   <Input
                     type="email"
@@ -95,7 +96,7 @@ export default function Home() {
                     disabled={isSubmitting}
                     className="bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-8 h-12 rounded-xl shrink-0"
                   >
-                    {isSubmitting ? 'Joining...' : 'Join the Waitlist'}
+                    {isSubmitting ? 'Subscribing...' : 'Subscribe'}
                   </Button>
                 </div>
                 {error && <p className="text-sm text-red-400 mt-3 text-center sm:text-left">{error}</p>}
@@ -105,9 +106,9 @@ export default function Home() {
                 <Card className="bg-green-500/10 border-green-500/20">
                   <CardContent className="pt-6 text-center">
                     <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                    <p className="text-green-500 font-medium">You're on the list!</p>
+                    <p className="text-green-500 font-medium">You&apos;re subscribed!</p>
                     <p className="text-sm text-muted-foreground mt-1">
-                      We'll notify you when beta launches
+                      We&apos;ll send you the latest updates on deposit.now
                     </p>
                   </CardContent>
                 </Card>

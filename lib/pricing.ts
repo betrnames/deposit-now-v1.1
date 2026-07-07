@@ -108,8 +108,8 @@ export const pricingTiers: PricingTier[] = [
     automation: 'Public receipt pages only',
     discovery: 'Merchant catalog + OpenAPI',
     revenueShare: '—',
-    cta: 'Join waitlist',
-    ctaHref: '/#waitlist',
+    cta: 'Get started',
+    ctaHref: '/docs',
   },
   {
     id: 'rail',
