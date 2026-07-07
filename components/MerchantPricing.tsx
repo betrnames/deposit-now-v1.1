@@ -120,10 +120,10 @@ function TierCard({ tier }: { tier: PricingTier }) {
       <div className="p-5 sm:p-6 pt-0">
         <Link
           href={tier.ctaHref}
-          className={`inline-flex w-full items-center justify-center h-10 rounded-xl font-black text-[10px] uppercase tracking-wider transition-colors ${
+          className={`inline-flex w-full items-center justify-center h-10 rounded-xl font-black text-[10px] uppercase tracking-wider transition-colors no-underline hover:no-underline ${
             tier.featured
-              ? 'bg-primary hover:bg-primary/90 text-white'
-              : 'bg-white/8 hover:bg-white/12 text-white border border-border/60'
+              ? 'bg-primary hover:bg-primary/90 !text-primary-foreground'
+              : 'bg-secondary hover:bg-secondary/80 !text-secondary-foreground border border-border'
           }`}
         >
           {tier.cta}
