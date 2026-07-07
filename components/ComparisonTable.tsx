@@ -79,7 +79,7 @@ export function ComparisonTable({
     );
   }
 
-  const cellPad = compact ? 'p-3' : 'p-4 sm:p-5';
+  const cellPad = compact ? 'px-4 py-3.5 sm:px-5 sm:py-4' : 'p-4 sm:p-5';
 
   const table = (
       <table
@@ -134,14 +134,14 @@ export function ComparisonTable({
   if (browserChrome) {
     return (
       <BrowserChrome title="compare — direct vs deposit.now">
-        <div className="bg-black/20">{table}</div>
+        <div className="bg-black/20 px-3 py-2 sm:px-4 sm:py-3">{table}</div>
       </BrowserChrome>
     );
   }
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/40 backdrop-blur">
-      {table}
+      <div className="px-3 py-2 sm:px-4 sm:py-3">{table}</div>
     </div>
   );
 }

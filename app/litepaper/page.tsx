@@ -118,7 +118,9 @@ export default function LitepaperPage() {
         transfers are raw plumbing; deposit.now is the production rail for agent-to-merchant
         commerce.
       </p>
-      <ComparisonTable compact />
+      <div className="my-6">
+        <ComparisonTable compact />
+      </div>
 
       <h2 id="economics">Economics</h2>
       <p>Three distinct amounts exist in the protocol:</p>

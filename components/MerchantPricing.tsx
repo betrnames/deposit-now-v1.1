@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Check, Coins, Minus, Zap, Bot, HandCoins } from 'lucide-react';
+import { Check, Coins, Minus, Zap } from 'lucide-react';
 import {
   agentRailNote,
   billingAutomationRows,
@@ -8,24 +8,27 @@ import {
 } from '@/lib/pricing';
 
 function BillingBadge({ mode }: { mode: 'automated' | 'manual' | 'free' }) {
+  const badgeClass =
+    'inline-flex shrink-0 items-center whitespace-nowrap rounded-md px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide border';
+
   if (mode === 'free') {
     return (
-      <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-400 border border-emerald-500/20">
+      <span
+        className={`${badgeClass} bg-emerald-500/10 text-emerald-400 border-emerald-500/20`}
+      >
         Free
       </span>
     );
   }
   if (mode === 'automated') {
     return (
-      <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-blue-300 border border-blue-500/20">
-        <Bot className="h-2.5 w-2.5" />
-        On-chain
+      <span className={`${badgeClass} bg-blue-500/10 text-blue-300 border-blue-500/20`}>
+        Onchain
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-300 border border-amber-500/20">
-      <HandCoins className="h-2.5 w-2.5" />
+    <span className={`${badgeClass} bg-amber-500/10 text-amber-300 border-amber-500/20`}>
       Custom
     </span>
   );
@@ -117,14 +120,13 @@ function TierCard({ tier }: { tier: PricingTier }) {
       <div className="p-5 sm:p-6 pt-0">
         <Link
           href={tier.ctaHref}
-          className={`inline-flex w-full items-center justify-center gap-2 h-10 rounded-xl font-black text-[10px] uppercase tracking-wider transition-colors ${
+          className={`inline-flex w-full items-center justify-center h-10 rounded-xl font-black text-[10px] uppercase tracking-wider transition-colors ${
             tier.featured
               ? 'bg-blue-600 hover:bg-blue-700 text-white'
               : 'bg-white/8 hover:bg-white/12 text-white border border-white/10'
           }`}
         >
           {tier.cta}
-          <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
     </article>
@@ -162,10 +164,10 @@ export function MerchantPricing() {
           </p>
         </div>
 
-        <div className="md:hidden divide-y divide-white/5">
+        <div className="md:hidden divide-y divide-white/5 pb-5 sm:pb-6">
           {billingAutomationRows.map((row) => (
             <div key={row.charge} className="px-5 py-4">
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-semibold text-white">{row.charge}</p>
                   <p className="text-xs text-gray-500 mt-0.5">{row.whoPays}</p>
@@ -177,23 +179,29 @@ export function MerchantPricing() {
           ))}
         </div>
 
-        <div className="hidden md:block overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto pb-5 sm:pb-6">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/5 text-left text-[10px] uppercase tracking-wider text-gray-500">
-                <th className="px-5 sm:px-6 py-3 font-bold">Charge</th>
-                <th className="px-5 sm:px-6 py-3 font-bold">Who pays</th>
-                <th className="px-5 sm:px-6 py-3 font-bold">How it works</th>
-                <th className="px-5 sm:px-6 py-3 font-bold">Mode</th>
+                <th className="px-5 sm:px-6 py-3 font-bold align-middle">Charge</th>
+                <th className="px-5 sm:px-6 py-3 font-bold align-middle">Who pays</th>
+                <th className="px-5 sm:px-6 py-3 font-bold align-middle">How it works</th>
+                <th className="px-5 sm:px-6 py-3 font-bold align-middle w-[5.5rem] min-w-[5.5rem]">
+                  Mode
+                </th>
               </tr>
             </thead>
             <tbody>
               {billingAutomationRows.map((row) => (
                 <tr key={row.charge} className="border-b border-white/5 last:border-0">
-                  <td className="px-5 sm:px-6 py-4 font-semibold text-white">{row.charge}</td>
-                  <td className="px-5 sm:px-6 py-4 text-gray-400">{row.whoPays}</td>
-                  <td className="px-5 sm:px-6 py-4 text-gray-400">{row.howCollected}</td>
-                  <td className="px-5 sm:px-6 py-4">
+                  <td className="px-5 sm:px-6 py-4 align-middle font-semibold text-white">
+                    {row.charge}
+                  </td>
+                  <td className="px-5 sm:px-6 py-4 align-middle text-gray-400">{row.whoPays}</td>
+                  <td className="px-5 sm:px-6 py-4 align-middle text-gray-400">
+                    {row.howCollected}
+                  </td>
+                  <td className="px-5 sm:px-6 py-4 align-middle w-[5.5rem] min-w-[5.5rem]">
                     <BillingBadge mode={row.mode} />
                   </td>
                 </tr>
@@ -202,9 +210,9 @@ export function MerchantPricing() {
           </table>
         </div>
 
-        <div className="px-5 sm:px-6 py-4 bg-white/[0.02] border-t border-white/5 space-y-2">
+        <div className="px-5 sm:px-6 pt-7 pb-8 sm:pt-8 sm:pb-10 bg-white/[0.02] border-t border-white/5 space-y-4">
           <p className="text-xs text-gray-500">Rail merchants renew and top up via x402:</p>
-          <ul className="text-[11px] sm:text-xs font-mono space-y-1.5 text-blue-300/90">
+          <ul className="text-[11px] sm:text-xs font-mono space-y-2.5 text-blue-300/90 pb-1">
             <li className="break-all">
               <span className="text-gray-500 font-sans">Renew </span>
               POST /api/merchants/&#123;slug&#125;/renew
