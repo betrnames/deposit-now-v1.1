@@ -202,7 +202,7 @@ export default function Home() {
                   <div className="mb-6">
                     <div className="text-primary text-xs mb-2">// REQUEST</div>
                     <div className="text-foreground/80">
-                      <span className="text-purple-400">GET</span> /api/fund/init
+                      <span className="text-purple-400">POST</span> /api/deposit
                     </div>
                   </div>
 
