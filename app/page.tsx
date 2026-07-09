@@ -70,7 +70,7 @@ export default function Home() {
             </h1>
 
             <p className="text-lg sm:text-2xl text-primary font-medium mb-4 sm:mb-8 mt-4 sm:mt-8">
-              The first live x402 API. No waitlist. No vendor lock-in.
+              No vendor lock-in. No API keys. No humans in the loop.
             </p>
 
             <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed">

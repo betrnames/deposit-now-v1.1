@@ -170,9 +170,9 @@ export default function EcosystemPage() {
           <main className="flex-1 min-w-0">
             <div className="max-w-4xl">
             <div className="mb-12">
-              <h1 className="text-sm font-medium text-muted-foreground mb-2">x402 ecosystem</h1>
+              <h1 className="text-sm font-medium text-muted-foreground mb-2">x402 directory</h1>
               <h2 className="text-2xl font-bold text-white mb-4">
-                Ecosystem Directory
+                x402 Directory
               </h2>
               <p className="text-xl text-muted-foreground leading-relaxed">
                 Discover innovative projects, tools, and applications built by our growing community of partners and developers.

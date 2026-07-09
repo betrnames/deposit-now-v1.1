@@ -77,16 +77,16 @@ export default function AboutPage() {
       <h2 id="roadmap">What we are building toward</h2>
       <ol>
         <li>
-          <strong>Phase 1 — Receipts (live):</strong> Public, on-chain-verifiable deposit
+          <strong>Receipts:</strong> Public, on-chain-verifiable deposit
           receipts after every settlement.
         </li>
         <li>
-          <strong>Phase 2 — Merchant endpoints (live):</strong> Per-merchant deposit routes
+          <strong>Merchant endpoints:</strong> Per-merchant deposit routes
           at <code>/api/merchants/&#123;slug&#125;/deposit</code> with merchant payTo
           settlement, public catalog, and optional webhooks.
         </li>
         <li>
-          <strong>Phase 3 — Discovery flywheel (live):</strong> Bazaar extension,{' '}
+          <strong>Discovery flywheel:</strong> Bazaar extension,{' '}
           <code>/.well-known/x402</code> manifest, OpenAPI + llms.txt, and CDP Bazaar
           indexing after mainnet settlement.
         </li>

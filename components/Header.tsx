@@ -144,7 +144,7 @@ export function Header() {
                     About
                   </Link>
                   <Link href="/ecosystem" className={linkClass}>
-                    Ecosystem
+                    x402 Directory
                   </Link>
                   <Link href="/docs" className={linkClass}>
                     API
@@ -190,7 +190,7 @@ export function Header() {
               {[
                 ['About', '/about'],
                 ['Litepaper', '/litepaper'],
-                ['Ecosystem', '/ecosystem'],
+                ['x402 Directory', '/ecosystem'],
                 ['API Documentation', '/docs'],
                 ['Pricing', '/pricing'],
               ].map(([label, href]) => (

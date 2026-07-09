@@ -72,7 +72,7 @@ function FooterLinks() {
         </li>
         <li>
           <Link href="/ecosystem" className={linkClass}>
-            Ecosystem
+            x402 Directory
           </Link>
         </li>
         <li>

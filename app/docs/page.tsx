@@ -60,6 +60,16 @@ export default function DocsPage() {
                   Introduction
                 </button>
                 <button
+                  onClick={() => scrollToSection('quickstart')}
+                  className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
+                    activeSection === 'quickstart'
+                      ? 'bg-primary/20 text-primary rounded-lg'
+                      : 'text-muted-foreground hover:text-white hover:bg-muted/50 rounded-lg'
+                  }`}
+                >
+                  Quickstart
+                </button>
+                <button
                   onClick={() => scrollToSection('authentication')}
                   className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
                     activeSection === 'authentication'
@@ -174,8 +184,7 @@ export default function DocsPage() {
                   <h2 className="text-2xl font-bold text-white">Overview</h2>
                 </div>
                 <p className="text-muted-foreground">
-                  The deposit.now API enables AI agents to trigger deposits autonomously using the x402 payment protocol.
-                  Each API call requires a micropayment of 0.01 USDC on Base mainnet.
+                  When you call <code className="text-primary">POST /api/deposit</code>, your agent pays 0.01 USDC via x402 &rarr; deposit.now triggers the on-chain deposit &rarr; a public receipt is generated &rarr; a webhook fires (merchant tier).
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                   <div className="border border-border/60 rounded-lg p-4 bg-background">
@@ -190,6 +199,33 @@ export default function DocsPage() {
                     <div className="text-sm text-muted-foreground/70 mb-1">Network</div>
                     <div className="font-mono text-sm text-white">Base mainnet</div>
                   </div>
+                </div>
+
+                {/* 5-Minute Quickstart */}
+                <div id="quickstart" className="mt-8 border border-primary/30 rounded-lg p-6 bg-primary/5">
+                  <h3 className="text-lg font-bold text-white mb-2">5-minute quickstart</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Copy-paste this into a Node.js file. You need a Base wallet with USDC — that&apos;s it.
+                  </p>
+                  <pre className="bg-background rounded-lg p-4 overflow-x-auto border border-border/60 text-sm">
+                    <code>
+                      <span className="text-yellow-300">import</span> <span className="text-white">{'{'} wrapFetchWithPayment {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">&apos;@x402/fetch&apos;</span><span className="text-white">;</span>{'\n'}
+                      <span className="text-yellow-300">import</span> <span className="text-white">{'{'} x402Client {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">&apos;@x402/core/client&apos;</span><span className="text-white">;</span>{'\n'}
+                      <span className="text-yellow-300">import</span> <span className="text-white">{'{'} ExactEvmScheme {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">&apos;@x402/evm/exact/client&apos;</span><span className="text-white">;</span>{'\n'}
+                      <span className="text-yellow-300">import</span> <span className="text-white">{'{'} privateKeyToAccount {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">&apos;viem/accounts&apos;</span><span className="text-white">;</span>{'\n\n'}
+                      <span className="text-yellow-300">const</span> <span className="text-white">signer</span> <span className="text-yellow-300">=</span> <span className="text-green-400">privateKeyToAccount</span><span className="text-white">(process.env.EVM_PRIVATE_KEY);</span>{'\n'}
+                      <span className="text-yellow-300">const</span> <span className="text-white">client</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">new</span> <span className="text-green-400">x402Client</span><span className="text-white">();</span>{'\n'}
+                      <span className="text-white">client.</span><span className="text-green-400">register</span><span className="text-white">(</span><span className="text-orange-400">&apos;eip155:*&apos;</span><span className="text-white">,</span> <span className="text-yellow-300">new</span> <span className="text-green-400">ExactEvmScheme</span><span className="text-white">(signer));</span>{'\n'}
+                      <span className="text-yellow-300">const</span> <span className="text-white">fetchWithPayment</span> <span className="text-yellow-300">=</span> <span className="text-green-400">wrapFetchWithPayment</span><span className="text-white">(fetch, client);</span>{'\n\n'}
+                      <span className="text-yellow-300">const</span> <span className="text-white">res</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">await</span> <span className="text-green-400">fetchWithPayment</span><span className="text-white">(</span><span className="text-orange-400">&apos;https://deposit.now/api/deposit&apos;</span><span className="text-white">,</span> <span className="text-white">{'{'}</span>{'\n'}
+                      {'  '}<span className="text-green-400">method</span><span className="text-white">:</span> <span className="text-orange-400">&apos;POST&apos;</span><span className="text-white">,</span>{'\n'}
+                      {'  '}<span className="text-green-400">headers</span><span className="text-white">:</span> <span className="text-white">{'{'}</span> <span className="text-orange-400">&apos;Content-Type&apos;</span><span className="text-white">:</span> <span className="text-orange-400">&apos;application/json&apos;</span> <span className="text-white">{'}'}</span><span className="text-white">,</span>{'\n'}
+                      {'  '}<span className="text-green-400">body</span><span className="text-white">:</span> <span className="text-white">JSON.</span><span className="text-green-400">stringify</span><span className="text-white">(</span><span className="text-white">{'{'}</span> <span className="text-green-400">amount</span><span className="text-white">:</span> <span className="text-orange-400">&apos;100.00&apos;</span><span className="text-white">,</span> <span className="text-green-400">account</span><span className="text-white">:</span> <span className="text-orange-400">&apos;agent-wallet-123&apos;</span> <span className="text-white">{'}'}</span><span className="text-white">)</span>{'\n'}
+                      <span className="text-white">{'}'}</span><span className="text-white">);</span>{'\n\n'}
+                      <span className="text-yellow-300">const</span> <span className="text-white">receipt</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">await</span> <span className="text-white">res.</span><span className="text-green-400">json</span><span className="text-white">();</span>{'\n'}
+                      <span className="text-white">console.</span><span className="text-green-400">log</span><span className="text-white">(</span><span className="text-orange-400">&apos;Receipt:&apos;</span><span className="text-white">,</span> <span className="text-white">receipt);</span>
+                    </code>
+                  </pre>
                 </div>
               </div>
 
@@ -526,7 +562,7 @@ asyncio.run(main())`,
               <div id="merchants" className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Terminal className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold text-white">Merchant endpoints (Phase 2)</h2>
+                  <h2 className="text-2xl font-bold text-white">Merchant endpoints</h2>
                 </div>
                 <p className="text-muted-foreground">
                   Merchant-scoped routes let agents fund a specific business or integration. The
@@ -574,7 +610,7 @@ asyncio.run(main())`,
                   </div>
                 </div>
                 <div className="bg-background rounded-lg p-4 border border-border/60 text-sm text-muted-foreground">
-                  <div className="font-semibold text-white mb-2">Discovery (Phase 3)</div>
+                  <div className="font-semibold text-white mb-2">Discovery</div>
                   <ul className="list-disc list-inside space-y-1">
                     <li>
                       Manifest:{' '}
