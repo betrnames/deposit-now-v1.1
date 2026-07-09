@@ -319,11 +319,13 @@ export default function DocsPage() {
                             {'    '}<span className="text-green-400">"network"</span><span className="text-white">:</span> <span className="text-orange-400">"eip155:8453"</span><span className="text-white">,</span>{'\n'}
                             {'    '}<span className="text-green-400">"payTo"</span><span className="text-white">:</span> <span className="text-orange-400">"0x3f7a...F685"</span><span className="text-white">,</span>{'\n'}
                             {'    '}<span className="text-green-400">"asset"</span><span className="text-white">:</span> <span className="text-orange-400">"USDC"</span><span className="text-white">,</span>{'\n'}
-                            {'    '}<span className="text-green-400">"maxAmountRequired"</span><span className="text-white">:</span> <span className="text-orange-400">"10000"</span>{'\n'}
+                            {'    '}<span className="text-green-400">"maxAmountRequired"</span><span className="text-white">:</span> <span className="text-orange-400">"100000000"</span>{'\n'}
                             {'  '}<span className="text-yellow-400">{'}'}]</span>{'\n'}
                             <span className="text-yellow-400">{'}'}</span>{'\n\n'}
-                            <span className="text-muted-foreground/70"># Retry the request with a signed X-Payment header —</span>{'\n'}
-                            <span className="text-muted-foreground/70"># the x402 client SDKs handle this automatically.</span>
+                            <span className="text-muted-foreground/70"># maxAmountRequired matches your declared deposit amount</span>{'\n'}
+                            <span className="text-muted-foreground/70"># (100.00 USDC = 100000000 atomic units).</span>{'\n'}
+                            <span className="text-muted-foreground/70"># Retry with a signed X-Payment header — x402 SDKs</span>{'\n'}
+                            <span className="text-muted-foreground/70"># handle this automatically.</span>
                           </code>
                         </pre>
                       </div>
