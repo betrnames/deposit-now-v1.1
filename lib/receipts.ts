@@ -27,7 +27,7 @@ export function receiptIdFromPayload(payload: unknown): string | null {
   } | null;
   const unique = p?.payload?.signature ?? p?.payload?.authorization?.nonce;
   if (!unique) return null;
-  return createHash('sha256').update(String(unique)).digest('hex').slice(0, 16);
+  return createHash('sha256').update(String(unique)).digest('hex').slice(0, 32);
 }
 
 export function receiptIdFromPaymentHeader(header: string): string | null {
@@ -41,7 +41,7 @@ export function receiptIdFromPaymentHeader(header: string): string | null {
 
 export const receiptBlobPath = (id: string) => `receipts/${id}.json`;
 
-export const isValidReceiptId = (id: string) => /^[a-f0-9]{16}$/.test(id);
+export const isValidReceiptId = (id: string) => /^[a-f0-9]{16,32}$/.test(id);
 
 export function explorerTxUrl(network: string | null, txHash: string | null): string | null {
   if (!txHash) return null;

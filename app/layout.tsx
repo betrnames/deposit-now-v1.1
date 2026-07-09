@@ -67,9 +67,8 @@ export default function RootLayout({
         provider: { '@type': 'Organization', name: 'deposit.now', url: 'https://deposit.now' },
         offers: {
           '@type': 'Offer',
-          price: '0.01',
           priceCurrency: 'USD',
-          description: 'Agent pays the declared deposit amount via x402 exact scheme on Base mainnet',
+          description: 'Agent pays the declared deposit amount (min $0.01) via x402 exact scheme on Base mainnet. Price equals the deposit amount — no fixed per-call fee.',
         },
       },
       {

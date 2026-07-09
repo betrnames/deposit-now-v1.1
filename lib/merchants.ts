@@ -36,12 +36,39 @@ const SLUG_RE = /^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$/;
 const EVM_ADDRESS_RE = /^0x[a-fA-F0-9]{40}$/;
 const REGISTRY_PATH = 'merchants/_registry.json';
 
+const RESERVED_SLUGS = new Set([
+  'stripe', 'stripe-official', 'coinbase', 'coinbase-pay', 'coinbase-commerce',
+  'paypal', 'venmo', 'square', 'shopify', 'apple-pay', 'google-pay',
+  'circle', 'usdc', 'visa', 'mastercard', 'metamask', 'phantom',
+  'admin', 'system', 'platform', 'api', 'support', 'help', 'test',
+  'official', 'verified', 'deposit-now-official',
+]);
+
 export function isValidMerchantSlug(slug: string): boolean {
-  return SLUG_RE.test(slug);
+  return SLUG_RE.test(slug) && !RESERVED_SLUGS.has(slug);
 }
 
 export function isValidEvmAddress(address: string): boolean {
   return EVM_ADDRESS_RE.test(address);
+}
+
+export function isValidWebhookUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:') return false;
+    const host = parsed.hostname.replace(/^\[|\]$/g, '');
+    if (
+      host === 'localhost' ||
+      host.endsWith('.local') ||
+      host.endsWith('.internal') ||
+      /^(127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|169\.254\.|0\.)/.test(host)
+    ) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function merchantRouteFromPath(
@@ -130,6 +157,9 @@ export async function upsertMerchant(input: Omit<Merchant, 'createdAt'> & { crea
   }
   if (!isValidEvmAddress(input.payTo)) {
     throw new Error('Invalid payTo address');
+  }
+  if (input.webhookUrl && !isValidWebhookUrl(input.webhookUrl)) {
+    throw new Error('Invalid webhook URL: must be HTTPS and not resolve to a private address');
   }
 
   const existing = await getMerchant(slug);

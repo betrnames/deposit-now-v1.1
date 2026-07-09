@@ -1,6 +1,35 @@
 import { createHmac } from 'crypto';
+import { resolve as dnsResolve } from 'dns/promises';
 import type { Merchant } from '@/lib/merchants';
 import type { DepositReceipt } from '@/lib/receipts';
+
+const PRIVATE_IP_RE =
+  /^(127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|169\.254\.|0\.|::1$|fc|fd|fe80)/;
+
+async function isPrivateUrl(urlString: string): Promise<boolean> {
+  try {
+    const parsed = new URL(urlString);
+    const hostname = parsed.hostname.replace(/^\[|\]$/g, '');
+
+    if (
+      hostname === 'localhost' ||
+      hostname.endsWith('.local') ||
+      hostname.endsWith('.internal') ||
+      PRIVATE_IP_RE.test(hostname)
+    ) {
+      return true;
+    }
+
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+      return true;
+    }
+
+    const addresses = await dnsResolve(hostname).catch(() => [hostname]);
+    return addresses.some((addr) => PRIVATE_IP_RE.test(addr));
+  } catch {
+    return true;
+  }
+}
 
 export interface WebhookDepositPayload {
   event: 'deposit.settled';
@@ -61,6 +90,11 @@ export async function deliverMerchantWebhook(
 ): Promise<boolean> {
   if (!merchant.webhookUrl) return false;
 
+  if (await isPrivateUrl(merchant.webhookUrl)) {
+    console.error(`webhook blocked for ${merchant.slug}: URL resolves to private address`);
+    return false;
+  }
+
   const body = JSON.stringify(payload);
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -77,6 +111,7 @@ export async function deliverMerchantWebhook(
       method: 'POST',
       headers,
       body,
+      redirect: 'error',
       signal: AbortSignal.timeout(10_000),
     });
     return res.ok;

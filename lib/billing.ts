@@ -82,15 +82,17 @@ export function extendTierExpiry(current: string | undefined, days: number): str
 
 export function clampDepositUsdc(amount: unknown): number | null {
   if (amount === undefined || amount === null) return null;
-  const parsed = typeof amount === 'number' ? amount : parseFloat(String(amount));
-  if (!Number.isFinite(parsed) || parsed < DEPOSIT_MIN_USDC) return null;
-  return Math.min(DEPOSIT_MAX_USDC, Math.max(DEPOSIT_MIN_USDC, parsed));
+  const raw = typeof amount === 'number' ? amount : parseFloat(String(amount).trim());
+  if (!Number.isFinite(raw) || raw < DEPOSIT_MIN_USDC) return null;
+  const clamped = Math.min(DEPOSIT_MAX_USDC, Math.max(DEPOSIT_MIN_USDC, raw));
+  return Math.round(clamped * 1e6) / 1e6;
 }
 
 export function clampTopupUsdc(amount: unknown): number {
-  const parsed = typeof amount === 'number' ? amount : parseFloat(String(amount ?? TOPUP_MIN_USDC));
-  if (!Number.isFinite(parsed)) return TOPUP_MIN_USDC;
-  return Math.min(TOPUP_MAX_USDC, Math.max(TOPUP_MIN_USDC, parsed));
+  const raw = typeof amount === 'number' ? amount : parseFloat(String(amount ?? TOPUP_MIN_USDC).trim());
+  if (!Number.isFinite(raw)) return TOPUP_MIN_USDC;
+  const clamped = Math.min(TOPUP_MAX_USDC, Math.max(TOPUP_MIN_USDC, raw));
+  return Math.round(clamped * 1e6) / 1e6;
 }
 
 export interface MerchantBillingPublic {
