@@ -1,10 +1,5 @@
-'use client';
-
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Zap, Coins, CheckCircle2, Sparkles } from 'lucide-react';
 import { SiteFooter } from '@/components/SiteFooter';
 import { Header } from '@/components/Header';
@@ -12,35 +7,6 @@ import { WhyDepositNow } from '@/components/WhyDepositNow';
 
 
 export default function Home() {
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState('');
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError('');
-
-    try {
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-
-      if (response.ok) {
-        setIsSubmitted(true);
-        setEmail('');
-      } else {
-        const data = await response.json();
-        setError(data.error || 'Failed to subscribe');
-      }
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className="min-h-screen page-shell">
@@ -70,50 +36,28 @@ export default function Home() {
             </h1>
 
             <p className="text-lg sm:text-2xl text-primary font-medium mb-4 sm:mb-8 mt-4 sm:mt-8">
-              No vendor lock-in. No API keys. No humans in the loop.
+              Agents pay. Merchants get found. Live on mainnet.
             </p>
 
             <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed">
-              deposit.now is the first public x402 API that lets AI agents deposit funds
-              autonomously — 0.01 USDC per call on Base mainnet, paid over HTTP 402.
-              No accounts, no API keys, no humans in the loop.
+              deposit.now lets AI agents deposit funds autonomously — 0.01 USDC per call
+              on Base mainnet, paid over HTTP 402. No accounts, no API keys, no humans in the loop.
             </p>
 
-            {!isSubmitted ? (
-              <form id="subscribe" onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-12">
-                <p className="text-sm text-muted-foreground mb-3">Subscribe for the latest updates</p>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-2">
-                  <Input
-                    type="email"
-                    placeholder="enter email..."
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/45 h-12 text-base px-4 rounded-xl backdrop-blur-sm focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/35"
-                  />
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-8 h-12 rounded-xl shrink-0"
-                  >
-                    {isSubmitting ? 'Subscribing...' : 'Subscribe'}
-                  </Button>
-                </div>
-                {error && <p className="text-sm text-red-400 mt-3 text-center sm:text-left">{error}</p>}
-              </form>
-            ) : (
-              <div className="max-w-2xl mx-auto mb-12">
-                <Card className="bg-green-500/10 border-green-500/20">
-                  <CardContent className="pt-6 text-center">
-                    <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                    <p className="text-green-500 font-medium">You&apos;re subscribed!</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      We&apos;ll send you the latest updates on deposit.now
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+            <div className="flex justify-center gap-4 mb-12">
+              <a
+                href="/docs"
+                className="bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-8 h-12 rounded-xl inline-flex items-center"
+              >
+                Get started
+              </a>
+              <a
+                href="/pricing"
+                className="bg-white/10 hover:bg-white/15 border border-white/20 text-white font-black text-[10px] uppercase tracking-wider px-8 h-12 rounded-xl inline-flex items-center"
+              >
+                View pricing
+              </a>
+            </div>
 
             <div className="flex justify-center items-center gap-4 sm:gap-8 text-xs sm:text-sm text-muted-foreground/70 uppercase tracking-wider font-medium py-4 sm:py-0">
               <div className="flex items-center gap-2 whitespace-nowrap">

@@ -184,7 +184,7 @@ export default function DocsPage() {
                   <h2 className="text-2xl font-bold text-white">Overview</h2>
                 </div>
                 <p className="text-muted-foreground">
-                  When you call <code className="text-primary">POST /api/deposit</code>, your agent pays 0.01 USDC via x402 &rarr; deposit.now triggers the on-chain deposit &rarr; a public receipt is generated &rarr; a webhook fires (merchant tier).
+                  When an agent calls <code className="text-primary">POST /api/deposit</code>, it pays 0.01 USDC via x402 to access the endpoint. The <code className="text-primary">amount</code> field declares the deposit value to be recorded on the merchant&apos;s ledger, and the platform generates a verifiable receipt and fires a webhook to the merchant.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                   <div className="border border-border/60 rounded-lg p-4 bg-background">
@@ -564,6 +564,10 @@ asyncio.run(main())`,
                   <Terminal className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-bold text-white">Merchant endpoints</h2>
                 </div>
+                <p className="text-sm text-muted-foreground bg-primary/10 border border-primary/20 rounded-lg px-4 py-3 mb-4">
+                  Merchant endpoints are rolling out to early partners. Request access at{' '}
+                  <a href="mailto:support@deposit.now" className="text-primary hover:underline">support@deposit.now</a>.
+                </p>
                 <p className="text-muted-foreground">
                   Merchant-scoped routes let agents fund a specific business or integration. The
                   0.01 USDC x402 fee still applies, but settlement lands on the merchant&apos;s{' '}
@@ -694,7 +698,7 @@ asyncio.run(main())`,
                   <div>
                     <h3 className="font-semibold mb-2 text-white">What is deposit.now?</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      deposit.now is the first public x402 API that lets AI agents autonomously
+                      deposit.now is a public x402 API that lets AI agents autonomously
                       deposit funds. Agents pay 0.01 USDC per call over HTTP — no accounts, API
                       keys, or human sign-up required.
                     </p>

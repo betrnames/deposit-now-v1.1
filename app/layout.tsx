@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     default: 'Deposit Now | The Funding Layer for AI Agents',
     template: '%s | Deposit Now',
   },
-  description: 'The first public API for AI agents to autonomously deposit funds using x402 payment protocol on Base mainnet. Instant USDC micropayments, no accounts required.',
+  description: 'Agents pay. Merchants get found. deposit.now lets AI agents deposit funds autonomously via x402 on Base mainnet — no accounts, no API keys.',
   keywords: [
     'x402',
     'x402 API',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://deposit.now' },
   openGraph: {
     title: 'Deposit Now | The Funding Layer for AI Agents',
-    description: 'Let AI agents deposit funds autonomously via x402 on Base mainnet — no accounts, instant USDC payments',
+    description: 'Agents pay. Merchants get found. Autonomous USDC deposits via x402 on Base mainnet — no accounts required.',
     url: 'https://deposit.now',
     siteName: 'Deposit Now',
     images: [
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Deposit Now | The Funding Layer for AI Agents',
-    description: 'The first public API for AI agents to autonomously deposit funds',
+    description: 'Agents pay. Merchants get found. Autonomous USDC deposits via x402 on Base mainnet.',
     images: ['/og.png'],
   },
   icons: {
@@ -80,7 +80,7 @@ export default function RootLayout({
             name: 'What is deposit.now?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'deposit.now is the first public x402 API that lets AI agents autonomously deposit funds. Agents pay 0.01 USDC per call over HTTP — no accounts, API keys, or human sign-up required.',
+              text: 'deposit.now lets AI agents autonomously deposit funds via x402. Agents pay 0.01 USDC per call over HTTP — no accounts, API keys, or human sign-up required.',
             },
           },
           {

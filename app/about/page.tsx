@@ -52,7 +52,7 @@ export default function AboutPage() {
       jsonLd={jsonLd}
     >
       <p id="overview">
-        <strong>deposit.now</strong> is the first public x402 API that lets AI agents
+        <strong>deposit.now</strong> is a public x402 API that lets AI agents
         autonomously trigger deposits over HTTP. Agents pay a micropayment in USDC on Base mainnet;
         the facilitator settles on-chain; deposit.now returns a verifiable public receipt
         bound to the transaction.

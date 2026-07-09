@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Deposit Now',
     short_name: 'deposit.now',
     description:
-      'The first public API for AI agents to autonomously deposit funds using the x402 payment protocol.',
+      'Agents pay. Merchants get found. Autonomous USDC deposits via x402 on Base mainnet.',
     start_url: '/',
     display: 'standalone',
     background_color: '#0f172a',
