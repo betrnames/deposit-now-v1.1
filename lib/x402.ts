@@ -15,8 +15,10 @@ import {
   ensureDefaultMerchants,
 } from '@/lib/merchants';
 import {
+  DEPOSIT_MIN_USDC,
   TIER_BILLING,
   canUseWebhooks,
+  clampDepositUsdc,
   clampTopupUsdc,
   extendTierExpiry,
   normalizeTier,
@@ -46,14 +48,14 @@ const depositDiscovery = declareDiscoveryExtension({
     properties: {
       amount: {
         type: 'string',
-        description: 'Deposit amount to trigger, as a decimal string',
+        description: 'USDC amount to deposit (min $0.01). This becomes the x402 payment price — the agent pays this amount on-chain.',
       },
       account: {
         type: 'string',
         description: 'Agent account identifier receiving the deposit',
       },
     },
-    required: [],
+    required: ['amount'],
   },
   output: {
     example: {
@@ -77,14 +79,14 @@ const merchantDiscovery = declareDiscoveryExtension({
     properties: {
       amount: {
         type: 'string',
-        description: 'Deposit amount to trigger for the merchant account',
+        description: 'USDC amount to deposit to the merchant (min $0.01). This becomes the x402 payment price — the agent pays this amount on-chain directly to the merchant wallet.',
       },
       account: {
         type: 'string',
         description: 'Agent or customer account identifier',
       },
     },
-    required: [],
+    required: ['amount'],
   },
   output: {
     example: {
@@ -124,6 +126,18 @@ async function parseDepositBody(context: HTTPRequestContext) {
     return { amount, account };
   } catch {
     return { amount: null, account: null };
+  }
+}
+
+async function resolveDepositPrice(context: HTTPRequestContext): Promise<string> {
+  try {
+    if (!context.adapter.getBody) return `$${DEPOSIT_MIN_USDC}`;
+    const body = (await context.adapter.getBody()) as { amount?: string | number } | undefined;
+    const usdc = clampDepositUsdc(body?.amount);
+    if (usdc === null) return `$${DEPOSIT_MIN_USDC}`;
+    return `$${usdc}`;
+  } catch {
+    return `$${DEPOSIT_MIN_USDC}`;
   }
 }
 
@@ -271,13 +285,13 @@ export const middleware = paymentProxy(
       accepts: [
         {
           scheme: 'exact',
-          price: '$0.01',
+          price: resolveDepositPrice,
           network: X402_NETWORK,
           payTo: PLATFORM_PAY_TO,
         },
       ],
       description:
-        'Trigger an autonomous agent deposit via deposit.now. Pays 0.01 USDC per call on Base mainnet.',
+        'Deposit USDC autonomously via deposit.now. Agent pays the declared amount on Base mainnet — no accounts or API keys.',
       mimeType: 'application/json',
       extensions: {
         ...depositDiscovery,
@@ -287,13 +301,13 @@ export const middleware = paymentProxy(
       accepts: [
         {
           scheme: 'exact',
-          price: '$0.01',
+          price: resolveDepositPrice,
           network: X402_NETWORK,
           payTo: resolveMerchantPayTo,
         },
       ],
       description:
-        'Merchant-scoped deposit endpoint. USDC settles directly to the merchant payTo address.',
+        'Merchant-scoped deposit. Agent pays the declared amount — USDC settles directly to the merchant payTo address.',
       mimeType: 'application/json',
       extensions: {
         ...merchantDiscovery,

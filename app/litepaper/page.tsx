@@ -123,22 +123,18 @@ export default function LitepaperPage() {
       </div>
 
       <h2 id="economics">Economics</h2>
-      <p>Three distinct amounts exist in the protocol:</p>
+      <p>Two distinct charges exist in the protocol:</p>
       <ul>
         <li>
-          <strong>Agent rail (real today):</strong> 0.01 USDC per call — the x402{' '}
-          <code>price</code> in middleware. Paid by the agent, not the merchant. Covers
-          facilitator settlement, receipt storage, and discovery indexing.
+          <strong>Deposit amount (agent-paid):</strong> the <code>amount</code> in the
+          request body becomes the x402 <code>price</code>. The agent pays this amount in
+          USDC on-chain — it settles directly to the merchant&apos;s{' '}
+          <code>payTo</code> address. Non-custodial.
         </li>
         <li>
-          <strong>Merchant settlement fee (usage-based):</strong> a small % of each deposit
-          settled to the merchant&apos;s <code>payTo</code> address. Non-custodial — funds
-          never touch deposit.now wallets. See{' '}
+          <strong>Settlement fee (merchant-paid):</strong> a small % of each deposit,
+          debited from the merchant&apos;s prepaid balance. See{' '}
           <a href="/pricing">pricing tiers</a>.
-        </li>
-        <li>
-          <strong>Deposit intent (metadata):</strong> JSON body <code>amount</code> /{' '}
-          <code>account</code> describes the deposit to trigger on the merchant endpoint.
         </li>
       </ul>
       <p>
@@ -189,7 +185,7 @@ export default function LitepaperPage() {
             0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
           </code>
         </li>
-        <li>Price: 10,000 atomic units (0.01 USDC)</li>
+        <li>Price: dynamic — equals the declared deposit amount (min $0.01)</li>
         <li>OpenAPI: <a href="/openapi.json">/openapi.json</a></li>
       </ul>
 

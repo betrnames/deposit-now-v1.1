@@ -61,7 +61,7 @@ export default function RootLayout({
         '@type': 'WebAPI',
         name: 'deposit.now x402 Deposit API',
         description:
-          'Public x402 API for AI agents to autonomously deposit funds. 0.01 USDC per call, paid over HTTP via the x402 protocol on Base mainnet (eip155:8453). No accounts or API keys required.',
+          'Public x402 API for AI agents to deposit USDC autonomously. Agent pays the declared amount on Base mainnet (eip155:8453) via x402 — no accounts or API keys required.',
         url: 'https://deposit.now/api/deposit',
         documentation: 'https://deposit.now/docs',
         provider: { '@type': 'Organization', name: 'deposit.now', url: 'https://deposit.now' },
@@ -69,7 +69,7 @@ export default function RootLayout({
           '@type': 'Offer',
           price: '0.01',
           priceCurrency: 'USD',
-          description: '0.01 USDC per API call via x402 exact scheme on Base mainnet',
+          description: 'Agent pays the declared deposit amount via x402 exact scheme on Base mainnet',
         },
       },
       {
@@ -80,7 +80,7 @@ export default function RootLayout({
             name: 'What is deposit.now?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'deposit.now lets AI agents autonomously deposit funds via x402. Agents pay 0.01 USDC per call over HTTP — no accounts, API keys, or human sign-up required.',
+              text: 'deposit.now lets AI agents deposit USDC autonomously via x402. Agents pay the declared deposit amount on-chain — no accounts, API keys, or human sign-up required.',
             },
           },
           {
@@ -96,7 +96,7 @@ export default function RootLayout({
             name: 'What does the deposit.now API cost?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: '0.01 USDC per call, settled on Base mainnet via the x402 payment protocol. There are no subscriptions, accounts, or minimums.',
+              text: 'The agent pays the declared deposit amount (min $0.01) via x402 on Base mainnet. Settlement fees apply to merchants — no subscriptions or minimums for agents.',
             },
           },
         ],

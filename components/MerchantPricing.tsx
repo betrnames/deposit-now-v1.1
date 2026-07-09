@@ -243,9 +243,9 @@ export function MerchantPricing() {
             directly to your merchant wallet.
           </li>
           <li>
-            <strong className="text-white">Agent rail</strong> — 0.01 USDC per x402 call, always paid
-            by the agent to your merchant wallet. Keeps discovery open
-            and avoids merchant-side friction.
+            <strong className="text-white">Deposit settlement</strong> — agents pay the full deposit
+            amount via x402. USDC settles directly to your merchant wallet on-chain. No
+            per-call platform toll.
           </li>
           <li>
             <strong className="text-white">Rail renewal</strong> — pay 49 USDC through the renew

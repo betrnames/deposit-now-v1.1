@@ -64,9 +64,9 @@ export interface BillingAutomationRow {
 
 export const billingAutomationRows: BillingAutomationRow[] = [
   {
-    charge: 'Agent rail',
+    charge: 'Deposit',
     whoPays: 'Agent',
-    howCollected: '0.01 USDC via x402 on every deposit call — settles to your merchant wallet',
+    howCollected: 'Agent pays the full deposit amount via x402 — USDC settles directly to your merchant wallet',
     mode: 'automated',
   },
   {
@@ -91,7 +91,7 @@ export const billingAutomationRows: BillingAutomationRow[] = [
 ];
 
 export const agentRailNote =
-  'Agents pay 0.01 USDC per x402 call on every deposit — covers facilitator settlement, receipt storage, and discovery indexing. Merchants never block agent access with account gates. All merchant charges run on-chain via x402 — no invoices.';
+  'Agents pay the declared deposit amount via x402 — USDC settles directly to the merchant wallet on-chain. Merchants pay a settlement fee from their prepaid balance. No per-call platform toll, no invoices.';
 
 export const pricingTiers: PricingTier[] = [
   {
@@ -102,7 +102,7 @@ export const pricingTiers: PricingTier[] = [
     monthlyBilling: 'free',
     settlementFee: '0.30% per settled deposit',
     settlementBilling: 'automated',
-    agentRail: '0.01 USDC / call (agent-paid)',
+    agentRail: 'Agent pays deposit amount via x402',
     endpoints: '1 merchant endpoint',
     webhooks: '—',
     automation: 'Public receipt pages only',
@@ -119,7 +119,7 @@ export const pricingTiers: PricingTier[] = [
     monthlyBilling: 'automated',
     settlementFee: '0.15% per settled deposit',
     settlementBilling: 'automated',
-    agentRail: '0.01 USDC / call (agent-paid)',
+    agentRail: 'Agent pays deposit amount via x402',
     endpoints: 'Up to 5 endpoints',
     webhooks: 'deposit.settled — 10k deliveries / mo included',
     automation: 'Retries, idempotency keys, HMAC signing',
@@ -137,7 +137,7 @@ export const pricingTiers: PricingTier[] = [
     monthlyBilling: 'manual',
     settlementFee: '0.05–0.10% at volume',
     settlementBilling: 'automated',
-    agentRail: '0.01 USDC / call (agent-paid)',
+    agentRail: 'Agent pays deposit amount via x402',
     endpoints: 'Unlimited endpoints',
     webhooks: 'Unlimited + custom payloads',
     automation: 'Dedicated retry policy, MCP priority, SLA',

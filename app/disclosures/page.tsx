@@ -81,12 +81,11 @@ export default function DisclosuresPage() {
         </li>
       </ul>
 
-      <h2 id="api-fee">API fee vs deposit amount</h2>
+      <h2 id="api-fee">Deposit amount = payment amount</h2>
       <p>
-        The x402 micropayment (currently <strong>0.01 USDC per call</strong>) is the fee to
-        access the API. The JSON fields <code>amount</code> and <code>account</code> in the
-        request body describe deposit <em>intent</em> and may not represent a separate
-        on-chain transfer unless explicitly documented for a merchant endpoint. Read the{' '}
+        The <code>amount</code> field in the request body becomes the x402 payment price. The
+        agent pays this amount in USDC on-chain — it settles directly to the recipient
+        wallet (merchant <code>payTo</code> address or the platform wallet). Read the{' '}
         <a href="/litepaper">litepaper</a> for the economic model.
       </p>
 

@@ -40,8 +40,8 @@ export default function Home() {
             </p>
 
             <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed">
-              deposit.now lets AI agents deposit funds autonomously — 0.01 USDC per call
-              on Base mainnet, paid over HTTP 402. No accounts, no API keys, no humans in the loop.
+              deposit.now lets AI agents deposit USDC autonomously — any amount,
+              settled on Base mainnet via x402. No accounts, no API keys, no humans in the loop.
             </p>
 
             <div className="flex justify-center gap-4 mb-12">
@@ -66,7 +66,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2 whitespace-nowrap">
                 <Coins className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground/70" />
-                <span>0.01 USDC per call</span>
+                <span>Any amount, settled on-chain</span>
               </div>
             </div>
           </div>
@@ -217,7 +217,7 @@ export default function Home() {
                     <div className="bg-muted/40 border border-border/40 rounded-lg p-4 space-y-2">
                       <div className="text-primary text-xs mb-2">CHALLENGE_DETAILS</div>
                       <div className="text-foreground/80 text-xs leading-relaxed">
-                        <span className="text-emerald-400">WWW-Authenticate:</span> x402 address=<span className="text-orange-400">"0x742d..."</span>, amount=<span className="text-orange-400">"0.01"</span>, asset=<span className="text-orange-400">"USDC"</span>
+                        <span className="text-emerald-400">WWW-Authenticate:</span> x402 address=<span className="text-orange-400">"0x742d..."</span>, amount=<span className="text-orange-400">"100.00"</span>, asset=<span className="text-orange-400">"USDC"</span>
                       </div>
                     </div>
                   </div>

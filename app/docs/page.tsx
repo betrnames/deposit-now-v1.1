@@ -184,7 +184,7 @@ export default function DocsPage() {
                   <h2 className="text-2xl font-bold text-white">Overview</h2>
                 </div>
                 <p className="text-muted-foreground">
-                  When an agent calls <code className="text-primary">POST /api/deposit</code>, it pays 0.01 USDC via x402 to access the endpoint. The <code className="text-primary">amount</code> field declares the deposit value to be recorded on the merchant&apos;s ledger, and the platform generates a verifiable receipt and fires a webhook to the merchant.
+                  When an agent calls <code className="text-primary">POST /api/deposit</code>, the <code className="text-primary">amount</code> field becomes the x402 payment price — the agent pays that amount in USDC on-chain. After settlement, the platform generates a verifiable receipt and fires a webhook to the merchant.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                   <div className="border border-border/60 rounded-lg p-4 bg-background">
@@ -193,7 +193,7 @@ export default function DocsPage() {
                   </div>
                   <div className="border border-border/60 rounded-lg p-4 bg-background">
                     <div className="text-sm text-muted-foreground/70 mb-1">Price per call</div>
-                    <div className="font-mono text-sm text-white">0.01 USDC</div>
+                    <div className="font-mono text-sm text-white">= deposit amount</div>
                   </div>
                   <div className="border border-border/60 rounded-lg p-4 bg-background">
                     <div className="text-sm text-muted-foreground/70 mb-1">Network</div>
@@ -242,7 +242,7 @@ export default function DocsPage() {
                 <div className="bg-background rounded-lg p-4 space-y-2 border border-border/60">
                   <div className="font-semibold text-white">x402 Requirements:</div>
                   <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    <li>Payment amount: 10000 atomic units (0.01 USDC)</li>
+                    <li>Payment amount: equals the declared deposit amount (min $0.01)</li>
                     <li className="break-words">
                       Currency: USDC (
                       <code className="break-all">
@@ -570,8 +570,8 @@ asyncio.run(main())`,
                 </p>
                 <p className="text-muted-foreground">
                   Merchant-scoped routes let agents fund a specific business or integration. The
-                  0.01 USDC x402 fee still applies, but settlement lands on the merchant&apos;s{' '}
-                  <code className="text-primary">payTo</code> address instead of the platform wallet.
+                  full deposit amount settles directly to the merchant&apos;s{' '}
+                  <code className="text-primary">payTo</code> address on-chain.
                   After settlement, deposit.now writes a public receipt and optionally POSTs a{' '}
                   <code className="text-primary">deposit.settled</code> webhook.
                 </p>
@@ -683,8 +683,8 @@ asyncio.run(main())`,
                 </div>
                 <p className="text-sm text-muted-foreground/70">
                   After each settled deposit, the tier settlement fee (e.g. 0.15% on Rail) debits
-                  automatically from your prepaid balance. Agent rail fees (0.01 USDC/call) still
-                  settle to your <code className="text-primary">payTo</code> address.
+                  automatically from your prepaid balance. The full deposit amount settles
+                  directly to your <code className="text-primary">payTo</code> address.
                 </p>
               </div>
 
@@ -698,9 +698,9 @@ asyncio.run(main())`,
                   <div>
                     <h3 className="font-semibold mb-2 text-white">What is deposit.now?</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      deposit.now is a public x402 API that lets AI agents autonomously
-                      deposit funds. Agents pay 0.01 USDC per call over HTTP — no accounts, API
-                      keys, or human sign-up required.
+                      deposit.now is a public x402 API that lets AI agents deposit USDC
+                      autonomously. Agents pay the declared deposit amount on-chain via x402 — no
+                      accounts, API keys, or human sign-up required.
                     </p>
                   </div>
                   <div>
@@ -716,8 +716,8 @@ asyncio.run(main())`,
                   <div>
                     <h3 className="font-semibold mb-2 text-white">What does the deposit.now API cost?</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      0.01 USDC per call, settled on Base mainnet via the x402 payment protocol. There are
-                      no subscriptions, accounts, or minimums.
+                      The agent pays the declared deposit amount (min $0.01) via x402 on Base mainnet.
+                      No per-call platform toll, no subscriptions, no minimums for agents.
                     </p>
                   </div>
                 </div>

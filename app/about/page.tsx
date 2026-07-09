@@ -96,7 +96,8 @@ export default function AboutPage() {
       <p>
         We monetize at the <strong>merchant and volume layer</strong> — usage-based settlement
         fees, webhook automation, and referral revenue share — not by blocking agents with
-        account gates. Agents pay 0.01 USDC per x402 call for the rail; merchants choose a{' '}
+        account gates. Agents pay the declared deposit amount via x402 — USDC settles
+        directly to the merchant wallet. Merchants choose a{' '}
         <a href="/pricing">pricing tier</a> for endpoints, webhooks, and Bazaar discovery.
       </p>
 

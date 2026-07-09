@@ -23,15 +23,15 @@ export function discoveryManifest() {
       {
         type: 'platform',
         url: 'https://deposit.now/api/deposit',
-        price: '0.01 USDC',
+        price: 'dynamic — equals declared deposit amount (min $0.01)',
         description: 'Default platform deposit — settles to deposit.now payTo.',
       },
       {
         type: 'merchant',
         url: 'https://deposit.now/api/merchants/{slug}/deposit',
-        price: '0.01 USDC',
+        price: 'dynamic — equals declared deposit amount (min $0.01)',
         description:
-          'Merchant-scoped deposit — USDC settles to merchant payTo. List slugs at /api/merchants.',
+          'Merchant-scoped deposit — full amount settles to merchant payTo. List slugs at /api/merchants.',
       },
     ],
   };

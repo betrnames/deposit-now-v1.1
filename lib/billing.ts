@@ -30,6 +30,9 @@ export const TIER_BILLING: Record<MerchantTier, TierBillingConfig> = {
   },
 };
 
+export const DEPOSIT_MIN_USDC = 0.01;
+export const DEPOSIT_MAX_USDC = 100_000;
+
 export const TOPUP_MIN_USDC = 10;
 export const TOPUP_MAX_USDC = 10_000;
 
@@ -75,6 +78,13 @@ export function extendTierExpiry(current: string | undefined, days: number): str
   const base = current && new Date(current) > new Date() ? new Date(current) : new Date();
   base.setUTCDate(base.getUTCDate() + days);
   return base.toISOString();
+}
+
+export function clampDepositUsdc(amount: unknown): number | null {
+  if (amount === undefined || amount === null) return null;
+  const parsed = typeof amount === 'number' ? amount : parseFloat(String(amount));
+  if (!Number.isFinite(parsed) || parsed < DEPOSIT_MIN_USDC) return null;
+  return Math.min(DEPOSIT_MAX_USDC, Math.max(DEPOSIT_MIN_USDC, parsed));
 }
 
 export function clampTopupUsdc(amount: unknown): number {

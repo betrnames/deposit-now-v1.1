@@ -6,7 +6,7 @@ import { pageGraph } from '@/lib/seo';
 export const metadata: Metadata = {
   title: 'Pricing',
   description:
-    'Merchant pricing for deposit.now: usage-based settlement fees, webhook automation, Bazaar discovery, and referral revenue share. Agents pay 0.01 USDC per x402 call.',
+    'Merchant pricing for deposit.now: usage-based settlement fees, webhook automation, Bazaar discovery, and referral revenue share.',
   alternates: { canonical: 'https://deposit.now/pricing' },
   keywords: [
     'deposit.now pricing',
