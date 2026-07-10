@@ -121,6 +121,7 @@ async function writeRegistry(slugs: string[]) {
   await put(REGISTRY_PATH, JSON.stringify({ slugs: unique, updatedAt: new Date().toISOString() }), {
     access: 'public',
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: 'application/json',
   });
 }
@@ -180,6 +181,7 @@ export async function upsertMerchant(input: Omit<Merchant, 'createdAt'> & { crea
   await put(merchantBlobPath(slug), JSON.stringify(merchant), {
     access: 'public',
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: 'application/json',
   });
 
@@ -222,6 +224,7 @@ export async function patchMerchantBilling(
   await put(merchantBlobPath(slug), JSON.stringify(merchant), {
     access: 'public',
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: 'application/json',
   });
 

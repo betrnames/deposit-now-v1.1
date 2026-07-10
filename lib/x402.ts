@@ -256,6 +256,7 @@ const server = new x402ResourceServer(facilitatorClient)
       await put(receiptBlobPath(id), JSON.stringify(receipt), {
         access: 'public',
         addRandomSuffix: false,
+        allowOverwrite: true,
         contentType: 'application/json',
       });
 
