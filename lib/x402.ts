@@ -22,13 +22,19 @@ import {
   clampTopupUsdc,
   extendTierExpiry,
   normalizeTier,
-  settlementFeeMicro,
 } from '@/lib/billing';
 import { buildWebhookPayload, deliverMerchantWebhook } from '@/lib/webhooks';
 import { receiptIdFromPayload, receiptBlobPath } from '@/lib/receipts';
+import {
+  calculateSplit,
+  forwardWithRetry,
+  logSettlement,
+  type SettlementSplit,
+} from '@/lib/cdp';
 import type { HTTPRequestContext } from '@x402/core/server';
 
-export const PLATFORM_PAY_TO = '0x3f7a25Dc7307F5662489686e5A457DAD4879F685';
+export const PLATFORM_PAY_TO =
+  process.env.CDP_PLATFORM_ADDRESS ?? '0x3f7a25Dc7307F5662489686e5A457DAD4879F685';
 
 const useMainnet =
   process.env.X402_NETWORK === 'mainnet' &&
@@ -101,7 +107,7 @@ const merchantDiscovery = declareDiscoveryExtension({
   },
 });
 
-async function resolveMerchantPayTo(context: HTTPRequestContext): Promise<string> {
+async function validateMerchantAndReturnPlatform(context: HTTPRequestContext): Promise<string> {
   const slug = merchantSlugFromPath(context.path);
   if (!slug) {
     throw new Error('Invalid merchant route');
@@ -110,7 +116,7 @@ async function resolveMerchantPayTo(context: HTTPRequestContext): Promise<string
   if (!merchant?.active) {
     throw new Error(`Unknown merchant: ${slug}`);
   }
-  return merchant.payTo;
+  return PLATFORM_PAY_TO;
 }
 
 async function parseDepositBody(context: HTTPRequestContext) {
@@ -186,14 +192,6 @@ async function applyBillingAfterSettle(
     return;
   }
 
-  if (route.action === 'deposit') {
-    const fee = settlementFeeMicro(depositBody.amount, merchant.tier);
-    if (fee <= 0) return;
-    const current = merchant.billingBalanceMicro ?? 0;
-    await patchMerchantBilling(merchantSlug, {
-      billingBalanceMicro: Math.max(0, current - fee),
-    });
-  }
 }
 
 const server = new x402ResourceServer(facilitatorClient)
@@ -236,11 +234,43 @@ const server = new x402ResourceServer(facilitatorClient)
         network?: string;
       };
       const amountAtomic = String(req.amount ?? req.maxAmountRequired ?? '');
+      const amountUsdc = amountAtomic ? (Number(amountAtomic) / 1e6).toFixed(6) : null;
+
+      // Settlement split: forward net amount to merchant via CDP
+      const isMerchantDeposit = route?.action === 'deposit' && merchant;
+      let split: SettlementSplit | null = null;
+      let forwardTxHash: string | null = null;
+      let forwardStatus: 'settled' | 'forward_failed' | null = null;
+
+      if (isMerchantDeposit) {
+        split = calculateSplit(depositBody.amount ?? amountUsdc, merchant.tier);
+        if (split && split.net > 0) {
+          const fwd = await forwardWithRetry(merchant.payTo, split.net);
+          forwardTxHash = fwd.txHash;
+          forwardStatus = fwd.txHash ? 'settled' : 'forward_failed';
+
+          await logSettlement({
+            depositId: id,
+            merchantSlug: merchant.slug,
+            grossAmount: split.gross.toFixed(6),
+            fee: split.fee.toFixed(6),
+            feePercent: split.feePercent.toFixed(2),
+            netToMerchant: split.net.toFixed(6),
+            agentTxHash: result.transaction ?? null,
+            merchantTxHash: fwd.txHash,
+            status: fwd.txHash ? 'settled' : 'forward_failed',
+            error: fwd.error ?? undefined,
+            requiresManualReview: !fwd.txHash,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+
       const receipt = {
         id,
         payer: result.payer ?? payload.payload?.authorization?.from ?? null,
         amountAtomic: amountAtomic || null,
-        amountUsdc: amountAtomic ? (Number(amountAtomic) / 1e6).toFixed(6) : null,
+        amountUsdc,
         asset: req.asset ?? null,
         network: req.network ?? result.network ?? null,
         payTo: req.payTo ?? null,
@@ -251,6 +281,13 @@ const server = new x402ResourceServer(facilitatorClient)
         merchantName: merchant?.name ?? null,
         depositAmount: depositBody.amount,
         account: depositBody.account,
+        grossAmount: split ? split.gross.toFixed(6) : null,
+        fee: split ? split.fee.toFixed(6) : null,
+        feePercent: split ? split.feePercent.toFixed(2) : null,
+        netToMerchant: split ? split.net.toFixed(6) : null,
+        merchantPayTo: merchant?.payTo ?? null,
+        forwardTxHash,
+        forwardStatus,
       };
 
       await put(receiptBlobPath(id), JSON.stringify(receipt), {
@@ -260,7 +297,8 @@ const server = new x402ResourceServer(facilitatorClient)
         contentType: 'application/json',
       });
 
-      if (merchantSlug) {
+      // Billing: renew/topup only — deposit fees are now taken at the tx level
+      if (merchantSlug && route && route.action !== 'deposit') {
         await applyBillingAfterSettle(
           requestPath,
           merchantSlug,
@@ -274,7 +312,7 @@ const server = new x402ResourceServer(facilitatorClient)
         await deliverMerchantWebhook(merchant, webhookPayload);
       }
     } catch (error) {
-      console.error('receipt write failed:', error);
+      console.error('settlement failed:', error instanceof Error ? error.message : 'unknown');
     }
   });
 
@@ -304,7 +342,7 @@ export const middleware = paymentProxy(
           scheme: 'exact',
           price: resolveDepositPrice,
           network: X402_NETWORK,
-          payTo: resolveMerchantPayTo,
+          payTo: validateMerchantAndReturnPlatform,
         },
       ],
       description:

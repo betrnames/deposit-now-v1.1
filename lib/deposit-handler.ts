@@ -67,7 +67,7 @@ export async function handleDepositPost(request: NextRequest) {
       amount = String(body.amount);
     }
     if (typeof body.account === 'string') {
-      account = body.account;
+      account = body.account.slice(0, 128);
     }
   } catch {
     // empty body is fine — defaults apply
@@ -85,7 +85,7 @@ export async function handleDepositPost(request: NextRequest) {
       network: networkLabel(),
       x402Network: X402_NETWORK,
       paymentReceived: true,
-      transactionId: `txn_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+      transactionId: `txn_${Date.now()}_${crypto.randomUUID().slice(0, 12)}`,
       ...(merchant
         ? {
             merchantSlug: merchant.slug,

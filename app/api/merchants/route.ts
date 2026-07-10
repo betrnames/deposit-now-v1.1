@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { normalizeTier } from '@/lib/billing';
 import {
@@ -8,9 +9,15 @@ import {
 } from '@/lib/merchants';
 import { X402_NETWORK } from '@/lib/x402';
 
-const CORS_HEADERS = {
+const PUBLIC_CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+const ADMIN_CORS = {
+  'Access-Control-Allow-Origin': process.env.ADMIN_ALLOWED_ORIGIN ?? '',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Admin-Secret',
 };
 
@@ -20,7 +27,11 @@ function isAuthorized(request: NextRequest): boolean {
   const header =
     request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ??
     request.headers.get('x-admin-secret');
-  return header === secret;
+  if (!header) return false;
+  const a = Buffer.from(header);
+  const b = Buffer.from(secret);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
 }
 
 export async function GET() {
@@ -32,7 +43,7 @@ export async function GET() {
       x402Network: X402_NETWORK,
       docs: 'https://deposit.now/docs#merchants',
     },
-    { headers: CORS_HEADERS }
+    { headers: PUBLIC_CORS }
   );
 }
 
@@ -40,7 +51,7 @@ export async function POST(request: NextRequest) {
   if (!isAuthorized(request)) {
     return NextResponse.json(
       { error: 'unauthorized', message: 'Valid MERCHANT_ADMIN_SECRET required.' },
-      { status: 401, headers: CORS_HEADERS }
+      { status: 401, headers: ADMIN_CORS }
     );
   }
 
@@ -50,7 +61,7 @@ export async function POST(request: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: 'invalid_json' },
-      { status: 400, headers: CORS_HEADERS }
+      { status: 400, headers: ADMIN_CORS }
     );
   }
 
@@ -61,14 +72,14 @@ export async function POST(request: NextRequest) {
   if (!isValidMerchantSlug(slug)) {
     return NextResponse.json(
       { error: 'invalid_slug', message: 'Use lowercase letters, numbers, and hyphens.' },
-      { status: 400, headers: CORS_HEADERS }
+      { status: 400, headers: ADMIN_CORS }
     );
   }
   if (!name) {
-    return NextResponse.json({ error: 'name_required' }, { status: 400, headers: CORS_HEADERS });
+    return NextResponse.json({ error: 'name_required' }, { status: 400, headers: ADMIN_CORS });
   }
   if (!isValidEvmAddress(payTo)) {
-    return NextResponse.json({ error: 'invalid_payTo' }, { status: 400, headers: CORS_HEADERS });
+    return NextResponse.json({ error: 'invalid_payTo' }, { status: 400, headers: ADMIN_CORS });
   }
 
   try {
@@ -83,8 +94,11 @@ export async function POST(request: NextRequest) {
       active: body.active !== false,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to save merchant';
-    return NextResponse.json({ error: message }, { status: 500, headers: CORS_HEADERS });
+    console.error('merchant upsert failed:', error instanceof Error ? error.message : error);
+    return NextResponse.json(
+      { error: 'merchant_save_failed' },
+      { status: 500, headers: ADMIN_CORS }
+    );
   }
 
   const merchants = await listMerchants();
@@ -92,10 +106,10 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json(
     { status: 'created', merchant: created },
-    { status: 201, headers: CORS_HEADERS }
+    { status: 201, headers: ADMIN_CORS }
   );
 }
 
 export async function OPTIONS() {
-  return new NextResponse(null, { status: 200, headers: CORS_HEADERS });
+  return new NextResponse(null, { status: 200, headers: { ...PUBLIC_CORS, ...ADMIN_CORS } });
 }

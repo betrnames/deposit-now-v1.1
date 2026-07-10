@@ -15,6 +15,13 @@ export interface DepositReceipt {
   merchantName?: string | null;
   depositAmount?: string | null;
   account?: string | null;
+  grossAmount?: string | null;
+  fee?: string | null;
+  feePercent?: string | null;
+  netToMerchant?: string | null;
+  merchantPayTo?: string | null;
+  forwardTxHash?: string | null;
+  forwardStatus?: 'settled' | 'forward_failed' | null;
 }
 
 // The receipt id is derived deterministically from the payment's unique

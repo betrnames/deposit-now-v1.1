@@ -79,17 +79,31 @@ export default async function ReceiptPage({
                 {receipt.merchantName ?? receipt.merchantSlug}
               </Row>
             ) : null}
-            {receipt.depositAmount ? (
+            {receipt.grossAmount ? (
+              <Row label="Gross amount">{receipt.grossAmount} USDC</Row>
+            ) : receipt.depositAmount ? (
               <Row label="Deposit intent">{receipt.depositAmount} USDC</Row>
             ) : null}
+            {receipt.fee ? (
+              <Row label="Settlement fee">
+                {receipt.fee} USDC ({receipt.feePercent}%)
+              </Row>
+            ) : null}
+            {receipt.netToMerchant ? (
+              <Row label="Net to merchant">{receipt.netToMerchant} USDC</Row>
+            ) : null}
             {receipt.account ? <Row label="Account">{receipt.account}</Row> : null}
-            <Row label="API fee">
-              {receipt.amountUsdc ? `${receipt.amountUsdc} USDC` : '—'}
-            </Row>
+            {!receipt.grossAmount && receipt.amountUsdc ? (
+              <Row label="Amount">{receipt.amountUsdc} USDC</Row>
+            ) : null}
             <Row label="Payer">{receipt.payer ?? '—'}</Row>
-            <Row label="Paid to">{receipt.payTo ?? '—'}</Row>
+            {receipt.merchantPayTo ? (
+              <Row label="Merchant wallet">{receipt.merchantPayTo}</Row>
+            ) : (
+              <Row label="Paid to">{receipt.payTo ?? '—'}</Row>
+            )}
             <Row label="Settled at">{receipt.settledAt}</Row>
-            <Row label="Transaction">
+            <Row label="Agent → Platform">
               {explorerTxUrl(receipt.network, receipt.txHash) ? (
                 <a
                   href={explorerTxUrl(receipt.network, receipt.txHash)!}
@@ -103,6 +117,26 @@ export default async function ReceiptPage({
                 receipt.txHash ?? '—'
               )}
             </Row>
+            {receipt.forwardTxHash ? (
+              <Row label="Platform → Merchant">
+                {explorerTxUrl(receipt.network, receipt.forwardTxHash) ? (
+                  <a
+                    href={explorerTxUrl(receipt.network, receipt.forwardTxHash)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    {receipt.forwardTxHash.slice(0, 10)}…{receipt.forwardTxHash.slice(-8)} ↗
+                  </a>
+                ) : (
+                  receipt.forwardTxHash
+                )}
+              </Row>
+            ) : receipt.forwardStatus === 'forward_failed' ? (
+              <Row label="Platform → Merchant">
+                <span className="text-red-400">Forward pending — contact support</span>
+              </Row>
+            ) : null}
 
             <p className="text-xs text-muted-foreground/70 mt-6 leading-relaxed">
               This receipt was written by deposit.now after the x402 facilitator

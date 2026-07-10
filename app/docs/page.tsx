@@ -633,14 +633,62 @@ asyncio.run(main())`,
               <div id="billing" className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Terminal className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold text-white">Merchant billing (on-chain)</h2>
+                  <h2 className="text-2xl font-bold text-white">Settlement fees</h2>
                 </div>
                 <p className="text-muted-foreground">
-                  Merchant charges are collected via x402 USDC on Base — no invoices or card billing.
-                  Settlement fees debit from a prepaid balance; Rail tier renews with a fixed 49 USDC
-                  payment to the platform wallet.
+                  When an agent deposits funds to a merchant, the platform collects a settlement fee
+                  at the transaction level before forwarding the remainder to the merchant&apos;s{' '}
+                  <code className="text-primary">payTo</code> wallet. No prepaid balances, no invoices.
                 </p>
-                <div className="space-y-4">
+                <div className="bg-background rounded-lg p-4 space-y-3 border border-border/60 mt-4">
+                  <div className="font-semibold text-white text-sm">Example: $100.00 deposit on Catalog tier (0.30%)</div>
+                  <div className="grid grid-cols-1 gap-2 text-sm font-mono">
+                    <div className="flex justify-between"><span className="text-muted-foreground">Agent pays</span><span className="text-white">$100.00 USDC → platform wallet</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Platform fee</span><span className="text-primary">$0.30 USDC retained</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Merchant receives</span><span className="text-white">$99.70 USDC → merchant payTo</span></div>
+                  </div>
+                </div>
+                <div className="overflow-x-auto mt-4">
+                  <table className="w-full text-sm border-collapse">
+                    <thead>
+                      <tr className="border-b border-border/60">
+                        <th className="text-left py-2 pr-4 text-muted-foreground font-medium">Tier</th>
+                        <th className="text-left py-2 pr-4 text-muted-foreground font-medium">Fee</th>
+                        <th className="text-left py-2 pr-4 text-muted-foreground font-medium">Merchant gets</th>
+                        <th className="text-left py-2 text-muted-foreground font-medium">Best for</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-border/30">
+                        <td className="py-2 pr-4 text-white font-medium">Catalog</td>
+                        <td className="py-2 pr-4 font-mono text-primary">0.30%</td>
+                        <td className="py-2 pr-4 font-mono text-white">99.70%</td>
+                        <td className="py-2 text-muted-foreground">Public Bazaar merchants</td>
+                      </tr>
+                      <tr className="border-b border-border/30">
+                        <td className="py-2 pr-4 text-white font-medium">Rail</td>
+                        <td className="py-2 pr-4 font-mono text-primary">0.15%</td>
+                        <td className="py-2 pr-4 font-mono text-white">99.85%</td>
+                        <td className="py-2 text-muted-foreground">High-volume integrations</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2 pr-4 text-white font-medium">Network</td>
+                        <td className="py-2 pr-4 font-mono text-primary">0.05%</td>
+                        <td className="py-2 pr-4 font-mono text-white">99.95%</td>
+                        <td className="py-2 text-muted-foreground">Enterprise / foundation</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-sm text-muted-foreground/70 mt-2">
+                  Both transactions (agent → platform, platform → merchant) are visible on{' '}
+                  <a href="https://basescan.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">BaseScan</a>.
+                  Receipts include a full fee breakdown with both transaction hashes.
+                  Merchant forwarding is gasless — Coinbase sponsors gas for USDC on Base.
+                </p>
+
+                <div className="mt-6 space-y-4">
+                  <h3 className="text-lg font-bold text-white">Billing endpoints</h3>
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline" className="text-white border-white/20">GET</Badge>
@@ -648,7 +696,7 @@ asyncio.run(main())`,
                     </div>
                     <p className="text-sm text-muted-foreground">
                       Returns merchant details plus a <code className="text-primary">billing</code>{' '}
-                      object: tier, prepaid balance, renew/topup URLs, and settlement fee bps.
+                      object: tier, settlement fee bps, and renew URL.
                     </p>
                   </div>
                   <div>
@@ -660,34 +708,17 @@ asyncio.run(main())`,
                       Pay 49 USDC via x402 to extend Rail webhooks and automation for 30 days.
                     </p>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="text-white border-white/20">POST</Badge>
-                      <code className="text-sm text-primary">/api/merchants/&#123;slug&#125;/topup</code>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Top up prepaid USDC for settlement-fee debits. Minimum 10 USDC.
-                    </p>
-                    <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
-                      <code>
-                        <span className="text-yellow-300">POST</span>{' '}
-                        <span className="text-orange-400">https://deposit.now/api/merchants/acme-corp/topup</span>
-                        {'\n'}
-                        <span className="text-white">{'{'}</span>{'\n'}
-                        {'  '}<span className="text-green-400">&quot;amount&quot;</span>
-                        <span className="text-white">: </span>
-                        <span className="text-orange-400">&quot;50&quot;</span>
-                        {'\n'}
-                        <span className="text-white">{'}'}</span>
-                      </code>
-                    </pre>
-                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground/70">
-                  After each settled deposit, the tier settlement fee (e.g. 0.15% on Rail) debits
-                  automatically from your prepaid balance. The full deposit amount settles
-                  directly to your <code className="text-primary">payTo</code> address.
-                </p>
+
+                <div className="mt-6 border border-primary/30 rounded-lg p-5 bg-primary/5">
+                  <h3 className="text-sm font-bold text-white mb-2">Recommended: CDP Agentic Wallets</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    For production agents, we recommend{' '}
+                    <a href="https://www.coinbase.com/developer-platform/products/agentic-wallets" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CDP Agentic Wallets</a>{' '}
+                    instead of raw private keys — private keys secured in TEE, programmable spend caps,
+                    gasless USDC on Base, built-in KYT compliance, and native x402 support.
+                  </p>
+                </div>
               </div>
 
               {/* FAQ Section */}

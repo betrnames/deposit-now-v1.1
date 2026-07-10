@@ -5,6 +5,7 @@ import {
   type MerchantBillingPublic,
   type MerchantTier,
 } from '@/lib/billing';
+import { canEncrypt, decrypt, encrypt } from '@/lib/crypto';
 
 export interface Merchant {
   slug: string;
@@ -132,7 +133,16 @@ export async function getMerchant(slug: string): Promise<Merchant | null> {
     const blob = await head(merchantBlobPath(slug));
     const res = await fetch(blob.url, { cache: 'no-store' });
     if (!res.ok) return null;
-    return (await res.json()) as Merchant;
+    const merchant = (await res.json()) as Merchant & { webhookSecretEncrypted?: string };
+    if (merchant.webhookSecretEncrypted && !merchant.webhookSecret) {
+      try {
+        merchant.webhookSecret = decrypt(merchant.webhookSecretEncrypted);
+      } catch {
+        // decryption failed — key rotated or corrupted; treat as absent
+      }
+      delete merchant.webhookSecretEncrypted;
+    }
+    return merchant;
   } catch {
     return null;
   }
@@ -164,13 +174,15 @@ export async function upsertMerchant(input: Omit<Merchant, 'createdAt'> & { crea
   }
 
   const existing = await getMerchant(slug);
+  const webhookSecretPlain = input.webhookSecret?.trim() || existing?.webhookSecret || undefined;
+
   const merchant: Merchant = {
     slug,
     name: input.name.trim(),
     payTo: input.payTo,
     description: input.description?.trim() || undefined,
     webhookUrl: input.webhookUrl?.trim() || undefined,
-    webhookSecret: input.webhookSecret?.trim() || undefined,
+    webhookSecret: webhookSecretPlain,
     tier: input.tier ? normalizeTier(input.tier) : existing?.tier ?? 'catalog',
     tierExpiresAt: input.tierExpiresAt ?? existing?.tierExpiresAt,
     billingBalanceMicro: input.billingBalanceMicro ?? existing?.billingBalanceMicro ?? 0,
@@ -178,7 +190,14 @@ export async function upsertMerchant(input: Omit<Merchant, 'createdAt'> & { crea
     createdAt: existing?.createdAt ?? input.createdAt ?? new Date().toISOString(),
   };
 
-  await put(merchantBlobPath(slug), JSON.stringify(merchant), {
+  // Strip plaintext secret from blob; store encrypted instead
+  const blobData: Record<string, unknown> = { ...merchant };
+  delete blobData.webhookSecret;
+  if (webhookSecretPlain && canEncrypt()) {
+    blobData.webhookSecretEncrypted = encrypt(webhookSecretPlain);
+  }
+
+  await put(merchantBlobPath(slug), JSON.stringify(blobData), {
     access: 'public',
     addRandomSuffix: false,
     allowOverwrite: true,

@@ -51,6 +51,15 @@ export interface WebhookDepositPayload {
     network: string | null;
     settledAt: string;
   };
+  grossAmount: string | null;
+  fee: string | null;
+  feePercent: string | null;
+  netAmount: string | null;
+  currency: string;
+  transactions: {
+    agentToPlatform: string | null;
+    platformToMerchant: string | null;
+  };
   timestamp: string;
 }
 
@@ -75,6 +84,15 @@ export function buildWebhookPayload(
       txHash: receipt.txHash,
       network: receipt.network,
       settledAt: receipt.settledAt,
+    },
+    grossAmount: receipt.grossAmount ?? receipt.amountUsdc ?? null,
+    fee: receipt.fee ?? null,
+    feePercent: receipt.feePercent ?? null,
+    netAmount: receipt.netToMerchant ?? null,
+    currency: 'USDC',
+    transactions: {
+      agentToPlatform: receipt.txHash ?? null,
+      platformToMerchant: receipt.forwardTxHash ?? null,
     },
     timestamp: new Date().toISOString(),
   };
@@ -116,7 +134,7 @@ export async function deliverMerchantWebhook(
     });
     return res.ok;
   } catch (error) {
-    console.error(`webhook delivery failed for ${merchant.slug}:`, error);
+    console.error(`webhook delivery failed for ${merchant.slug}:`, error instanceof Error ? error.message : 'unknown');
     return false;
   }
 }
