@@ -107,18 +107,6 @@ const merchantDiscovery = declareDiscoveryExtension({
   },
 });
 
-async function validateMerchantAndReturnPlatform(context: HTTPRequestContext): Promise<string> {
-  const slug = merchantSlugFromPath(context.path);
-  if (!slug) {
-    throw new Error('Invalid merchant route');
-  }
-  const merchant = await getMerchant(slug);
-  if (!merchant?.active) {
-    throw new Error(`Unknown merchant: ${slug}`);
-  }
-  return PLATFORM_PAY_TO;
-}
-
 async function parseDepositBody(context: HTTPRequestContext) {
   try {
     if (!context.adapter.getBody) return { amount: null, account: null };
@@ -342,11 +330,11 @@ export const middleware = paymentProxy(
           scheme: 'exact',
           price: resolveDepositPrice,
           network: X402_NETWORK,
-          payTo: validateMerchantAndReturnPlatform,
+          payTo: PLATFORM_PAY_TO,
         },
       ],
       description:
-        'Merchant-scoped deposit. Agent pays the declared amount — USDC settles directly to the merchant payTo address.',
+        'Merchant-scoped deposit. Agent pays the declared amount — platform splits fee and forwards net to merchant.',
       mimeType: 'application/json',
       extensions: {
         ...merchantDiscovery,
