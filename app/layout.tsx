@@ -6,13 +6,17 @@ import { ThemeInit } from '@/components/ThemeInit';
 export const metadata: Metadata = {
   metadataBase: new URL('https://deposit.now'),
   title: {
-    default: 'Deposit Now | The Funding Layer for AI Agents',
+    default: 'Deposit Now | x402 Payment Intelligence',
     template: '%s | Deposit Now',
   },
-  description: 'Agents pay. Merchants get found. deposit.now lets AI agents deposit funds autonomously via x402 on Base mainnet — no accounts, no API keys.',
+  description: 'Compare x402 facilitators by fee, chain, and token. deposit.now helps developers and AI agents route payments to the best facilitator.',
   keywords: [
     'x402',
     'x402 API',
+    'x402 facilitator',
+    'facilitator comparison',
+    'payment routing',
+    'facilitator dashboard',
     'AI agent payments',
     'agent deposits',
     'HTTP 402',
@@ -24,8 +28,8 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://deposit.now' },
   openGraph: {
-    title: 'Deposit Now | The Funding Layer for AI Agents',
-    description: 'Agents pay. Merchants get found. Autonomous USDC deposits via x402 on Base mainnet — no accounts required.',
+    title: 'Deposit Now | x402 Payment Intelligence',
+    description: 'Compare x402 facilitators by fee, chain, and token. Route payments to the best facilitator for every transaction.',
     url: 'https://deposit.now',
     siteName: 'Deposit Now',
     images: [
@@ -38,8 +42,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Deposit Now | The Funding Layer for AI Agents',
-    description: 'Agents pay. Merchants get found. Autonomous USDC deposits via x402 on Base mainnet.',
+    title: 'Deposit Now | x402 Payment Intelligence',
+    description: 'Compare x402 facilitators by fee, chain, and token. Route payments to the best facilitator.',
     images: ['/og.png'],
   },
   icons: {
@@ -59,16 +63,16 @@ export default function RootLayout({
     '@graph': [
       {
         '@type': 'WebAPI',
-        name: 'deposit.now x402 Deposit API',
+        name: 'deposit.now x402 Payment Intelligence',
         description:
-          'Public x402 API for AI agents to deposit USDC autonomously. Agent pays the declared amount on Base mainnet (eip155:8453) via x402 — no accounts or API keys required.',
-        url: 'https://deposit.now/api/deposit',
+          'Compare x402 facilitators and route payments to the best facilitator by fee, chain, and token. Also supports autonomous USDC deposits via x402 on Base mainnet.',
+        url: 'https://deposit.now/dashboard',
         documentation: 'https://deposit.now/docs',
         provider: { '@type': 'Organization', name: 'deposit.now', url: 'https://deposit.now' },
         offers: {
           '@type': 'Offer',
           priceCurrency: 'USD',
-          description: 'Agent pays the declared deposit amount (min $0.01) via x402 exact scheme on Base mainnet. Price equals the deposit amount — no fixed per-call fee.',
+          description: 'Free facilitator comparison dashboard. Deposit API: agent pays the declared amount (min $0.01) via x402 exact scheme on Base mainnet.',
         },
       },
       {
@@ -79,23 +83,23 @@ export default function RootLayout({
             name: 'What is deposit.now?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'deposit.now lets AI agents deposit USDC autonomously via x402. Agents pay the declared deposit amount on-chain — no accounts, API keys, or human sign-up required.',
+              text: 'deposit.now is an x402 payment intelligence platform that helps developers and AI agents compare facilitators by fee, chain, and token support. It also provides a live x402 deposit API on Base mainnet.',
             },
           },
           {
             '@type': 'Question',
-            name: 'How does an AI agent pay the deposit.now API?',
+            name: 'How does deposit.now help with x402?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'The agent calls POST https://deposit.now/api/deposit and receives HTTP 402 with signed payment requirements (x402 v2, exact scheme, USDC on Base mainnet). An x402 client SDK such as @x402/fetch for JavaScript or x402[httpx] for Python signs the payment and retries automatically; the CDP facilitator verifies and settles it on-chain.',
+              text: 'deposit.now indexes x402 facilitators and lets you compare them side by side — fees, supported chains, tokens, payment schemes, and production status. The dashboard helps you choose the right facilitator for your integration.',
             },
           },
           {
             '@type': 'Question',
-            name: 'What does the deposit.now API cost?',
+            name: 'How many facilitators does deposit.now index?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'The agent pays the declared deposit amount (min $0.01) via x402 on Base mainnet. Settlement fees apply to merchants — no subscriptions or minimums for agents.',
+              text: 'deposit.now indexes 20 x402 facilitators including CDP, Corbits, thirdweb, Mogami, OpenX402.ai, PayAI, Meridian, and more — covering multiple chains, tokens, and fee structures.',
             },
           },
         ],

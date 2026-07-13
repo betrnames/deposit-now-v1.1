@@ -65,6 +65,11 @@ function FooterLinks() {
     <>
       <FooterColumn title="Product">
         <li>
+          <Link href="/dashboard" className={linkClass}>
+            Dashboard
+          </Link>
+        </li>
+        <li>
           <Link href="/docs" className={linkClass}>
             <span className="md:hidden">API</span>
             <span className="hidden md:inline">API Documentation</span>
@@ -144,8 +149,8 @@ export function SiteFooter() {
               <DepositLogo size={40} />
             </Link>
             <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
-              Programmable funding gateway for autonomous AI agents. Verifiable x402 deposits on
-              Base mainnet — non-custodial USDC.
+              x402 payment intelligence — compare facilitators, route payments, and settle
+              on-chain across the x402 ecosystem.
             </p>
           </div>
 
@@ -178,8 +183,8 @@ export function SiteFooter() {
               </div>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed mb-4 max-w-sm">
-              Programmable funding gateway for autonomous AI agents. Verifiable x402 deposits on
-              Base mainnet — non-custodial USDC.
+              x402 payment intelligence — compare facilitators, route payments, and settle
+              on-chain across the x402 ecosystem.
             </p>
             <a
               href="https://x402.org"

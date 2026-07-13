@@ -183,6 +183,17 @@ export default function DocsPage() {
                 <div className="flex items-center gap-3 mb-4">
                   <h2 className="text-2xl font-bold text-white">Overview</h2>
                 </div>
+                <div className="border border-primary/30 rounded-lg p-5 bg-primary/5 mb-4">
+                  <p className="text-white font-semibold mb-2">What is deposit.now?</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    <strong className="text-white">x402</strong> is an open standard that lets AI agents pay for API calls with crypto — the agent sends an HTTP request, gets back a 402 with payment terms, signs a USDC transfer, and retries.
+                    A <strong className="text-white">facilitator</strong> is the service that verifies the payment and settles it on-chain.
+                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed mt-2">
+                    <strong className="text-white">deposit.now</strong> does two things: (1) indexes every x402 facilitator so you can compare fees, chains, and tokens in one{' '}
+                    <a href="/dashboard" className="text-primary hover:underline">dashboard</a>, and (2) runs a live x402 deposit API on Base mainnet that you can call right now.
+                  </p>
+                </div>
                 <p className="text-muted-foreground">
                   When an agent calls <code className="text-primary">POST /api/deposit</code>, the <code className="text-primary">amount</code> field becomes the x402 payment price — the agent pays that amount in USDC on-chain. After settlement, the platform generates a verifiable receipt and fires a webhook to the merchant.
                 </p>
@@ -731,26 +742,20 @@ asyncio.run(main())`,
                   <div>
                     <h3 className="font-semibold mb-2 text-white">What is deposit.now?</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      deposit.now is a public x402 API that lets AI agents deposit USDC
-                      autonomously. Agents pay the declared deposit amount on-chain via x402 — no
-                      accounts, API keys, or human sign-up required.
+                      deposit.now is a facilitator comparison dashboard and x402 deposit API. It indexes every x402 facilitator so you can compare fees, chains, and tokens — and provides a live API on Base mainnet that agents can call to deposit USDC via x402.
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-2 text-white">How does an AI agent pay the deposit.now API?</h3>
+                    <h3 className="font-semibold mb-2 text-white">What is x402?</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      The agent calls POST https://deposit.now/api/deposit and receives HTTP 402
-                      with signed payment requirements (x402 v2, exact scheme, USDC on Base mainnet). An
-                      x402 client SDK such as @x402/fetch for JavaScript or x402[httpx] for Python
-                      signs the payment and retries automatically; the facilitator verifies and
-                      settles it on-chain.
+                      x402 is an open HTTP payment standard. An AI agent calls an API, gets back HTTP 402 with payment terms (amount, token, chain), signs a USDC transfer, and retries with the signed payment attached. A facilitator verifies the signature and settles on-chain. No API keys, no accounts — the payment IS the authentication.
                     </p>
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2 text-white">What does the deposit.now API cost?</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       The agent pays the declared deposit amount (min $0.01) via x402 on Base mainnet.
-                      No per-call platform toll, no subscriptions, no minimums for agents.
+                      No per-call platform toll, no subscriptions, no minimums for agents. The facilitator comparison dashboard is free.
                     </p>
                   </div>
                 </div>
