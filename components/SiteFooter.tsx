@@ -105,6 +105,17 @@ function FooterLinks() {
         </li>
         <li>
           <a
+            href="https://x402dir.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${linkClass} inline-flex items-center gap-1`}
+          >
+            x402dir.com
+            <ExternalLink className="h-3 w-3 shrink-0" />
+          </a>
+        </li>
+        <li>
+          <a
             href="https://x402.org"
             target="_blank"
             rel="noopener noreferrer"

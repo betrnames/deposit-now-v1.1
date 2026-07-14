@@ -328,7 +328,7 @@ export default function DocsPage() {
                             {'  '}<span className="text-green-400">"accepts"</span><span className="text-white">:</span> <span className="text-yellow-400">[{'{'}</span>{'\n'}
                             {'    '}<span className="text-green-400">"scheme"</span><span className="text-white">:</span> <span className="text-orange-400">"exact"</span><span className="text-white">,</span>{'\n'}
                             {'    '}<span className="text-green-400">"network"</span><span className="text-white">:</span> <span className="text-orange-400">"eip155:8453"</span><span className="text-white">,</span>{'\n'}
-                            {'    '}<span className="text-green-400">"payTo"</span><span className="text-white">:</span> <span className="text-orange-400">"0x3f7a...F685"</span><span className="text-white">,</span>{'\n'}
+                            {'    '}<span className="text-green-400">"payTo"</span><span className="text-white">:</span> <span className="text-orange-400">"0x96da...c9AA"</span><span className="text-white">,</span>{'\n'}
                             {'    '}<span className="text-green-400">"asset"</span><span className="text-white">:</span> <span className="text-orange-400">"USDC"</span><span className="text-white">,</span>{'\n'}
                             {'    '}<span className="text-green-400">"maxAmountRequired"</span><span className="text-white">:</span> <span className="text-orange-400">"100000000"</span>{'\n'}
                             {'  '}<span className="text-yellow-400">{'}'}]</span>{'\n'}

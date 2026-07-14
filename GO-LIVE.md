@@ -13,7 +13,7 @@
 
 - Real x402 v2 payment verification is live via `middleware.ts` (`@x402/next` `paymentProxy`).
 - **Production network: Base mainnet** (`eip155:8453`), facilitator: Coinbase Developer Platform (CDP).
-- Payments settle to `0x3f7a25Dc7307F5662489686e5A457DAD4879F685` (MetaMask account "deposit.now").
+- Payments settle to `0x96da70311D3fDb8500B9AB0855E17F213dB0C9AA` (CDP platform wallet).
 - Asset: USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`.
 - Price: $0.01 USDC per call to `/api/deposit` (GET or POST).
 - Site copy, docs, OpenAPI, and `llms.txt` all reference Base mainnet.

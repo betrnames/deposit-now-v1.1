@@ -34,7 +34,7 @@ import {
 import type { HTTPRequestContext } from '@x402/core/server';
 
 export const PLATFORM_PAY_TO =
-  process.env.CDP_PLATFORM_ADDRESS ?? '0x3f7a25Dc7307F5662489686e5A457DAD4879F685';
+  process.env.CDP_PLATFORM_ADDRESS ?? '0x96da70311D3fDb8500B9AB0855E17F213dB0C9AA';
 
 const useMainnet =
   process.env.X402_NETWORK === 'mainnet' &&

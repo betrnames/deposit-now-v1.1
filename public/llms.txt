@@ -77,7 +77,7 @@ Built for machine consumption: any x402 v2 client can read the payment requireme
 ## Facts
 
 - Payments verified and settled by an x402 facilitator before the API responds
-- Settlement address: 0x3f7a25Dc7307F5662489686e5A457DAD4879F685 (Base)
+- Settlement address: 0x96da70311D3fDb8500B9AB0855E17F213dB0C9AA (Base)
 - Mainnet live on Base (eip155:8453) via CDP facilitator; verifiable receipts at /receipt/<id>
 - Bazaar: indexed by CDP after first mainnet settlement; search via CDP discovery/search
 - Merchant webhooks: POST deposit.settled to merchant webhookUrl after settlement (optional)
