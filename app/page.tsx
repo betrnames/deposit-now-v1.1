@@ -12,7 +12,7 @@ export default function Home() {
     <div className="min-h-screen page-shell">
       <Header />
 
-      <section className="relative overflow-hidden py-16 sm:py-40">
+      <section className="relative overflow-hidden py-12 sm:py-40">
         <div className="absolute inset-0 opacity-25 hero-grid" />
         <div
           className="absolute inset-0"
@@ -22,55 +22,55 @@ export default function Home() {
           }}
         />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
+          <div className="flex flex-col items-center text-center">
             <Badge
               className="mb-6 sm:mb-12 px-4 py-2 bg-transparent border-primary/50 text-primary font-black uppercase"
-              style={{ letterSpacing: '0.3em', fontSize: '10px' }}
+              style={{ letterSpacing: '0.2em', fontSize: '10px' }}
               variant="outline"
             >
               <Zap className="h-3 w-3 mr-2" />
               x402 · Base mainnet
             </Badge>
 
-            <TerminalTitle className="text-4xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-4 leading-[1.05] text-left sm:text-center">
-              <span className="inline-block align-top">
-                <span className="block text-white mb-2">Open x402</span>
+            <TerminalTitle className="w-full text-[2.15rem] leading-[1.08] sm:text-7xl lg:text-8xl font-black tracking-tighter mb-4 sm:leading-[1.05] text-center">
+              <span className="inline-flex flex-col items-start text-left align-top">
+                <span className="block text-white mb-1 sm:mb-2">Open x402</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/90 to-accent">
                   funding rail
                 </span>
               </span>
             </TerminalTitle>
 
-            <p className="text-lg sm:text-2xl text-primary font-medium mb-4 sm:mb-8 mt-4 sm:mt-8">
+            <p className="text-base sm:text-2xl text-primary font-medium mb-4 sm:mb-8 mt-4 sm:mt-8 max-w-md sm:max-w-none px-1">
               Pay amount + 1% · net to any EVM target
             </p>
 
-            <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed">
+            <p className="text-sm sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed px-1">
               {honestPitch}
             </p>
 
-            <div className="flex justify-center gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-4 mb-10 sm:mb-12 w-full max-w-xs sm:max-w-none">
               <a
                 href="/docs"
-                className="bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-8 h-12 rounded-xl inline-flex items-center"
+                className="bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-8 h-12 rounded-xl inline-flex items-center justify-center"
               >
                 Get started
               </a>
               <a
                 href="/llms.txt"
-                className="bg-white/10 hover:bg-white/15 border border-white/20 text-white font-black text-[10px] uppercase tracking-wider px-8 h-12 rounded-xl inline-flex items-center"
+                className="bg-white/10 hover:bg-white/15 border border-white/20 text-white font-black text-[10px] uppercase tracking-wider px-8 h-12 rounded-xl inline-flex items-center justify-center"
               >
                 llms.txt
               </a>
             </div>
 
-            <div className="flex justify-center items-center gap-4 sm:gap-8 text-xs sm:text-sm text-muted-foreground/70 uppercase tracking-wider font-medium py-4 sm:py-0">
-              <div className="flex items-center gap-2 whitespace-nowrap">
-                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-8 text-xs sm:text-sm text-muted-foreground/70 uppercase tracking-wider font-medium">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-primary shrink-0" />
                 <span>Live on Base Mainnet</span>
               </div>
-              <div className="flex items-center gap-2 whitespace-nowrap">
-                <Coins className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground/70" />
+              <div className="flex items-center gap-2">
+                <Coins className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground/70 shrink-0" />
                 <span>1% platform fee</span>
               </div>
             </div>
