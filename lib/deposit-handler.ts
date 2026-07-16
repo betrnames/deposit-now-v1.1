@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMerchant, merchantSlugFromPath } from '@/lib/merchants';
+import {
+  calculateDepositSplit,
+  clampDepositUsdc,
+  isValidEvmAddress,
+} from '@/lib/billing';
 import { receiptIdFromPaymentHeader } from '@/lib/receipts';
 import { X402_NETWORK } from '@/lib/x402';
 
@@ -28,27 +32,19 @@ function networkLabel() {
 }
 
 export async function handleDepositGet(request: NextRequest) {
-  const merchantSlug = merchantSlugFromPath(request.nextUrl.pathname);
-  const merchant = merchantSlug ? await getMerchant(merchantSlug) : null;
-
   return NextResponse.json(
     {
-      status: 'success',
-      message: merchant
-        ? `Deposit triggered for merchant ${merchant.name}`
-        : 'Deposit triggered for agent!',
-      depositAmount: '100.00',
+      status: 'ok',
+      service: 'deposit.now',
+      description:
+        'The Funding Layer for AI Agents. POST /api/deposit with { target, amount, memo? } — pay via x402 (amount + 1% fee), net forwards to target.',
       network: networkLabel(),
       x402Network: X402_NETWORK,
+      feePercent: 1,
+      docs: 'https://deposit.now/docs',
+      llms: 'https://deposit.now/llms.txt',
+      openapi: 'https://deposit.now/openapi.json',
       timestamp: new Date().toISOString(),
-      paymentReceived: true,
-      ...(merchant
-        ? {
-            merchantSlug: merchant.slug,
-            merchantName: merchant.name,
-            payTo: merchant.payTo,
-          }
-        : {}),
       ...receiptFields(request),
     },
     { status: 200, headers: CORS_HEADERS }
@@ -56,43 +52,59 @@ export async function handleDepositGet(request: NextRequest) {
 }
 
 export async function handleDepositPost(request: NextRequest) {
-  const merchantSlug = merchantSlugFromPath(request.nextUrl.pathname);
-  const merchant = merchantSlug ? await getMerchant(merchantSlug) : null;
+  let target: string | null = null;
+  let amountRaw: string | number | null = null;
+  let memo: string | null = null;
 
-  let amount = '100.00';
-  let account = 'default-agent';
   try {
     const body = await request.json();
-    if (typeof body.amount === 'string' || typeof body.amount === 'number') {
-      amount = String(body.amount);
-    }
-    if (typeof body.account === 'string') {
-      account = body.account.slice(0, 128);
-    }
+    if (typeof body.target === 'string') target = body.target.trim();
+    if (body.amount !== undefined && body.amount !== null) amountRaw = body.amount;
+    if (typeof body.memo === 'string') memo = body.memo.slice(0, 256).trim() || null;
   } catch {
-    // empty body is fine — defaults apply
+    // empty body handled below
   }
+
+  if (!isValidEvmAddress(target)) {
+    return NextResponse.json(
+      {
+        error: 'invalid_target',
+        message: 'target must be a valid EVM address (0x + 40 hex chars).',
+      },
+      { status: 400, headers: CORS_HEADERS }
+    );
+  }
+
+  const net = clampDepositUsdc(amountRaw);
+  if (net === null) {
+    return NextResponse.json(
+      {
+        error: 'invalid_amount',
+        message: 'amount must be a USDC decimal between 0.01 and 100000 (net to target).',
+      },
+      { status: 400, headers: CORS_HEADERS }
+    );
+  }
+
+  const split = calculateDepositSplit(net)!;
 
   return NextResponse.json(
     {
       status: 'success',
-      depositAmount: amount,
-      account,
-      message: merchant
-        ? `Deposit of ${amount} triggered for ${merchant.name} account: ${account}`
-        : `Deposit of ${amount} triggered for agent account: ${account}`,
-      timestamp: new Date().toISOString(),
+      message: memo
+        ? `Funded ${split.net.toFixed(6)} USDC to ${target} — ${memo}`
+        : `Funded ${split.net.toFixed(6)} USDC to ${target}`,
+      target,
+      memo,
+      depositAmount: split.net.toFixed(6),
+      fee: split.fee.toFixed(6),
+      feePercent: split.feePercent,
+      grossPaid: split.gross.toFixed(6),
       network: networkLabel(),
       x402Network: X402_NETWORK,
       paymentReceived: true,
+      timestamp: new Date().toISOString(),
       transactionId: `txn_${Date.now()}_${crypto.randomUUID().slice(0, 12)}`,
-      ...(merchant
-        ? {
-            merchantSlug: merchant.slug,
-            merchantName: merchant.name,
-            payTo: merchant.payTo,
-          }
-        : {}),
       ...receiptFields(request),
     },
     { status: 200, headers: CORS_HEADERS }

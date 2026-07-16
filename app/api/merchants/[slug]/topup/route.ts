@@ -1,18 +1,23 @@
-import { NextRequest } from 'next/server';
-import {
-  handleBillingGet,
-  handleBillingOptions,
-  handleBillingPost,
-} from '@/lib/billing-handler';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  return handleBillingGet(request);
+export async function GET() {
+  return NextResponse.json(
+    {
+      error: 'gone',
+      message: 'Merchant top-up is retired. Platform fee is taken from each x402 payment (1%).',
+      docs: 'https://deposit.now/pricing',
+    },
+    { status: 410 }
+  );
 }
 
-export async function POST(request: NextRequest) {
-  return handleBillingPost(request);
-}
-
-export async function OPTIONS() {
-  return handleBillingOptions();
+export async function POST() {
+  return NextResponse.json(
+    {
+      error: 'gone',
+      message: 'Merchant top-up is retired. Platform fee is taken from each x402 payment (1%).',
+      docs: 'https://deposit.now/pricing',
+    },
+    { status: 410 }
+  );
 }

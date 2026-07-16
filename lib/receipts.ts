@@ -11,23 +11,22 @@ export interface DepositReceipt {
   txHash: string | null;
   resource: string;
   settledAt: string;
-  merchantSlug?: string | null;
-  merchantName?: string | null;
+  /** Destination wallet that receives net funds */
+  target?: string | null;
+  /** Optional agent memo (e.g. fund child trading agent) */
+  memo?: string | null;
+  /** Net USDC intended for target */
   depositAmount?: string | null;
-  account?: string | null;
   grossAmount?: string | null;
   fee?: string | null;
   feePercent?: string | null;
-  netToMerchant?: string | null;
-  merchantPayTo?: string | null;
+  netToTarget?: string | null;
   forwardTxHash?: string | null;
   forwardStatus?: 'settled' | 'forward_failed' | null;
 }
 
-// The receipt id is derived deterministically from the payment's unique
-// signature/nonce, so the route handler (which sees the X-Payment request
-// header) and the onAfterSettle hook (which sees the decoded payload)
-// independently compute the same id with no shared state.
+// Receipt id is derived from the payment signature/nonce so the route handler
+// and onAfterSettle independently compute the same id with no shared state.
 export function receiptIdFromPayload(payload: unknown): string | null {
   const p = payload as {
     payload?: { signature?: string; authorization?: { nonce?: string } };

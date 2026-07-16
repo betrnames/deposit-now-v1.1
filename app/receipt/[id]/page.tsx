@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Deposit Receipt',
   description:
-    'Verifiable x402 deposit receipt: payer, amount, and on-chain settlement transaction.',
+    'Verifiable x402 deposit receipt: payer, target, fee, and on-chain forward transaction.',
   robots: { index: false },
 };
 
@@ -58,9 +58,9 @@ export default async function ReceiptPage({
           <div className="mt-10 border border-border/60 rounded-2xl p-8 bg-card/40">
             <h1 className="text-xl font-bold mb-3">Receipt not found</h1>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              No settled deposit matches this receipt ID. If the payment just
-              happened, settlement can take a few seconds — refresh shortly.
-              Otherwise, check the receiptUrl returned by the API response.
+              No settled deposit matches this receipt ID. If the payment just happened, settlement
+              can take a few seconds — refresh shortly. Otherwise, check the receiptUrl returned by
+              the API response.
             </p>
           </div>
         ) : (
@@ -74,34 +74,25 @@ export default async function ReceiptPage({
             </p>
 
             <Row label="Receipt ID">{receipt.id}</Row>
-            {receipt.merchantSlug ? (
-              <Row label="Merchant">
-                {receipt.merchantName ?? receipt.merchantSlug}
-              </Row>
-            ) : null}
+            {receipt.target ? <Row label="Target">{receipt.target}</Row> : null}
+            {receipt.memo ? <Row label="Memo">{receipt.memo}</Row> : null}
             {receipt.grossAmount ? (
-              <Row label="Gross amount">{receipt.grossAmount} USDC</Row>
-            ) : receipt.depositAmount ? (
-              <Row label="Deposit intent">{receipt.depositAmount} USDC</Row>
+              <Row label="Gross paid">{receipt.grossAmount} USDC</Row>
+            ) : receipt.amountUsdc ? (
+              <Row label="Amount paid">{receipt.amountUsdc} USDC</Row>
             ) : null}
             {receipt.fee ? (
-              <Row label="Settlement fee">
-                {receipt.fee} USDC ({receipt.feePercent}%)
+              <Row label="Platform fee">
+                {receipt.fee} USDC ({receipt.feePercent ?? '1'}%)
               </Row>
             ) : null}
-            {receipt.netToMerchant ? (
-              <Row label="Net to merchant">{receipt.netToMerchant} USDC</Row>
-            ) : null}
-            {receipt.account ? <Row label="Account">{receipt.account}</Row> : null}
-            {!receipt.grossAmount && receipt.amountUsdc ? (
-              <Row label="Amount">{receipt.amountUsdc} USDC</Row>
+            {receipt.netToTarget || receipt.depositAmount ? (
+              <Row label="Net to target">
+                {receipt.netToTarget ?? receipt.depositAmount} USDC
+              </Row>
             ) : null}
             <Row label="Payer">{receipt.payer ?? '—'}</Row>
-            {receipt.merchantPayTo ? (
-              <Row label="Merchant wallet">{receipt.merchantPayTo}</Row>
-            ) : (
-              <Row label="Paid to">{receipt.payTo ?? '—'}</Row>
-            )}
+            <Row label="Paid to (platform)">{receipt.payTo ?? '—'}</Row>
             <Row label="Settled at">{receipt.settledAt}</Row>
             <Row label="Agent → Platform">
               {explorerTxUrl(receipt.network, receipt.txHash) ? (
@@ -118,7 +109,7 @@ export default async function ReceiptPage({
               )}
             </Row>
             {receipt.forwardTxHash ? (
-              <Row label="Platform → Merchant">
+              <Row label="Platform → Target">
                 {explorerTxUrl(receipt.network, receipt.forwardTxHash) ? (
                   <a
                     href={explorerTxUrl(receipt.network, receipt.forwardTxHash)!}
@@ -133,16 +124,8 @@ export default async function ReceiptPage({
                 )}
               </Row>
             ) : receipt.forwardStatus === 'forward_failed' ? (
-              <Row label="Platform → Merchant">
-                <span className="text-red-400">Forward pending — contact support</span>
-              </Row>
+              <Row label="Forward">Failed — manual review</Row>
             ) : null}
-
-            <p className="text-xs text-muted-foreground/70 mt-6 leading-relaxed">
-              This receipt was written by deposit.now after the x402 facilitator
-              settled the payment on-chain. The transaction link is the
-              authoritative proof; this page binds it to the deposit request.
-            </p>
           </div>
         )}
       </div>

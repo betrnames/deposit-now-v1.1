@@ -1,18 +1,36 @@
-import { NextRequest } from 'next/server';
-import {
-  handleDepositGet,
-  handleDepositOptions,
-  handleDepositPost,
-} from '@/lib/deposit-handler';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  return handleDepositGet(request);
+export async function GET() {
+  return NextResponse.json(
+    {
+      error: 'gone',
+      message:
+        'Merchant deposit routes are retired. Use POST /api/deposit with target wallet address.',
+      docs: 'https://deposit.now/docs',
+    },
+    { status: 410 }
+  );
 }
 
-export async function POST(request: NextRequest) {
-  return handleDepositPost(request);
+export async function POST() {
+  return NextResponse.json(
+    {
+      error: 'gone',
+      message:
+        'Merchant deposit routes are retired. Use POST /api/deposit with target wallet address.',
+      docs: 'https://deposit.now/docs',
+    },
+    { status: 410 }
+  );
 }
 
 export async function OPTIONS() {
-  return handleDepositOptions();
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, X-Payment, payment-signature',
+    },
+  });
 }

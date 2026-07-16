@@ -6,21 +6,20 @@ import { pageGraph } from '@/lib/seo';
 export const metadata: Metadata = {
   title: 'Litepaper',
   description:
-    'Technical and economic overview of deposit.now: x402 micropayments, verifiable receipts, non-custodial USDC settlement on Base mainnet, and the three-phase roadmap for agentic commerce.',
+    'Technical overview of deposit.now: the funding layer for AI agents — x402 programmable deposits, 1% fee, Base mainnet, parent-to-child funding.',
   alternates: { canonical: 'https://deposit.now/litepaper' },
   keywords: [
     'deposit.now litepaper',
-    'x402 whitepaper',
-    'AI agent deposits',
-    'agentic commerce',
+    'AI agent funding',
+    'x402 deposit API',
+    'agent-to-agent transfers',
     'USDC Base',
-    'HTTP 402 payments',
   ],
   openGraph: {
-    title: 'Litepaper',
-    description: 'x402 agent deposits, verifiable receipts, and roadmap.',
+    title: 'Litepaper | deposit.now',
+    description: 'The Funding Layer for AI Agents — technical overview.',
     url: 'https://deposit.now/litepaper',
-    siteName: 'Deposit Now',
+    siteName: 'deposit.now',
   },
   robots: { index: true, follow: true },
 };
@@ -28,13 +27,13 @@ export const metadata: Metadata = {
 const jsonLd = pageGraph(
   {
     '@type': 'TechArticle',
-    headline: 'deposit.now Litepaper — Programmable Agent Deposits via x402',
+    headline: 'deposit.now Litepaper — Funding Layer for AI Agents',
     description:
-      'Non-custodial deposit infrastructure for AI agents using x402, USDC on Base mainnet, and public on-chain receipts.',
+      'Programmable deposits via x402 for AI agents: fund any wallet including sub-wallets and child agents.',
     author: { '@type': 'Organization', name: 'deposit.now' },
     publisher: { '@type': 'Organization', name: 'deposit.now' },
     url: 'https://deposit.now/litepaper',
-    dateModified: '2026-07-05',
+    dateModified: '2026-07-15',
   },
   '/litepaper',
   'Litepaper'
@@ -47,7 +46,6 @@ const nav = [
   { id: 'architecture', label: 'Architecture' },
   { id: 'why-compare', label: 'vs direct transfer' },
   { id: 'economics', label: 'Economics' },
-  { id: 'roadmap', label: 'Roadmap' },
   { id: 'live-facts', label: 'Live facts' },
   { id: 'risk', label: 'Risk summary' },
 ];
@@ -57,143 +55,106 @@ export default function LitepaperPage() {
     <GuidePage
       kicker="Technical overview"
       title="Litepaper"
-      subtitle="Programmable agent deposits over HTTP 402 — technical overview and roadmap."
+      subtitle="The Funding Layer for AI Agents — programmable deposits over HTTP 402."
       nav={nav}
       jsonLd={jsonLd}
     >
       <p id="overview">
-        <strong>deposit.now</strong> is programmable funding infrastructure for autonomous
-        AI agents. Agents call a single HTTP endpoint, receive{' '}
-        <strong>402 Payment Required</strong>, pay in USDC on Base mainnet via the{' '}
-        <strong>x402</strong> protocol, and receive a JSON response plus a{' '}
-        <strong>verifiable public receipt</strong> linked to the settlement transaction.
+        <strong>deposit.now</strong> is programmable funding infrastructure for autonomous AI
+        agents. Agents call a single HTTP endpoint with a <strong>target wallet</strong> and net
+        amount, receive <strong>402 Payment Required</strong> for amount + 1%, pay USDC on Base via{' '}
+        <strong>x402</strong>, and receive a JSON response plus a{' '}
+        <strong>verifiable public receipt</strong>. Net funds are forwarded to the target —
+        including sub-wallets and child agents. No humans required for secondary flows.
       </p>
 
       <h2 id="problem">Problem</h2>
       <p>
-        Agents need to move money without human checkout flows, OAuth, or custodial accounts.
-        Traditional APIs assume identity-first billing. Agentic commerce needs{' '}
-        <strong>payment-first authorization</strong> — prove payment in the same request that
-        triggers an action.
+        Multi-agent systems need to fund sub-agents and wallets without human checkout, OAuth, or
+        merchant onboarding. Direct transfers lack receipts, standardized 402 flow, and a thin
+        funding abstraction agents can call programmatically.
       </p>
 
       <h2 id="solution">Solution</h2>
       <ul>
         <li>
-          <strong>x402 v2 exact scheme</strong> — USDC micropayment per API call, facilitator
-          verifies and settles before the handler runs.
+          <strong>One deposit call</strong> — <code>POST /api/deposit</code> with{' '}
+          <code>target</code>, <code>amount</code>, optional <code>memo</code>.
         </li>
         <li>
-          <strong>Non-custodial settlement</strong> — funds land on-chain at a declared{' '}
-          <code>payTo</code> address; deposit.now never holds balances.
+          <strong>x402 v2 exact scheme</strong> — agent pays gross (amount + 1%) in USDC; facilitator
+          verifies on-chain before success.
         </li>
         <li>
-          <strong>Deterministic receipts</strong> — receipt ID derived from the payment
-          signature; written to public storage after settlement with Basescan proof.
+          <strong>CDP forward</strong> — platform retains fee, forwards net to target via Coinbase
+          Agentic / Server Wallet.
         </li>
         <li>
-          <strong>Bazaar discovery extension</strong> — machine-readable input/output schemas
-          in the 402 payload for agent marketplaces.
+          <strong>Deterministic receipts</strong> — public proof with payment and forward txs.
         </li>
       </ul>
 
       <h2 id="architecture">Architecture</h2>
       <ol>
-        <li>Agent → <code>POST /api/deposit</code> → HTTP 402 + <code>Payment-Required</code></li>
-        <li>Agent SDK signs payment → retry with <code>payment-signature</code> header</li>
-        <li>x402 facilitator (CDP on mainnet) settles USDC on Base</li>
-        <li>Route handler returns success + <code>receiptId</code> / <code>receiptUrl</code></li>
         <li>
-          <code>onAfterSettle</code> hook persists receipt JSON →{' '}
-          <code>/receipt/&lt;id&gt;</code>
+          Agent → <code>POST /api/deposit</code> → HTTP 402 + <code>Payment-Required</code>
+        </li>
+        <li>Agent SDK signs payment for gross amount → retry with payment header</li>
+        <li>x402 facilitator (CDP on mainnet) settles USDC to platform wallet</li>
+        <li>
+          <code>onAfterSettle</code> → fee kept · net forwarded to <code>target</code>
+        </li>
+        <li>
+          Success + <code>receiptId</code> · public page at <code>/receipt/&lt;id&gt;</code>
         </li>
       </ol>
 
       <h2 id="why-compare">Why not a direct on-chain transfer?</h2>
       <p>
-        Direct USDC transfers give agents a tx hash. deposit.now gives{' '}
-        <strong>verifiable public receipts</strong>, <strong>merchant webhooks</strong> (
-        <code>deposit.settled</code>), <strong>Bazaar discovery</strong>, and a{' '}
-        <strong>standardized x402 client flow</strong> with retries and idempotency. Direct
-        transfers are raw plumbing; deposit.now is the production rail for agent-to-merchant
-        commerce.
+        Direct transfers give a tx hash. deposit.now adds a standardized x402 client path,
+        verifiable receipts, amount+fee accounting, and a single agent-facing API for parent → child
+        funding.
       </p>
       <div className="my-6">
         <ComparisonTable compact />
       </div>
 
       <h2 id="economics">Economics</h2>
-      <p>Two distinct charges exist in the protocol:</p>
       <ul>
         <li>
-          <strong>Deposit amount (agent-paid):</strong> the <code>amount</code> in the
-          request body becomes the x402 <code>price</code>. The agent pays this amount in
-          USDC on-chain — it settles directly to the merchant&apos;s{' '}
-          <code>payTo</code> address. Non-custodial.
+          <strong>Net amount (to target):</strong> the <code>amount</code> field.
         </li>
         <li>
-          <strong>Settlement fee (merchant-paid):</strong> a small % of each deposit,
-          debited from the merchant&apos;s prepaid balance. See{' '}
-          <a href="/pricing">pricing tiers</a>.
+          <strong>Platform fee:</strong> flat <strong>1%</strong> of net, paid by the agent as part of
+          gross x402 payment.
+        </li>
+        <li>
+          No merchant tiers, renewals, or prepaid balances. See{' '}
+          <a href="/pricing">pricing</a>.
         </li>
       </ul>
-      <p>
-        <strong>Merchant tiers:</strong> Catalog (free, 0.30% settlement), Rail ($49/mo, 0.15% +
-        webhooks), Network (custom volume rates). Rail+ includes{' '}
-        <strong>5% referral rev-share</strong> on first deposits from Bazaar-routed agents.
-        Full breakdown: <a href="/pricing">deposit.now/pricing</a>.
-      </p>
-
-      <h2 id="roadmap">Roadmap</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Phase</th>
-            <th>Status</th>
-            <th>Deliverable</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>Live</td>
-            <td>Verifiable deposit receipts (Vercel Blob + public receipt pages)</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Live</td>
-            <td>Merchant-scoped deposit endpoints, catalog API, webhooks</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Live</td>
-            <td>Bazaar extension, /.well-known/x402 manifest, OpenAPI + llms.txt</td>
-          </tr>
-        </tbody>
-      </table>
 
       <h2 id="live-facts">Live facts (mainnet)</h2>
       <ul className="min-w-0">
         <li className="break-words">
-          Endpoint:{' '}
-          <code className="break-all">https://deposit.now/api/deposit</code>
+          Endpoint: <code className="break-all">https://deposit.now/api/deposit</code>
         </li>
         <li>Network: Base mainnet (<code>eip155:8453</code>)</li>
-        <li className="break-words">
-          Asset: USDC
-          <code className="block sm:inline sm:ml-1 mt-0.5 sm:mt-0 break-all">
-            0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
-          </code>
+        <li>Asset: USDC</li>
+        <li>Price: dynamic — amount + 1%</li>
+        <li>
+          OpenAPI: <a href="/openapi.json">/openapi.json</a>
         </li>
-        <li>Price: dynamic — equals the declared deposit amount (min $0.01)</li>
-        <li>OpenAPI: <a href="/openapi.json">/openapi.json</a></li>
+        <li>
+          Agents: <a href="/llms.txt">/llms.txt</a>
+        </li>
       </ul>
 
       <h2 id="risk">Risk summary</h2>
       <p>
         See full <a href="/disclosures">disclosures</a>. deposit.now is experimental
-        infrastructure, not a money transmitter, bank, or investment product. On-chain
-        payments are irreversible.
+        infrastructure, not a money transmitter, bank, or investment product. On-chain payments are
+        irreversible. Platform forwarding depends on CDP wallet health and on-chain conditions.
       </p>
     </GuidePage>
   );

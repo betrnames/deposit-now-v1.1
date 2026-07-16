@@ -1,75 +1,56 @@
-# deposit.now — go-live checklist
+# deposit.now — go-live checklist (v3 funding layer)
 
-## Phase 1 shipped (2026-07-05): verifiable deposit receipts
+## Product
 
-- Every settled payment writes a public receipt to Vercel Blob (store
-  `deposit-receipts`) from the `onAfterSettle` hook in middleware.ts.
-- Receipt ID is derived deterministically from the payment signature, so the
-  API response can include `receiptId`/`receiptUrl` before settlement lands.
-- Public page: `https://deposit.now/receipt/<id>` — payer, amount, payTo,
-  settlement time, and a Basescan link to the settlement transaction.
+**The Funding Layer for AI Agents.** Programmable deposits via one x402 call — fund any wallet (including sub-wallets / child agents). No humans required for secondary/agent-to-agent flows.
 
-## Current state (2026-07-06)
+### Flow
 
-- Real x402 v2 payment verification is live via `middleware.ts` (`@x402/next` `paymentProxy`).
-- **Production network: Base mainnet** (`eip155:8453`), facilitator: Coinbase Developer Platform (CDP).
-- Payments settle to `0x96da70311D3fDb8500B9AB0855E17F213dB0C9AA` (CDP platform wallet).
-- Asset: USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`.
-- Price: $0.01 USDC per call to `/api/deposit` (GET or POST).
-- Site copy, docs, OpenAPI, and `llms.txt` all reference Base mainnet.
+1. `POST /api/deposit` `{ target, amount, memo? }`
+2. HTTP 402 for **amount + 1%**
+3. Agent pays USDC via x402 to platform CDP wallet
+4. Confirm → fee retained → net forwarded to `target` via CDP
+5. Public receipt at `/receipt/<id>`
 
-## Production env (required for mainnet)
+### Retired
+
+- Facilitator directory / dashboards
+- Merchant registration, renew, topup, merchant webhooks
+- Announcement / sunset bar
+
+## Production env (Vercel secrets only)
 
 ```
-CDP_API_KEY_ID       # set via: vercel env add CDP_API_KEY_ID production
-CDP_API_KEY_SECRET   # set via: vercel env add CDP_API_KEY_SECRET production
-X402_NETWORK=mainnet # set via: vercel env add X402_NETWORK production
+CDP_API_KEY_ID
+CDP_API_KEY_SECRET
+CDP_WALLET_SECRET          # CDP Server Wallet auth — not a MetaMask raw key paste in repo
+CDP_PLATFORM_ADDRESS       # optional override for payTo
+X402_NETWORK=mainnet
 BLOB_READ_WRITE_TOKEN
 ```
 
-Verify: `curl -i https://deposit.now/api/deposit` → the base64 in the
-`Payment-Required` header should contain `eip155:8453` and the mainnet USDC asset.
+**Never** put platform hot-wallet private keys or MetaMask secrets in `.env` for production settlement. Agents that *pay* may use their own client-side keys offline only.
 
-The middleware auto-switches: mainnet requires all three CDP env vars; anything else
-falls back to Base Sepolia testnet via `x402.org/facilitator`. Local dev always runs testnet.
-
-## Phase 2 shipped (2026-07-06): merchant endpoints
-
-- `GET /api/merchants` — public catalog of merchant deposit routes
-- `POST /api/merchants/{slug}/deposit` — x402-protected; USDC settles to merchant `payTo`
-- Optional `deposit.settled` webhooks (HMAC-signed when `webhookSecret` is set)
-- Register merchants: `POST /api/merchants` with `Authorization: Bearer $MERCHANT_ADMIN_SECRET`
-
-## Phase 3 shipped (2026-07-06): discovery flywheel
-
-- `GET /.well-known/x402` and `GET /api/discovery` — machine-readable manifest
-- Bazaar extension on all deposit routes (already in middleware)
-- CDP Bazaar indexes after first mainnet settlement — no separate registration
-- OpenAPI + llms.txt updated with merchant paths
-
-## Next steps
-
-1. End-to-end mainnet test with a real payment (~$0.01) using the JS client from /docs.
-2. Register additional merchants via admin API.
-3. MCP server: `mcp-server/` — add to Cursor MCP config (see mcp-server/README.md).
-4. x402scan listing (browse at https://www.x402scan.com after Bazaar indexing).
-
-## Testing on testnet (local dev, free)
-
-Fund a throwaway wallet with Base Sepolia test USDC (Circle faucet:
-faucet.circle.com), then from the project root:
+## Verify
 
 ```
-$env:EVM_PRIVATE_KEY="0x..."   # throwaway key only — never paste into chat
-$env:DEPOSIT_API_URL="http://localhost:3000/api/deposit"
-npm run test:deposit
+curl -i -X POST https://deposit.now/api/deposit \
+  -H "Content-Type: application/json" \
+  -d "{\"target\":\"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0\",\"amount\":\"1.00\",\"memo\":\"smoke\"}"
 ```
 
-## Testing on mainnet (production, real USDC)
+Expect 402; Payment-Required should include mainnet network when `X402_NETWORK=mainnet` + CDP keys are set.
+
+## Local
+
+Without mainnet CDP env, middleware falls back to Base Sepolia facilitator.
 
 ```
-$env:EVM_PRIVATE_KEY="0x..."   # wallet with ~0.01 USDC on Base mainnet
-npm run test:deposit           # hits https://deposit.now/api/deposit by default
+npm run dev
 ```
 
-This proves the full loop: 402 → settle → receipt blob → `/receipt/<id>` page.
+## Machine docs
+
+- https://deposit.now/llms.txt
+- https://deposit.now/llms-full.txt
+- https://deposit.now/openapi.json

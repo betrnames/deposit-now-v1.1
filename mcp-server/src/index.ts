@@ -24,7 +24,7 @@ async function jsonFetch(path: string) {
 function paymentFetch() {
   const key = process.env.EVM_PRIVATE_KEY;
   if (!key) {
-    throw new Error('EVM_PRIVATE_KEY is required for paid deposit calls');
+    throw new Error('EVM_PRIVATE_KEY is required for paid deposit calls (paying agent only)');
   }
   const signer = privateKeyToAccount(key as `0x${string}`);
   const client = new x402Client();
@@ -34,12 +34,12 @@ function paymentFetch() {
 
 const server = new McpServer({
   name: 'deposit-now',
-  version: '1.0.0',
+  version: '3.0.0',
 });
 
 server.tool(
   'deposit_now_describe',
-  'Return the deposit.now x402 discovery manifest (endpoints, network, OpenAPI pointers).',
+  'Return the deposit.now discovery manifest (funding layer for AI agents).',
   {},
   async () => {
     const { status, body } = await jsonFetch('/api/discovery');
@@ -50,37 +50,23 @@ server.tool(
 );
 
 server.tool(
-  'deposit_now_list_merchants',
-  'List active merchant-scoped deposit endpoints and their payTo addresses.',
-  {},
-  async () => {
-    const { status, body } = await jsonFetch('/api/merchants');
-    return {
-      content: [{ type: 'text', text: JSON.stringify({ status, body }, null, 2) }],
-    };
-  }
-);
-
-server.tool(
   'deposit_now_trigger_deposit',
-  'Trigger an x402 deposit (platform or merchant). Requires EVM_PRIVATE_KEY with USDC on Base mainnet.',
+  'Fund a target wallet via x402. Pays amount + 1% fee; net is forwarded to target. Requires EVM_PRIVATE_KEY on the paying agent with USDC on Base.',
   {
-    amount: z.string().default('100.00').describe('Deposit intent amount (metadata)'),
-    account: z.string().default('agent-wallet-123').describe('Target account identifier'),
-    merchantSlug: z
+    target: z
       .string()
-      .optional()
-      .describe('Optional merchant slug; omit for platform /api/deposit'),
+      .regex(/^0x[a-fA-F0-9]{40}$/)
+      .describe('EVM address receiving net USDC (child agent / sub-wallet / any wallet)'),
+    amount: z.string().describe('Net USDC to forward to target (e.g. "50.00")'),
+    memo: z.string().max(256).optional().describe('Optional memo, e.g. Fund child trading agent'),
   },
-  async ({ amount, account, merchantSlug }) => {
-    const path = merchantSlug
-      ? `/api/merchants/${merchantSlug}/deposit`
-      : '/api/deposit';
+  async ({ target, amount, memo }) => {
+    const path = '/api/deposit';
     const paidFetch = paymentFetch();
     const res = await paidFetch(`${API_BASE}${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount, account }),
+      body: JSON.stringify({ target, amount, memo }),
     });
     const body = await res.json();
     return {
@@ -96,14 +82,14 @@ server.tool(
 
 server.tool(
   'deposit_now_get_receipt',
-  'Fetch a public deposit receipt by ID (16-char hex from receiptId / receiptUrl).',
+  'Fetch a public deposit receipt by ID (from receiptId / receiptUrl).',
   {
-    receiptId: z.string().regex(/^[a-f0-9]{16}$/).describe('Receipt ID from API response'),
+    receiptId: z
+      .string()
+      .regex(/^[a-f0-9]{16,32}$/)
+      .describe('Receipt ID from API response'),
   },
   async ({ receiptId }) => {
-    const res = await fetch(`${API_BASE}/receipt/${receiptId}`, {
-      headers: { Accept: 'text/html' },
-    });
     return {
       content: [
         {
@@ -112,8 +98,7 @@ server.tool(
             {
               receiptId,
               receiptUrl: `${API_BASE}/receipt/${receiptId}`,
-              pageStatus: res.status,
-              note: 'Open receiptUrl for human-readable settlement proof with Basescan link.',
+              note: 'Open receiptUrl for settlement proof, target, fee, and Basescan links.',
             },
             null,
             2

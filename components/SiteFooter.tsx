@@ -3,7 +3,6 @@ import { DepositLogo } from '@/components/DepositLogo';
 import { ExternalLink, Github, Mail } from 'lucide-react';
 import Link from 'next/link';
 
-
 const linkClass =
   'text-muted-foreground hover:text-white transition-colors text-xs sm:text-sm py-1 inline-block leading-snug';
 const socialClass =
@@ -30,7 +29,13 @@ function FooterColumn({
   );
 }
 
-function SocialIcons({ className = socialClass, iconClassName = 'h-4 w-4' }: { className?: string; iconClassName?: string }) {
+function SocialIcons({
+  className = socialClass,
+  iconClassName = 'h-4 w-4',
+}: {
+  className?: string;
+  iconClassName?: string;
+}) {
   return (
     <>
       <a
@@ -65,29 +70,28 @@ function FooterLinks() {
     <>
       <FooterColumn title="Product">
         <li>
-          <Link href="/dashboard" className={linkClass}>
-            Dashboard
-          </Link>
-        </li>
-        <li>
           <Link href="/docs" className={linkClass}>
-            <span className="md:hidden">API</span>
-            <span className="hidden md:inline">API Documentation</span>
-          </Link>
-        </li>
-        <li>
-          <Link href="/ecosystem" className={linkClass}>
-            x402 Directory
-          </Link>
-        </li>
-        <li>
-          <Link href="/litepaper" className={linkClass}>
-            Litepaper
+            Docs
           </Link>
         </li>
         <li>
           <Link href="/pricing" className={linkClass}>
             Pricing
+          </Link>
+        </li>
+        <li>
+          <a href="/llms.txt" className={linkClass}>
+            llms.txt
+          </a>
+        </li>
+        <li>
+          <a href="/openapi.json" className={linkClass}>
+            OpenAPI
+          </a>
+        </li>
+        <li>
+          <Link href="/litepaper" className={linkClass}>
+            Litepaper
           </Link>
         </li>
       </FooterColumn>
@@ -105,24 +109,12 @@ function FooterLinks() {
         </li>
         <li>
           <a
-            href="https://x402dir.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${linkClass} inline-flex items-center gap-1`}
-          >
-            x402dir.com
-            <ExternalLink className="h-3 w-3 shrink-0" />
-          </a>
-        </li>
-        <li>
-          <a
             href="https://x402.org"
             target="_blank"
             rel="noopener noreferrer"
             className={`${linkClass} inline-flex items-center gap-1`}
           >
-            <span className="md:hidden">x402</span>
-            <span className="hidden md:inline">x402 Standard</span>
+            x402 Standard
             <ExternalLink className="h-3 w-3 shrink-0" />
           </a>
         </li>
@@ -153,15 +145,14 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-card/60 backdrop-blur py-10 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Mobile */}
         <div className="md:hidden mb-8 flex flex-col items-start text-left w-full">
           <div className="flex flex-col items-start gap-3 mb-6 w-full">
             <Link href="/" className="shrink-0" aria-label="deposit.now home">
               <DepositLogo size={40} />
             </Link>
             <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
-              x402 payment intelligence — compare facilitators, route payments, and settle
-              on-chain across the x402 ecosystem.
+              The Funding Layer for AI Agents. Programmable deposits via one x402 call — fund any
+              wallet, including sub-wallets and child agents.
             </p>
           </div>
 
@@ -182,7 +173,6 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Desktop */}
         <div className="hidden md:flex md:items-start md:justify-between gap-10 lg:gap-16 mb-12">
           <div className="max-w-xs lg:max-w-sm shrink-0">
             <div className="flex flex-nowrap items-center justify-start gap-4 mb-4">
@@ -194,8 +184,8 @@ export function SiteFooter() {
               </div>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed mb-4 max-w-sm">
-              x402 payment intelligence — compare facilitators, route payments, and settle
-              on-chain across the x402 ecosystem.
+              The Funding Layer for AI Agents. Programmable deposits via one x402 call — fund any
+              wallet, including sub-wallets and child agents.
             </p>
             <a
               href="https://x402.org"
@@ -213,7 +203,6 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Mobile bottom */}
         <div className="md:hidden border-t border-border pt-6 flex flex-col items-start gap-3">
           <div className="flex items-center gap-1 -ml-2">
             <SocialIcons />
@@ -223,18 +212,17 @@ export function SiteFooter() {
             <a href="https://deposit.now" className="hover:text-foreground/80 transition-colors">
               deposit.now
             </a>{' '}
-            · Built for the agentic future
+            · The funding layer for AI agents
           </p>
         </div>
 
-        {/* Desktop bottom */}
         <div className="hidden md:block border-t border-border pt-8">
           <p className="text-muted-foreground/70 text-sm text-left">
             © 2026{' '}
             <a href="https://deposit.now" className="hover:text-foreground/80 transition-colors">
               deposit.now
             </a>{' '}
-            · Built for the agentic future
+            · The funding layer for AI agents
           </p>
         </div>
       </div>

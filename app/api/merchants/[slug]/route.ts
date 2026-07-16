@@ -1,25 +1,13 @@
 import { NextResponse } from 'next/server';
-import { getMerchant, isValidMerchantSlug, toPublicMerchant } from '@/lib/merchants';
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-};
-
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
-  const { slug: rawSlug } = await params;
-  const slug = rawSlug.toLowerCase();
-
-  if (!isValidMerchantSlug(slug)) {
-    return NextResponse.json({ error: 'invalid_slug' }, { status: 400, headers: CORS_HEADERS });
-  }
-
-  const merchant = await getMerchant(slug);
-  if (!merchant?.active) {
-    return NextResponse.json({ error: 'merchant_not_found' }, { status: 404, headers: CORS_HEADERS });
-  }
-
-  return NextResponse.json({ merchant: toPublicMerchant(merchant) }, { headers: CORS_HEADERS });
+export async function GET() {
+  return NextResponse.json(
+    {
+      error: 'gone',
+      message:
+        'Merchant endpoints are retired. Fund any wallet via POST /api/deposit { target, amount, memo? }.',
+      docs: 'https://deposit.now/docs',
+    },
+    { status: 410 }
+  );
 }

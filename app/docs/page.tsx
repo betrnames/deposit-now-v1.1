@@ -1,14 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Header } from '@/components/Header';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { SiteFooter } from '@/components/SiteFooter';
+import { ChevronRight, Copy, CheckCircle2 } from 'lucide-react';
 
-import { ChevronRight, Copy, CheckCircle2, Terminal } from 'lucide-react';
+const SECTIONS = [
+  { id: 'introduction', label: 'Introduction' },
+  { id: 'quickstart', label: 'Quickstart' },
+  { id: 'flow', label: 'Flow' },
+  { id: 'endpoints', label: 'Endpoints' },
+  { id: 'examples', label: 'Code examples' },
+  { id: 'security', label: 'Security' },
+  { id: 'faq', label: 'FAQ' },
+] as const;
 
 export default function DocsPage() {
   const [activeSection, setActiveSection] = useState('introduction');
@@ -26,14 +32,36 @@ export default function DocsPage() {
       const offset = 100;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
       setActiveSection(sectionId);
     }
   };
+
+  const jsExample = `import { wrapFetchWithPayment } from '@x402/fetch';
+import { x402Client } from '@x402/core/client';
+import { ExactEvmScheme } from '@x402/evm/exact/client';
+import { privateKeyToAccount } from 'viem/accounts';
+
+const signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY); // payer agent only
+const client = new x402Client();
+client.register('eip155:*', new ExactEvmScheme(signer));
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
+
+const res = await fetchWithPayment('https://deposit.now/api/deposit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    target: '0xChildOrSubWalletAddress',
+    amount: '50.00',
+    memo: 'Fund child trading agent',
+  }),
+});
+console.log(await res.json());`;
+
+  const curlExample = `curl -i -X POST https://deposit.now/api/deposit \\
+  -H 'Content-Type: application/json' \\
+  -d '{"target":"0x...","amount":"50.00","memo":"Fund child trading agent"}'
+# → HTTP 402 + Payment-Required header (pay amount + 1%)`;
 
   return (
     <div className="min-h-screen page-shell">
@@ -41,755 +69,241 @@ export default function DocsPage() {
 
       <div className="max-w-7xl mx-auto px-6 sm:px-8 py-16">
         <div className="flex gap-8">
-          {/* Left Sidebar */}
           <aside className="w-56 flex-shrink-0 hidden md:block">
             <div className="sticky top-24 py-6">
               <h2 className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-6 px-4">
-                DOCUMENTATION
+                Documentation
               </h2>
               <nav className="space-y-1">
-                <button
-                  onClick={() => scrollToSection('introduction')}
-                  className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                    activeSection === 'introduction'
-                      ? 'bg-primary/20 text-primary'
-                      : 'text-muted-foreground hover:text-white hover:bg-muted/50'
-                  }`}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                  Introduction
-                </button>
-                <button
-                  onClick={() => scrollToSection('quickstart')}
-                  className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
-                    activeSection === 'quickstart'
-                      ? 'bg-primary/20 text-primary rounded-lg'
-                      : 'text-muted-foreground hover:text-white hover:bg-muted/50 rounded-lg'
-                  }`}
-                >
-                  Quickstart
-                </button>
-                <button
-                  onClick={() => scrollToSection('authentication')}
-                  className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
-                    activeSection === 'authentication'
-                      ? 'bg-primary/20 text-primary rounded-lg'
-                      : 'text-muted-foreground hover:text-white hover:bg-muted/50 rounded-lg'
-                  }`}
-                >
-                  Authentication
-                </button>
-                <button
-                  onClick={() => scrollToSection('endpoints')}
-                  className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
-                    activeSection === 'endpoints'
-                      ? 'bg-primary/20 text-primary rounded-lg'
-                      : 'text-muted-foreground hover:text-white hover:bg-muted/50 rounded-lg'
-                  }`}
-                >
-                  Endpoints
-                </button>
-                <button
-                  onClick={() => scrollToSection('examples')}
-                  className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
-                    activeSection === 'examples'
-                      ? 'bg-primary/20 text-primary rounded-lg'
-                      : 'text-muted-foreground hover:text-white hover:bg-muted/50 rounded-lg'
-                  }`}
-                >
-                  Code Examples
-                </button>
-                <button
-                  onClick={() => scrollToSection('billing')}
-                  className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
-                    activeSection === 'billing'
-                      ? 'bg-primary/20 text-primary rounded-lg'
-                      : 'text-muted-foreground hover:text-white hover:bg-muted/50 rounded-lg'
-                  }`}
-                >
-                  Billing
-                </button>
+                {SECTIONS.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => scrollToSection(s.id)}
+                    className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                      activeSection === s.id
+                        ? 'bg-primary/20 text-primary'
+                        : 'text-muted-foreground hover:text-white hover:bg-muted/50'
+                    }`}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                    {s.label}
+                  </button>
+                ))}
               </nav>
             </div>
           </aside>
 
-          {/* Main Content */}
           <main className="flex-1 min-w-0">
-            <div className="max-w-4xl">
-            {/* Header */}
-            <div className="mb-6">
-              <h1 className="text-sm font-medium text-muted-foreground">x402 documentation</h1>
-            </div>
-
-            {/* Mobile Navigation Pills */}
-            <div className="md:hidden mb-6">
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => scrollToSection('introduction')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                    activeSection === 'introduction'
-                      ? 'bg-primary text-white'
-                      : 'bg-muted/50 text-muted-foreground hover:text-white hover:bg-muted'
-                  }`}
-                >
-                  Introduction
-                </button>
-                <button
-                  onClick={() => scrollToSection('authentication')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                    activeSection === 'authentication'
-                      ? 'bg-primary text-white'
-                      : 'bg-muted/50 text-muted-foreground hover:text-white hover:bg-muted'
-                  }`}
-                >
-                  Authentication
-                </button>
-                <button
-                  onClick={() => scrollToSection('endpoints')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                    activeSection === 'endpoints'
-                      ? 'bg-primary text-white'
-                      : 'bg-muted/50 text-muted-foreground hover:text-white hover:bg-muted'
-                  }`}
-                >
-                  Endpoints
-                </button>
-                <button
-                  onClick={() => scrollToSection('examples')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                    activeSection === 'examples'
-                      ? 'bg-primary text-white'
-                      : 'bg-muted/50 text-muted-foreground hover:text-white hover:bg-muted'
-                  }`}
-                >
-                  Examples
-                </button>
-                <button
-                  onClick={() => scrollToSection('billing')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                    activeSection === 'billing'
-                      ? 'bg-primary text-white'
-                      : 'bg-muted/50 text-muted-foreground hover:text-white hover:bg-muted'
-                  }`}
-                >
-                  Billing
-                </button>
-              </div>
-            </div>
-
-            {/* Overview Section */}
-            <div className="space-y-12 mb-16">
-              <div id="introduction" className="space-y-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <h2 className="text-2xl font-bold text-white">Overview</h2>
-                </div>
-                <div className="border border-primary/30 rounded-lg p-5 bg-primary/5 mb-4">
-                  <p className="text-white font-semibold mb-2">What is deposit.now?</p>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    <strong className="text-white">x402</strong> is an open standard that lets AI agents pay for API calls with crypto — the agent sends an HTTP request, gets back a 402 with payment terms, signs a USDC transfer, and retries.
-                    A <strong className="text-white">facilitator</strong> is the service that verifies the payment and settles it on-chain.
-                  </p>
-                  <p className="text-sm text-muted-foreground leading-relaxed mt-2">
-                    <strong className="text-white">deposit.now</strong> does two things: (1) indexes every x402 facilitator so you can compare fees, chains, and tokens in one{' '}
-                    <a href="/dashboard" className="text-primary hover:underline">dashboard</a>, and (2) runs a live x402 deposit API on Base mainnet that you can call right now.
-                  </p>
-                </div>
-                <p className="text-muted-foreground">
-                  When an agent calls <code className="text-primary">POST /api/deposit</code>, the <code className="text-primary">amount</code> field becomes the x402 payment price — the agent pays that amount in USDC on-chain. After settlement, the platform generates a verifiable receipt and fires a webhook to the merchant.
+            <div className="max-w-4xl space-y-16">
+              <div>
+                <h1 className="text-sm font-medium text-muted-foreground mb-2">
+                  deposit.now documentation
+                </h1>
+                <p className="text-3xl font-black text-white tracking-tight">
+                  The Funding Layer for AI Agents
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                  <div className="border border-border/60 rounded-lg p-4 bg-background">
-                    <div className="text-sm text-muted-foreground/70 mb-1">Base URL</div>
-                    <div className="font-mono text-sm text-white">https://deposit.now</div>
+              </div>
+
+              <section id="introduction" className="space-y-4">
+                <h2 className="text-2xl font-bold text-white">Introduction</h2>
+                <div className="border border-primary/30 rounded-lg p-5 bg-primary/5">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    <strong className="text-white">deposit.now</strong> is a programmable deposit
+                    API. Agents call <code className="text-primary">POST /api/deposit</code> with a
+                    target wallet and net amount, pay <strong className="text-white">amount + 1%</strong>{' '}
+                    via x402, and the platform forwards net USDC to the target — including
+                    sub-wallets and child agents. No humans required for secondary / agent-to-agent
+                    flows.
+                  </p>
+                </div>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    Network: Base mainnet (eip155:8453) in production
+                  </li>
+                  <li className="flex gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    Fee: flat 1% of net deposit
+                  </li>
+                  <li className="flex gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    Machine contracts:{' '}
+                    <a href="/llms.txt" className="text-primary hover:underline">
+                      llms.txt
+                    </a>
+                    ,{' '}
+                    <a href="/openapi.json" className="text-primary hover:underline">
+                      openapi.json
+                    </a>
+                  </li>
+                </ul>
+              </section>
+
+              <section id="quickstart" className="space-y-4">
+                <h2 className="text-2xl font-bold text-white">Quickstart</h2>
+                <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                  <li>Install an x402 client (e.g. @x402/fetch + viem for JS).</li>
+                  <li>
+                    POST JSON: <code className="text-primary">{`{ target, amount, memo? }`}</code>
+                  </li>
+                  <li>Handle 402 — pay gross (amount + 1%) in USDC.</li>
+                  <li>Retry with payment proof; read receiptId / receiptUrl from the 200 body.</li>
+                </ol>
+              </section>
+
+              <section id="flow" className="space-y-4">
+                <h2 className="text-2xl font-bold text-white">Bare-bones flow</h2>
+                <ol className="space-y-3 text-sm text-muted-foreground">
+                  <li>
+                    <strong className="text-white">1.</strong> Agent calls{' '}
+                    <code className="text-primary">POST /api/deposit</code> with{' '}
+                    <code className="text-primary">
+                      {`{ target: "0x…", amount: "50.00", memo?: "…" }`}
+                    </code>
+                  </li>
+                  <li>
+                    <strong className="text-white">2.</strong> Server returns 402 + x402 payment
+                    request for amount + 1% fee.
+                  </li>
+                  <li>
+                    <strong className="text-white">3.</strong> Agent pays full gross via x402 to the
+                    platform Coinbase Agentic (CDP) wallet.
+                  </li>
+                  <li>
+                    <strong className="text-white">4.</strong> Backend confirms settlement → keeps
+                    fee → forwards net to <code className="text-primary">target</code> via CDP.
+                  </li>
+                  <li>
+                    <strong className="text-white">5.</strong> Returns success receipt (also at{' '}
+                    <code className="text-primary">/receipt/&lt;id&gt;</code>).
+                  </li>
+                </ol>
+              </section>
+
+              <section id="endpoints" className="space-y-4">
+                <h2 className="text-2xl font-bold text-white">Endpoints</h2>
+                <Card className="bg-card/60 border-border/60">
+                  <CardContent className="p-6 space-y-4 text-sm">
+                    <div>
+                      <code className="text-primary font-mono">POST /api/deposit</code>
+                      <p className="text-muted-foreground mt-2">
+                        Body: <code className="text-white">target</code> (required EVM address),{' '}
+                        <code className="text-white">amount</code> (required net USDC 0.01–100000),{' '}
+                        <code className="text-white">memo</code> (optional, max 256 chars).
+                      </p>
+                    </div>
+                    <div>
+                      <code className="text-primary font-mono">GET /api/deposit</code>
+                      <p className="text-muted-foreground mt-2">
+                        Service metadata (also x402-protected when paid probes are used).
+                      </p>
+                    </div>
+                    <div>
+                      <code className="text-primary font-mono">GET /api/discovery</code> ·{' '}
+                      <code className="text-primary font-mono">GET /.well-known/x402</code>
+                      <p className="text-muted-foreground mt-2">Machine-readable discovery manifest.</p>
+                    </div>
+                    <div>
+                      <code className="text-primary font-mono">GET /receipt/:id</code>
+                      <p className="text-muted-foreground mt-2">Public verifiable receipt page.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </section>
+
+              <section id="examples" className="space-y-6">
+                <h2 className="text-2xl font-bold text-white">Code examples</h2>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-semibold text-white">JavaScript (@x402/fetch)</h3>
+                    <button
+                      type="button"
+                      onClick={() => copyToClipboard(jsExample, 0)}
+                      className="text-xs text-muted-foreground hover:text-white flex items-center gap-1"
+                    >
+                      {copiedIndex === 0 ? (
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                      Copy
+                    </button>
                   </div>
-                  <div className="border border-border/60 rounded-lg p-4 bg-background">
-                    <div className="text-sm text-muted-foreground/70 mb-1">Price per call</div>
-                    <div className="font-mono text-sm text-white">= deposit amount</div>
-                  </div>
-                  <div className="border border-border/60 rounded-lg p-4 bg-background">
-                    <div className="text-sm text-muted-foreground/70 mb-1">Network</div>
-                    <div className="font-mono text-sm text-white">Base mainnet</div>
-                  </div>
+                  <pre className="bg-muted/50 border border-border/60 rounded-xl p-4 text-xs text-foreground/90 overflow-x-auto leading-relaxed">
+                    {jsExample}
+                  </pre>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    <code className="text-primary">EVM_PRIVATE_KEY</code> is only for the{' '}
+                    <em>paying</em> agent client — never for the deposit.now server.
+                  </p>
                 </div>
 
-                {/* 5-Minute Quickstart */}
-                <div id="quickstart" className="mt-8 border border-primary/30 rounded-lg p-6 bg-primary/5">
-                  <h3 className="text-lg font-bold text-white mb-2">5-minute quickstart</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Copy-paste this into a Node.js file. You need a Base wallet with USDC — that&apos;s it.
-                  </p>
-                  <pre className="bg-background rounded-lg p-4 overflow-x-auto border border-border/60 text-sm">
-                    <code>
-                      <span className="text-yellow-300">import</span> <span className="text-white">{'{'} wrapFetchWithPayment {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">&apos;@x402/fetch&apos;</span><span className="text-white">;</span>{'\n'}
-                      <span className="text-yellow-300">import</span> <span className="text-white">{'{'} x402Client {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">&apos;@x402/core/client&apos;</span><span className="text-white">;</span>{'\n'}
-                      <span className="text-yellow-300">import</span> <span className="text-white">{'{'} ExactEvmScheme {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">&apos;@x402/evm/exact/client&apos;</span><span className="text-white">;</span>{'\n'}
-                      <span className="text-yellow-300">import</span> <span className="text-white">{'{'} privateKeyToAccount {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">&apos;viem/accounts&apos;</span><span className="text-white">;</span>{'\n\n'}
-                      <span className="text-yellow-300">const</span> <span className="text-white">signer</span> <span className="text-yellow-300">=</span> <span className="text-green-400">privateKeyToAccount</span><span className="text-white">(process.env.EVM_PRIVATE_KEY);</span>{'\n'}
-                      <span className="text-yellow-300">const</span> <span className="text-white">client</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">new</span> <span className="text-green-400">x402Client</span><span className="text-white">();</span>{'\n'}
-                      <span className="text-white">client.</span><span className="text-green-400">register</span><span className="text-white">(</span><span className="text-orange-400">&apos;eip155:*&apos;</span><span className="text-white">,</span> <span className="text-yellow-300">new</span> <span className="text-green-400">ExactEvmScheme</span><span className="text-white">(signer));</span>{'\n'}
-                      <span className="text-yellow-300">const</span> <span className="text-white">fetchWithPayment</span> <span className="text-yellow-300">=</span> <span className="text-green-400">wrapFetchWithPayment</span><span className="text-white">(fetch, client);</span>{'\n\n'}
-                      <span className="text-yellow-300">const</span> <span className="text-white">res</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">await</span> <span className="text-green-400">fetchWithPayment</span><span className="text-white">(</span><span className="text-orange-400">&apos;https://deposit.now/api/deposit&apos;</span><span className="text-white">,</span> <span className="text-white">{'{'}</span>{'\n'}
-                      {'  '}<span className="text-green-400">method</span><span className="text-white">:</span> <span className="text-orange-400">&apos;POST&apos;</span><span className="text-white">,</span>{'\n'}
-                      {'  '}<span className="text-green-400">headers</span><span className="text-white">:</span> <span className="text-white">{'{'}</span> <span className="text-orange-400">&apos;Content-Type&apos;</span><span className="text-white">:</span> <span className="text-orange-400">&apos;application/json&apos;</span> <span className="text-white">{'}'}</span><span className="text-white">,</span>{'\n'}
-                      {'  '}<span className="text-green-400">body</span><span className="text-white">:</span> <span className="text-white">JSON.</span><span className="text-green-400">stringify</span><span className="text-white">(</span><span className="text-white">{'{'}</span> <span className="text-green-400">amount</span><span className="text-white">:</span> <span className="text-orange-400">&apos;100.00&apos;</span><span className="text-white">,</span> <span className="text-green-400">account</span><span className="text-white">:</span> <span className="text-orange-400">&apos;agent-wallet-123&apos;</span> <span className="text-white">{'}'}</span><span className="text-white">)</span>{'\n'}
-                      <span className="text-white">{'}'}</span><span className="text-white">);</span>{'\n\n'}
-                      <span className="text-yellow-300">const</span> <span className="text-white">receipt</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">await</span> <span className="text-white">res.</span><span className="text-green-400">json</span><span className="text-white">();</span>{'\n'}
-                      <span className="text-white">console.</span><span className="text-green-400">log</span><span className="text-white">(</span><span className="text-orange-400">&apos;Receipt:&apos;</span><span className="text-white">,</span> <span className="text-white">receipt);</span>
-                    </code>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-semibold text-white">curl (probe 402)</h3>
+                    <button
+                      type="button"
+                      onClick={() => copyToClipboard(curlExample, 1)}
+                      className="text-xs text-muted-foreground hover:text-white flex items-center gap-1"
+                    >
+                      {copiedIndex === 1 ? (
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                      Copy
+                    </button>
+                  </div>
+                  <pre className="bg-muted/50 border border-border/60 rounded-xl p-4 text-xs text-foreground/90 overflow-x-auto leading-relaxed">
+                    {curlExample}
                   </pre>
                 </div>
-              </div>
+              </section>
 
-              {/* Authentication Section */}
-              <div id="authentication" className="space-y-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold text-white">Authentication</h2>
-                </div>
-                <p className="text-muted-foreground">
-                  The API uses x402 payment protocol for authentication. No API keys or accounts required.
-                  The payment itself serves as both authentication and authorization.
-                </p>
-                <div className="bg-background rounded-lg p-4 space-y-2 border border-border/60">
-                  <div className="font-semibold text-white">x402 Requirements:</div>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    <li>Payment amount: equals the declared deposit amount (min $0.01)</li>
-                    <li className="break-words">
-                      Currency: USDC (
-                      <code className="break-all">
-                        0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
-                      </code>
-                      )
-                    </li>
-                    <li>Network: Base mainnet (eip155:8453)</li>
-                    <li>Facilitator: Coinbase Developer Platform (CDP) x402 facilitator</li>
-                  </ul>
-                </div>
-              </div>
+              <section id="security" className="space-y-4">
+                <h2 className="text-2xl font-bold text-white">Security</h2>
+                <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
+                  <li>Platform hot wallet via Coinbase CDP / Agentic Wallet only — no raw platform private keys in app code.</li>
+                  <li>Strict validation: EVM address + amount caps (0.01–100000 USDC).</li>
+                  <li>Rate limiting on /api/* (stricter on deposit).</li>
+                  <li>x402 facilitator verifies payment on-chain before success response.</li>
+                  <li>Forward to target only after settlement; retries + settlement logs on failure.</li>
+                </ul>
+              </section>
 
-              {/* Endpoints Section */}
-              <div id="endpoints" className="space-y-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold text-white">Endpoints</h2>
-                </div>
-                <div className="space-y-6">
+              <section id="faq" className="space-y-4">
+                <h2 className="text-2xl font-bold text-white">FAQ</h2>
+                <div className="space-y-4 text-sm text-muted-foreground">
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="text-white border-white/20">POST</Badge>
-                      <code className="text-sm text-primary">/api/deposit</code>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Trigger a deposit for an AI agent account. Requires x402 payment.
-                    </p>
-
-                    <div className="space-y-4">
-                      <div>
-                        <div className="text-sm font-semibold mb-2 text-white">Request Body</div>
-                        <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
-                          <code>
-                            <span className="text-yellow-400">{'{'}</span>{'\n'}
-                            {'  '}<span className="text-green-400">"amount"</span><span className="text-white">:</span> <span className="text-orange-400">"100.00"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"account"</span><span className="text-white">:</span> <span className="text-orange-400">"agent-wallet-123"</span>{'\n'}
-                            <span className="text-yellow-400">{'}'}</span>
-                          </code>
-                        </pre>
-                      </div>
-
-                      <div>
-                        <div className="text-sm font-semibold mb-2 text-white">Success Response (200)</div>
-                        <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
-                          <code>
-                            <span className="text-yellow-400">{'{'}</span>{'\n'}
-                            {'  '}<span className="text-green-400">"status"</span><span className="text-white">:</span> <span className="text-orange-400">"success"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"depositAmount"</span><span className="text-white">:</span> <span className="text-orange-400">"100.00"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"account"</span><span className="text-white">:</span> <span className="text-orange-400">"agent-wallet-123"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"message"</span><span className="text-white">:</span> <span className="text-orange-400">"Deposit of 100.00 triggered for agent account: agent-wallet-123"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"timestamp"</span><span className="text-white">:</span> <span className="text-orange-400">"2025-12-30T12:00:00.000Z"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"network"</span><span className="text-white">:</span> <span className="text-orange-400">"eip155:8453"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"paymentReceived"</span><span className="text-white">:</span> <span className="text-yellow-300">true</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"transactionId"</span><span className="text-white">:</span> <span className="text-orange-400">"txn_1735563600000_abc123xyz"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"receiptId"</span><span className="text-white">:</span> <span className="text-orange-400">"a1b2c3d4e5f60718"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"receiptUrl"</span><span className="text-white">:</span> <span className="text-orange-400">"https://deposit.now/receipt/a1b2c3d4e5f60718"</span>{'\n'}
-                            <span className="text-yellow-400">{'}'}</span>
-                          </code>
-                        </pre>
-                      </div>
-
-                      <div>
-                        <div className="text-sm font-semibold mb-2 text-white">Payment Required Response (402)</div>
-                        <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
-                          <code>
-                            <span className="text-yellow-300">HTTP/1.1 402 Payment Required</span>{'\n'}
-                            <span className="text-green-400">Payment-Required:</span> <span className="text-white">&lt;base64 of the JSON below&gt;</span>{'\n\n'}
-                            <span className="text-yellow-400">{'{'}</span>{'\n'}
-                            {'  '}<span className="text-green-400">"x402Version"</span><span className="text-white">:</span> <span className="text-white">2</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"error"</span><span className="text-white">:</span> <span className="text-orange-400">"Payment required"</span><span className="text-white">,</span>{'\n'}
-                            {'  '}<span className="text-green-400">"accepts"</span><span className="text-white">:</span> <span className="text-yellow-400">[{'{'}</span>{'\n'}
-                            {'    '}<span className="text-green-400">"scheme"</span><span className="text-white">:</span> <span className="text-orange-400">"exact"</span><span className="text-white">,</span>{'\n'}
-                            {'    '}<span className="text-green-400">"network"</span><span className="text-white">:</span> <span className="text-orange-400">"eip155:8453"</span><span className="text-white">,</span>{'\n'}
-                            {'    '}<span className="text-green-400">"payTo"</span><span className="text-white">:</span> <span className="text-orange-400">"0x96da...c9AA"</span><span className="text-white">,</span>{'\n'}
-                            {'    '}<span className="text-green-400">"asset"</span><span className="text-white">:</span> <span className="text-orange-400">"USDC"</span><span className="text-white">,</span>{'\n'}
-                            {'    '}<span className="text-green-400">"maxAmountRequired"</span><span className="text-white">:</span> <span className="text-orange-400">"100000000"</span>{'\n'}
-                            {'  '}<span className="text-yellow-400">{'}'}]</span>{'\n'}
-                            <span className="text-yellow-400">{'}'}</span>{'\n\n'}
-                            <span className="text-muted-foreground/70"># maxAmountRequired matches your declared deposit amount</span>{'\n'}
-                            <span className="text-muted-foreground/70"># (100.00 USDC = 100000000 atomic units).</span>{'\n'}
-                            <span className="text-muted-foreground/70"># Retry with a signed X-Payment header — x402 SDKs</span>{'\n'}
-                            <span className="text-muted-foreground/70"># handle this automatically.</span>
-                          </code>
-                        </pre>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="text-white border-white/20">GET</Badge>
-                      <code className="text-sm text-primary">/api/deposit</code>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Get deposit information. Also protected by x402 payment.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Code Examples Section */}
-              <div id="examples" className="space-y-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold text-white">Code Examples</h2>
-                </div>
-                <Tabs defaultValue="javascript">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="javascript">JavaScript</TabsTrigger>
-                    <TabsTrigger value="python">Python</TabsTrigger>
-                    <TabsTrigger value="curl">cURL</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="javascript" className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground">Install the x402 client</p>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => copyToClipboard('npm install @x402/fetch @x402/core @x402/evm viem', 0)}
-                        >
-                          {copiedIndex === 0 ? (
-                            <CheckCircle2 className="h-4 w-4" />
-                          ) : (
-                            <Copy className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
-                        <code><span className="text-yellow-300">npm</span> <span className="text-green-400">install</span> <span className="text-white">@x402/fetch @x402/core @x402/evm viem</span></code>
-                      </pre>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground">Make a payment-protected request</p>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            copyToClipboard(
-                              `import { wrapFetchWithPayment } from '@x402/fetch';
-import { x402Client } from '@x402/core/client';
-import { ExactEvmScheme } from '@x402/evm/exact/client';
-import { privateKeyToAccount } from 'viem/accounts';
-
-const signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY);
-const client = new x402Client();
-client.register('eip155:*', new ExactEvmScheme(signer));
-const fetchWithPayment = wrapFetchWithPayment(fetch, client);
-
-const response = await fetchWithPayment('https://deposit.now/api/deposit', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ amount: '100.00', account: 'agent-wallet-123' })
-});
-
-const result = await response.json();
-console.log('Deposit status:', result.status);
-console.log('Transaction ID:', result.transactionId);`,
-                              1
-                            )
-                          }
-                        >
-                          {copiedIndex === 1 ? (
-                            <CheckCircle2 className="h-4 w-4" />
-                          ) : (
-                            <Copy className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
-                        <code>
-                          <span className="text-yellow-300">import</span> <span className="text-white">{'{'} wrapFetchWithPayment {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">'@x402/fetch'</span><span className="text-white">;</span>{'\n'}
-                          <span className="text-yellow-300">import</span> <span className="text-white">{'{'} x402Client {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">'@x402/core/client'</span><span className="text-white">;</span>{'\n'}
-                          <span className="text-yellow-300">import</span> <span className="text-white">{'{'} ExactEvmScheme {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">'@x402/evm/exact/client'</span><span className="text-white">;</span>{'\n'}
-                          <span className="text-yellow-300">import</span> <span className="text-white">{'{'} privateKeyToAccount {'}'}</span> <span className="text-yellow-300">from</span> <span className="text-orange-400">'viem/accounts'</span><span className="text-white">;</span>{'\n\n'}
-                          <span className="text-yellow-300">const</span> <span className="text-white">signer</span> <span className="text-yellow-300">=</span> <span className="text-green-400">privateKeyToAccount</span><span className="text-white">(process.env.EVM_PRIVATE_KEY);</span>{'\n'}
-                          <span className="text-yellow-300">const</span> <span className="text-white">client</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">new</span> <span className="text-green-400">x402Client</span><span className="text-white">();</span>{'\n'}
-                          <span className="text-white">client.</span><span className="text-green-400">register</span><span className="text-white">(</span><span className="text-orange-400">'eip155:*'</span><span className="text-white">,</span> <span className="text-yellow-300">new</span> <span className="text-green-400">ExactEvmScheme</span><span className="text-white">(signer));</span>{'\n'}
-                          <span className="text-yellow-300">const</span> <span className="text-white">fetchWithPayment</span> <span className="text-yellow-300">=</span> <span className="text-green-400">wrapFetchWithPayment</span><span className="text-white">(fetch, client);</span>{'\n\n'}
-                          <span className="text-yellow-300">const</span> <span className="text-white">response</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">await</span> <span className="text-green-400">fetchWithPayment</span><span className="text-white">(</span><span className="text-orange-400">'https://deposit.now/api/deposit'</span><span className="text-white">,</span> <span className="text-white">{'{'}</span>{'\n'}
-                          {'  '}<span className="text-green-400">method</span><span className="text-white">:</span> <span className="text-orange-400">'POST'</span><span className="text-white">,</span>{'\n'}
-                          {'  '}<span className="text-green-400">headers</span><span className="text-white">:</span> <span className="text-white">{'{'}</span> <span className="text-orange-400">'Content-Type'</span><span className="text-white">:</span> <span className="text-orange-400">'application/json'</span> <span className="text-white">{'}'}</span><span className="text-white">,</span>{'\n'}
-                          {'  '}<span className="text-green-400">body</span><span className="text-white">:</span> <span className="text-white">JSON.</span><span className="text-green-400">stringify</span><span className="text-white">(</span><span className="text-white">{'{'}</span> <span className="text-green-400">amount</span><span className="text-white">:</span> <span className="text-orange-400">'100.00'</span><span className="text-white">,</span> <span className="text-green-400">account</span><span className="text-white">:</span> <span className="text-orange-400">'agent-wallet-123'</span> <span className="text-white">{'}'}</span><span className="text-white">)</span>{'\n'}
-                          <span className="text-white">{'}'}</span><span className="text-white">);</span>{'\n\n'}
-                          <span className="text-yellow-300">const</span> <span className="text-white">result</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">await</span> <span className="text-white">response.</span><span className="text-green-400">json</span><span className="text-white">();</span>{'\n'}
-                          <span className="text-white">console.</span><span className="text-green-400">log</span><span className="text-white">(</span><span className="text-orange-400">'Deposit status:'</span><span className="text-white">,</span> <span className="text-white">result.status);</span>{'\n'}
-                          <span className="text-white">console.</span><span className="text-green-400">log</span><span className="text-white">(</span><span className="text-orange-400">'Transaction ID:'</span><span className="text-white">,</span> <span className="text-white">result.transactionId);</span>
-                        </code>
-                      </pre>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="python" className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground">Install the x402 client</p>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => copyToClipboard('pip install "x402[httpx]" eth-account', 2)}
-                        >
-                          {copiedIndex === 2 ? (
-                            <CheckCircle2 className="h-4 w-4" />
-                          ) : (
-                            <Copy className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
-                        <code><span className="text-yellow-300">pip</span> <span className="text-green-400">install</span> <span className="text-white">"x402[httpx]" eth-account</span></code>
-                      </pre>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground">Make a payment-protected request</p>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            copyToClipboard(
-                              `import asyncio, os
-from eth_account import Account
-from x402 import x402Client
-from x402.http.clients import x402HttpxClient
-from x402.mechanisms.evm import EthAccountSigner
-from x402.mechanisms.evm.exact.register import register_exact_evm_client
-
-async def main():
-    client = x402Client()
-    account = Account.from_key(os.getenv("EVM_PRIVATE_KEY"))
-    register_exact_evm_client(client, EthAccountSigner(account))
-
-    async with x402HttpxClient(client) as http:
-        response = await http.post(
-            "https://deposit.now/api/deposit",
-            json={"amount": "100.00", "account": "agent-wallet-123"},
-        )
-        print(await response.aread())
-
-asyncio.run(main())`,
-                              3
-                            )
-                          }
-                        >
-                          {copiedIndex === 3 ? (
-                            <CheckCircle2 className="h-4 w-4" />
-                          ) : (
-                            <Copy className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
-                        <code>
-                          <span className="text-yellow-300">import</span> <span className="text-white">asyncio, os</span>{'\n'}
-                          <span className="text-yellow-300">from</span> <span className="text-white">eth_account</span> <span className="text-yellow-300">import</span> <span className="text-green-400">Account</span>{'\n'}
-                          <span className="text-yellow-300">from</span> <span className="text-white">x402</span> <span className="text-yellow-300">import</span> <span className="text-green-400">x402Client</span>{'\n'}
-                          <span className="text-yellow-300">from</span> <span className="text-white">x402.http.clients</span> <span className="text-yellow-300">import</span> <span className="text-green-400">x402HttpxClient</span>{'\n'}
-                          <span className="text-yellow-300">from</span> <span className="text-white">x402.mechanisms.evm</span> <span className="text-yellow-300">import</span> <span className="text-green-400">EthAccountSigner</span>{'\n'}
-                          <span className="text-yellow-300">from</span> <span className="text-white">x402.mechanisms.evm.exact.register</span> <span className="text-yellow-300">import</span> <span className="text-green-400">register_exact_evm_client</span>{'\n\n'}
-                          <span className="text-yellow-300">async def</span> <span className="text-green-400">main</span><span className="text-white">():</span>{'\n'}
-                          {'    '}<span className="text-white">client</span> <span className="text-yellow-300">=</span> <span className="text-green-400">x402Client</span><span className="text-white">()</span>{'\n'}
-                          {'    '}<span className="text-white">account</span> <span className="text-yellow-300">=</span> <span className="text-white">Account.</span><span className="text-green-400">from_key</span><span className="text-white">(os.</span><span className="text-green-400">getenv</span><span className="text-white">(</span><span className="text-orange-400">"EVM_PRIVATE_KEY"</span><span className="text-white">))</span>{'\n'}
-                          {'    '}<span className="text-green-400">register_exact_evm_client</span><span className="text-white">(client, </span><span className="text-green-400">EthAccountSigner</span><span className="text-white">(account))</span>{'\n\n'}
-                          {'    '}<span className="text-yellow-300">async with</span> <span className="text-green-400">x402HttpxClient</span><span className="text-white">(client)</span> <span className="text-yellow-300">as</span> <span className="text-white">http:</span>{'\n'}
-                          {'        '}<span className="text-white">response</span> <span className="text-yellow-300">=</span> <span className="text-yellow-300">await</span> <span className="text-white">http.</span><span className="text-green-400">post</span><span className="text-white">(</span>{'\n'}
-                          {'            '}<span className="text-orange-400">"https://deposit.now/api/deposit"</span><span className="text-white">,</span>{'\n'}
-                          {'            '}<span className="text-white">json</span><span className="text-yellow-300">=</span><span className="text-white">{'{'}</span><span className="text-orange-400">"amount"</span><span className="text-white">:</span> <span className="text-orange-400">"100.00"</span><span className="text-white">,</span> <span className="text-orange-400">"account"</span><span className="text-white">:</span> <span className="text-orange-400">"agent-wallet-123"</span><span className="text-white">{'}'}</span><span className="text-white">,</span>{'\n'}
-                          {'        '}<span className="text-white">)</span>{'\n'}
-                          {'        '}<span className="text-green-400">print</span><span className="text-white">(</span><span className="text-yellow-300">await</span> <span className="text-white">response.</span><span className="text-green-400">aread</span><span className="text-white">())</span>{'\n\n'}
-                          <span className="text-white">asyncio.</span><span className="text-green-400">run</span><span className="text-white">(</span><span className="text-green-400">main</span><span className="text-white">())</span>
-                        </code>
-                      </pre>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="curl" className="space-y-4">
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">
-                        First request returns 402 with payment details
-                      </p>
-                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
-                        <code>
-                          <span className="text-yellow-300">curl</span> <span className="text-green-400">-i -X</span> <span className="text-white">POST</span> <span className="text-orange-400">https://deposit.now/api/deposit</span> <span className="text-white">\</span>{'\n'}
-                          {'  '}<span className="text-green-400">-H</span> <span className="text-orange-400">"Content-Type: application/json"</span> <span className="text-white">\</span>{'\n'}
-                          {'  '}<span className="text-green-400">-d</span> <span className="text-orange-400">'{`{`}"amount": "100.00", "account": "agent-wallet-123"{`}`}'</span>{'\n\n'}
-                          <span className="text-muted-foreground/70"># Response: HTTP 402 Payment Required with a Payment-Required</span>{'\n'}
-                          <span className="text-muted-foreground/70"># header listing accepted payment methods (scheme, network, payTo)</span>
-                        </code>
-                      </pre>
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">
-                        The retry carries an X-Payment header — a signed payment payload
-                        (EIP-712), not a plain string. Generate it with an x402 SDK
-                        (JavaScript or Python above); it cannot be hand-written in curl.
-                      </p>
-                      <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
-                        <code>
-                          <span className="text-yellow-300">curl</span> <span className="text-green-400">-X</span> <span className="text-white">POST</span> <span className="text-orange-400">https://deposit.now/api/deposit</span> <span className="text-white">\</span>{'\n'}
-                          {'  '}<span className="text-green-400">-H</span> <span className="text-orange-400">"Content-Type: application/json"</span> <span className="text-white">\</span>{'\n'}
-                          {'  '}<span className="text-green-400">-H</span> <span className="text-orange-400">"X-Payment: &lt;base64 signed payment payload from SDK&gt;"</span> <span className="text-white">\</span>{'\n'}
-                          {'  '}<span className="text-green-400">-d</span> <span className="text-orange-400">'{`{`}"amount": "100.00", "account": "agent-wallet-123"{`}`}'</span>{'\n\n'}
-                          <span className="text-muted-foreground/70"># Response: HTTP 200 OK with deposit confirmation +</span>{'\n'}
-                          <span className="text-muted-foreground/70"># X-Payment-Response header containing the settlement receipt</span>
-                        </code>
-                      </pre>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </div>
-
-              {/* Merchants Section */}
-              <div id="merchants" className="space-y-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold text-white">Merchant endpoints</h2>
-                </div>
-                <p className="text-sm text-muted-foreground bg-primary/10 border border-primary/20 rounded-lg px-4 py-3 mb-4">
-                  Merchant endpoints are rolling out to early partners. Request access at{' '}
-                  <a href="mailto:support@deposit.now" className="text-primary hover:underline">support@deposit.now</a>.
-                </p>
-                <p className="text-muted-foreground">
-                  Merchant-scoped routes let agents fund a specific business or integration. The
-                  full deposit amount settles directly to the merchant&apos;s{' '}
-                  <code className="text-primary">payTo</code> address on-chain.
-                  After settlement, deposit.now writes a public receipt and optionally POSTs a{' '}
-                  <code className="text-primary">deposit.settled</code> webhook.
-                </p>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="text-white border-white/20">GET</Badge>
-                      <code className="text-sm text-primary">/api/merchants</code>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Public catalog of active merchants with deposit URLs and payTo addresses.
+                    <p className="text-white font-semibold mb-1">Can I fund a child agent?</p>
+                    <p>
+                      Yes. Set <code className="text-primary">target</code> to the child / sub-wallet
+                      address. Parent pays; child receives net USDC.
                     </p>
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="text-white border-white/20">POST</Badge>
-                      <code className="text-sm text-primary">/api/merchants/&#123;slug&#125;/deposit</code>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Same x402 flow as the platform endpoint. Example slug:{' '}
-                      <code className="text-primary">deposit-now</code>.
+                    <p className="text-white font-semibold mb-1">Are merchant endpoints still live?</p>
+                    <p>
+                      No. Merchant registration, renew/topup, and facilitator dashboards are retired.
+                      Use the single deposit API.
                     </p>
-                    <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm border border-border/60">
-                      <code>
-                        <span className="text-yellow-300">POST</span>{' '}
-                        <span className="text-orange-400">https://deposit.now/api/merchants/acme-corp/deposit</span>
-                        {'\n'}
-                        <span className="text-white">{'{'}</span>{'\n'}
-                        {'  '}<span className="text-green-400">&quot;amount&quot;</span>
-                        <span className="text-white">: </span>
-                        <span className="text-orange-400">&quot;250.00&quot;</span>
-                        <span className="text-white">,</span>{'\n'}
-                        {'  '}<span className="text-green-400">&quot;account&quot;</span>
-                        <span className="text-white">: </span>
-                        <span className="text-orange-400">&quot;agent-wallet-123&quot;</span>
-                        {'\n'}
-                        <span className="text-white">{'}'}</span>
-                      </code>
-                    </pre>
                   </div>
-                </div>
-                <div className="bg-background rounded-lg p-4 border border-border/60 text-sm text-muted-foreground">
-                  <div className="font-semibold text-white mb-2">Discovery</div>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>
-                      Manifest:{' '}
-                      <a href="/.well-known/x402" className="text-primary hover:underline">
-                        /.well-known/x402
+                  <div>
+                    <p className="text-white font-semibold mb-1">Where is the machine-readable guide?</p>
+                    <p>
+                      <a href="/llms.txt" className="text-primary hover:underline">
+                        /llms.txt
+                      </a>{' '}
+                      and{' '}
+                      <a href="/llms-full.txt" className="text-primary hover:underline">
+                        /llms-full.txt
                       </a>
-                    </li>
-                    <li>Bazaar indexing via CDP facilitator after first mainnet settlement</li>
-                    <li>OpenAPI + llms.txt for agent crawlers</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div id="billing" className="space-y-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold text-white">Settlement fees</h2>
-                </div>
-                <p className="text-muted-foreground">
-                  When an agent deposits funds to a merchant, the platform collects a settlement fee
-                  at the transaction level before forwarding the remainder to the merchant&apos;s{' '}
-                  <code className="text-primary">payTo</code> wallet. No prepaid balances, no invoices.
-                </p>
-                <div className="bg-background rounded-lg p-4 space-y-3 border border-border/60 mt-4">
-                  <div className="font-semibold text-white text-sm">Example: $100.00 deposit on Catalog tier (0.30%)</div>
-                  <div className="grid grid-cols-1 gap-2 text-sm font-mono">
-                    <div className="flex justify-between"><span className="text-muted-foreground">Agent pays</span><span className="text-white">$100.00 USDC → platform wallet</span></div>
-                    <div className="flex justify-between"><span className="text-muted-foreground">Platform fee</span><span className="text-primary">$0.30 USDC retained</span></div>
-                    <div className="flex justify-between"><span className="text-muted-foreground">Merchant receives</span><span className="text-white">$99.70 USDC → merchant payTo</span></div>
-                  </div>
-                </div>
-                <div className="overflow-x-auto mt-4">
-                  <table className="w-full text-sm border-collapse">
-                    <thead>
-                      <tr className="border-b border-border/60">
-                        <th className="text-left py-2 pr-4 text-muted-foreground font-medium">Tier</th>
-                        <th className="text-left py-2 pr-4 text-muted-foreground font-medium">Fee</th>
-                        <th className="text-left py-2 pr-4 text-muted-foreground font-medium">Merchant gets</th>
-                        <th className="text-left py-2 text-muted-foreground font-medium">Best for</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-border/30">
-                        <td className="py-2 pr-4 text-white font-medium">Catalog</td>
-                        <td className="py-2 pr-4 font-mono text-primary">0.30%</td>
-                        <td className="py-2 pr-4 font-mono text-white">99.70%</td>
-                        <td className="py-2 text-muted-foreground">Public Bazaar merchants</td>
-                      </tr>
-                      <tr className="border-b border-border/30">
-                        <td className="py-2 pr-4 text-white font-medium">Rail</td>
-                        <td className="py-2 pr-4 font-mono text-primary">0.15%</td>
-                        <td className="py-2 pr-4 font-mono text-white">99.85%</td>
-                        <td className="py-2 text-muted-foreground">High-volume integrations</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 pr-4 text-white font-medium">Network</td>
-                        <td className="py-2 pr-4 font-mono text-primary">0.05%</td>
-                        <td className="py-2 pr-4 font-mono text-white">99.95%</td>
-                        <td className="py-2 text-muted-foreground">Enterprise / foundation</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <p className="text-sm text-muted-foreground/70 mt-2">
-                  Both transactions (agent → platform, platform → merchant) are visible on{' '}
-                  <a href="https://basescan.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">BaseScan</a>.
-                  Receipts include a full fee breakdown with both transaction hashes.
-                  Merchant forwarding is gasless — Coinbase sponsors gas for USDC on Base.
-                </p>
-
-                <div className="mt-6 space-y-4">
-                  <h3 className="text-lg font-bold text-white">Billing endpoints</h3>
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="text-white border-white/20">GET</Badge>
-                      <code className="text-sm text-primary">/api/merchants/&#123;slug&#125;</code>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Returns merchant details plus a <code className="text-primary">billing</code>{' '}
-                      object: tier, settlement fee bps, and renew URL.
-                    </p>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="text-white border-white/20">POST</Badge>
-                      <code className="text-sm text-primary">/api/merchants/&#123;slug&#125;/renew</code>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Pay 49 USDC via x402 to extend Rail webhooks and automation for 30 days.
+                      .
                     </p>
                   </div>
                 </div>
-
-                <div className="mt-6 border border-primary/30 rounded-lg p-5 bg-primary/5">
-                  <h3 className="text-sm font-bold text-white mb-2">Recommended: CDP Agentic Wallets</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    For production agents, we recommend{' '}
-                    <a href="https://www.coinbase.com/developer-platform/products/agentic-wallets" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CDP Agentic Wallets</a>{' '}
-                    instead of raw private keys — private keys secured in TEE, programmable spend caps,
-                    gasless USDC on Base, built-in KYT compliance, and native x402 support.
-                  </p>
-                </div>
-              </div>
-
-              {/* FAQ Section */}
-              <div id="faq" className="space-y-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold text-white">FAQ</h2>
-                </div>
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="font-semibold mb-2 text-white">What is deposit.now?</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      deposit.now is a facilitator comparison dashboard and x402 deposit API. It indexes every x402 facilitator so you can compare fees, chains, and tokens — and provides a live API on Base mainnet that agents can call to deposit USDC via x402.
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2 text-white">What is x402?</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      x402 is an open HTTP payment standard. An AI agent calls an API, gets back HTTP 402 with payment terms (amount, token, chain), signs a USDC transfer, and retries with the signed payment attached. A facilitator verifies the signature and settles on-chain. No API keys, no accounts — the payment IS the authentication.
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2 text-white">What does the deposit.now API cost?</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      The agent pays the declared deposit amount (min $0.01) via x402 on Base mainnet.
-                      No per-call platform toll, no subscriptions, no minimums for agents. The facilitator comparison dashboard is free.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Error Handling Section */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold text-white">Error Handling</h2>
-                </div>
-                <div className="space-y-4">
-                  <div className="border-l-4 border-yellow-500 pl-4">
-                    <div className="font-semibold mb-1 text-white">402 Payment Required</div>
-                    <p className="text-sm text-muted-foreground">
-                      No payment provided or payment invalid. Decode the Payment-Required header (base64 JSON) for the payment requirements.
-                    </p>
-                  </div>
-                  <div className="border-l-4 border-red-500 pl-4">
-                    <div className="font-semibold mb-1 text-white">400 Bad Request</div>
-                    <p className="text-sm text-muted-foreground">
-                      Invalid request body or parameters.
-                    </p>
-                  </div>
-                  <div className="border-l-4 border-red-500 pl-4">
-                    <div className="font-semibold mb-1 text-white">500 Internal Server Error</div>
-                    <p className="text-sm text-muted-foreground">
-                      Server error processing the request. Retry with exponential backoff.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-            </div>
+              </section>
             </div>
           </main>
         </div>

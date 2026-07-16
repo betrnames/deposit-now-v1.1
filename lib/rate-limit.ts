@@ -8,7 +8,7 @@ interface Entry {
 const store = new Map<string, Entry>();
 const WINDOW_MS = 60_000;
 const DEFAULT_MAX = 60;
-const ADMIN_MAX = 5;
+const DEPOSIT_MAX = 30;
 const WAITLIST_MAX = 10;
 
 if (typeof setInterval !== 'undefined') {
@@ -22,8 +22,9 @@ if (typeof setInterval !== 'undefined') {
 }
 
 function limitForRoute(pathname: string, method: string): number {
-  if (pathname === '/api/merchants' && method === 'POST') return ADMIN_MAX;
+  if (pathname === '/api/deposit' || pathname === '/api/deposit/') return DEPOSIT_MAX;
   if (pathname === '/api/waitlist') return WAITLIST_MAX;
+  if (pathname.startsWith('/api/merchants')) return 10;
   return DEFAULT_MAX;
 }
 

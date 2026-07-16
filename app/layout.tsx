@@ -6,32 +6,33 @@ import { ThemeInit } from '@/components/ThemeInit';
 export const metadata: Metadata = {
   metadataBase: new URL('https://deposit.now'),
   title: {
-    default: 'Deposit Now | x402 Payment Intelligence',
-    template: '%s | Deposit Now',
+    default: 'deposit.now | The Funding Layer for AI Agents',
+    template: '%s | deposit.now',
   },
-  description: 'Compare x402 facilitators by fee, chain, and token. deposit.now helps developers and AI agents route payments to the best facilitator.',
+  description:
+    'The Funding Layer for AI Agents. Programmable deposits via one x402 call — fund any wallet (including sub-wallets / child agents). No humans required for agent-to-agent flows.',
   keywords: [
-    'x402',
-    'x402 API',
-    'x402 facilitator',
-    'facilitator comparison',
-    'payment routing',
-    'facilitator dashboard',
-    'AI agent payments',
-    'agent deposits',
+    'AI agent funding',
+    'x402 deposit API',
+    'agent-to-agent transfers',
+    'programmable deposits',
+    'sub-agent funding',
+    'child agent wallet',
     'HTTP 402',
-    'USDC micropayments',
+    'USDC',
     'Base',
     'machine payments',
     'agentic commerce',
     'autonomous agents',
+    'deposit.now',
   ],
   alternates: { canonical: 'https://deposit.now' },
   openGraph: {
-    title: 'Deposit Now | x402 Payment Intelligence',
-    description: 'Compare x402 facilitators by fee, chain, and token. Route payments to the best facilitator for every transaction.',
+    title: 'deposit.now | The Funding Layer for AI Agents',
+    description:
+      'Programmable deposits via one x402 call — fund any wallet, including sub-wallets and child agents.',
     url: 'https://deposit.now',
-    siteName: 'Deposit Now',
+    siteName: 'deposit.now',
     images: [
       {
         url: '/og.png',
@@ -42,8 +43,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Deposit Now | x402 Payment Intelligence',
-    description: 'Compare x402 facilitators by fee, chain, and token. Route payments to the best facilitator.',
+    title: 'deposit.now | The Funding Layer for AI Agents',
+    description:
+      'Programmable deposits via one x402 call — fund any wallet, including sub-wallets and child agents.',
     images: ['/og.png'],
   },
   icons: {
@@ -63,16 +65,17 @@ export default function RootLayout({
     '@graph': [
       {
         '@type': 'WebAPI',
-        name: 'deposit.now x402 Payment Intelligence',
+        name: 'deposit.now — Funding Layer for AI Agents',
         description:
-          'Compare x402 facilitators and route payments to the best facilitator by fee, chain, and token. Also supports autonomous USDC deposits via x402 on Base mainnet.',
-        url: 'https://deposit.now/dashboard',
+          'Programmable USDC deposits via x402. Fund any wallet (including sub-wallets / child agents) with one POST. Agent pays amount + 1%; net is forwarded on Base.',
+        url: 'https://deposit.now/api/deposit',
         documentation: 'https://deposit.now/docs',
         provider: { '@type': 'Organization', name: 'deposit.now', url: 'https://deposit.now' },
         offers: {
           '@type': 'Offer',
           priceCurrency: 'USD',
-          description: 'Free facilitator comparison dashboard. Deposit API: agent pays the declared amount (min $0.01) via x402 exact scheme on Base mainnet.',
+          description:
+            '1% platform fee on each deposit. Agent pays amount + fee via x402 exact scheme on Base mainnet.',
         },
       },
       {
@@ -83,23 +86,23 @@ export default function RootLayout({
             name: 'What is deposit.now?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'deposit.now is an x402 payment intelligence platform that helps developers and AI agents compare facilitators by fee, chain, and token support. It also provides a live x402 deposit API on Base mainnet.',
+              text: 'deposit.now is the funding layer for AI agents: a programmable deposit API using x402 so agents can fund any wallet — including sub-wallets and child agents — without humans in secondary flows.',
             },
           },
           {
             '@type': 'Question',
-            name: 'How does deposit.now help with x402?',
+            name: 'How do agent-to-agent deposits work?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'deposit.now indexes x402 facilitators and lets you compare them side by side — fees, supported chains, tokens, payment schemes, and production status. The dashboard helps you choose the right facilitator for your integration.',
+              text: 'POST /api/deposit with target (EVM address), amount (net USDC), and optional memo. The API returns HTTP 402 for amount + 1%. After payment settles to the platform CDP wallet, net USDC is forwarded to target.',
             },
           },
           {
             '@type': 'Question',
-            name: 'How many facilitators does deposit.now index?',
+            name: 'What does it cost?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'deposit.now indexes 20 x402 facilitators including CDP, Corbits, thirdweb, Mogami, OpenX402.ai, PayAI, Meridian, and more — covering multiple chains, tokens, and fee structures.',
+              text: 'A flat 1% platform fee on the net deposit amount. No merchant tiers, accounts, or API keys required for agents.',
             },
           },
         ],
@@ -117,7 +120,10 @@ export default function RootLayout({
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

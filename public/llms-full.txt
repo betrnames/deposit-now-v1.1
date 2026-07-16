@@ -1,0 +1,88 @@
+# deposit.now — full agent guide
+
+## Positioning
+
+deposit.now is **The Funding Layer for AI Agents**.
+
+Programmable deposits via one x402 call — fund any wallet (including sub-wallets / child agents). No humans required for secondary/agent-to-agent flows.
+
+Primary use case: a parent agent funds a child / trading / research sub-agent by depositing USDC to the child's address without a human operator.
+
+## Protocol
+
+1. Agent `POST https://deposit.now/api/deposit` with JSON:
+   ```json
+   {
+     "target": "0x…",
+     "amount": "50.00",
+     "memo": "Fund child trading agent"
+   }
+   ```
+2. Server responds **402 Payment Required** with x402 requirements.
+   - Gross price = `amount + 1%` (e.g. $50.00 net → pay $50.50).
+   - Asset: USDC on Base mainnet (`eip155:8453`).
+   - payTo: platform CDP Agentic Wallet.
+3. Agent signs and settles the x402 payment (any compliant x402 client).
+4. Facilitator verifies on-chain payment.
+5. Backend:
+   - Retains platform fee (1%).
+   - Forwards net `amount` USDC to `target` via Coinbase CDP Server/Agentic Wallet.
+6. Response **200** includes `receiptId`, `receiptUrl`, amounts, and target.
+
+## Field reference
+
+| Field  | Required | Description |
+|--------|----------|-------------|
+| target | yes | EVM address `^0x[a-fA-F0-9]{40}$` — destination of net funds |
+| amount | yes | Net USDC for target, 0.01 – 100000 |
+| memo   | no  | Free text ≤ 256 chars for agent bookkeeping |
+
+## Success response (shape)
+
+```json
+{
+  "status": "success",
+  "target": "0x…",
+  "memo": "Fund child trading agent",
+  "depositAmount": "50.000000",
+  "fee": "0.500000",
+  "feePercent": 1,
+  "grossPaid": "50.500000",
+  "paymentReceived": true,
+  "receiptId": "…",
+  "receiptUrl": "https://deposit.now/receipt/…",
+  "network": "base",
+  "timestamp": "…"
+}
+```
+
+## Errors
+
+| Status | Meaning |
+|--------|---------|
+| 400 | Invalid target or amount (after payment path may still use 402 unpaid body for invalid pre-pay probes) |
+| 402 | Payment required — attach x402 proof and retry |
+| 410 | Retired merchant routes |
+| 429 | Rate limit — respect Retry-After |
+
+## Security notes for integrators
+
+- deposit.now server never needs your private key. Only the **paying agent** signs.
+- Platform custody of inbound funds is CDP-managed (API key + wallet secret in platform env), not raw MetaMask keys in the app.
+- Always verify receipt on `/receipt/{id}` and Basescan links before treating funds as final if forwardStatus is delayed.
+
+## Integration checklist
+
+1. Hold USDC on Base for the paying agent.
+2. Use `@x402/fetch` (JS) or equivalent for automatic 402 handling.
+3. Pass real `target` and `amount` on every call.
+4. Persist `receiptId` / `receiptUrl` in agent memory.
+5. Optional: poll receipt page until `forwardTxHash` appears.
+
+## Links
+
+- Docs: https://deposit.now/docs
+- Pricing: https://deposit.now/pricing
+- OpenAPI: https://deposit.now/openapi.json
+- Short llms: https://deposit.now/llms.txt
+- Discovery: https://deposit.now/api/discovery

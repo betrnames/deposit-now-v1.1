@@ -3,20 +3,20 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'API Documentation',
   description:
-    'x402 API documentation for deposit.now — dynamic deposit amounts, USDC on Base mainnet, agent quickstart, code examples, and merchant billing.',
+    'x402 deposit API for AI agents — fund any wallet with one call. amount + 1% fee, Base mainnet, sub-agent funding.',
   alternates: { canonical: 'https://deposit.now/docs' },
   openGraph: {
-    title: 'API Documentation | Deposit Now',
+    title: 'API Documentation | deposit.now',
     description:
-      'x402 API documentation — agents deposit any amount of USDC autonomously on Base mainnet. No accounts, no API keys.',
+      'Programmable deposits via one x402 call — fund any wallet including child agents.',
     url: 'https://deposit.now/docs',
-    siteName: 'Deposit Now',
+    siteName: 'deposit.now',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'API Documentation | Deposit Now',
+    title: 'API Documentation | deposit.now',
     description:
-      'x402 API for autonomous USDC deposits on Base mainnet — dynamic pricing, merchant webhooks, and Bazaar discovery.',
+      'AI agent funding layer — POST /api/deposit, pay via x402, net forwards to target.',
   },
   robots: { index: true, follow: true },
 };

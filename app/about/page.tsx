@@ -5,14 +5,14 @@ import { pageGraph } from '@/lib/seo';
 export const metadata: Metadata = {
   title: 'About',
   description:
-    'deposit.now is a non-custodial x402 payment rail that lets AI agents trigger verifiable USDC deposits on Base mainnet.',
+    'deposit.now is the funding layer for AI agents — programmable x402 deposits to fund any wallet, including sub-wallets and child agents.',
   alternates: { canonical: 'https://deposit.now/about' },
   openGraph: {
-    title: 'About',
+    title: 'About | deposit.now',
     description:
-      'Non-custodial programmable deposit infrastructure for autonomous AI agents on Base mainnet.',
+      'The Funding Layer for AI Agents. Programmable deposits via one x402 call on Base.',
     url: 'https://deposit.now/about',
-    siteName: 'Deposit Now',
+    siteName: 'deposit.now',
   },
   robots: { index: true, follow: true },
 };
@@ -23,7 +23,7 @@ const jsonLd = pageGraph(
     name: 'About deposit.now',
     url: 'https://deposit.now/about',
     description:
-      'Programmable funding gateway for autonomous AI agents using the x402 HTTP payment protocol and USDC on Base mainnet.',
+      'The Funding Layer for AI Agents — programmable deposits via x402 for agent-to-agent and sub-wallet funding.',
     mainEntity: {
       '@type': 'Organization',
       name: 'deposit.now',
@@ -37,7 +37,6 @@ const jsonLd = pageGraph(
 const nav = [
   { id: 'overview', label: 'Overview' },
   { id: 'what-we-are', label: 'What we are' },
-  { id: 'roadmap', label: 'Roadmap' },
   { id: 'business-model', label: 'Business model' },
   { id: 'contact', label: 'Contact' },
 ];
@@ -47,72 +46,51 @@ export default function AboutPage() {
     <GuidePage
       kicker="deposit.now"
       title="About"
-      subtitle="Programmable, non-custodial deposit infrastructure for autonomous agents."
+      subtitle="The Funding Layer for AI Agents."
       nav={nav}
       jsonLd={jsonLd}
     >
       <p id="overview">
-        <strong>deposit.now</strong> is a public x402 API that lets AI agents
-        autonomously trigger deposits over HTTP. Agents pay a micropayment in USDC on Base mainnet;
-        the facilitator settles on-chain; deposit.now returns a verifiable public receipt
-        bound to the transaction.
+        <strong>deposit.now</strong> is a public x402 deposit API. Agents fund any wallet —
+        including sub-wallets and child agents — with one HTTP call. No humans required for
+        secondary or agent-to-agent flows.
       </p>
 
       <h2 id="what-we-are">What we are</h2>
       <ul>
         <li>
-          <strong>Payment rail, not a bank.</strong> We do not custody user or merchant
-          funds. USDC settles directly to declared on-chain addresses.
+          <strong>Funding layer, not a bank.</strong> Agents pay amount + 1% via x402; net USDC is
+          forwarded on-chain to the declared target.
         </li>
         <li>
-          <strong>Machine-native.</strong> No accounts, passwords, or API keys. HTTP 402 +
-          x402 client SDKs handle authentication and payment.
+          <strong>Machine-native.</strong> No accounts or API keys for agents. HTTP 402 + x402
+          clients handle payment.
         </li>
         <li>
-          <strong>Verifiable.</strong> Every settled call can produce a public receipt with
-          payer, amount, pay-to address, and a Basescan transaction link.
+          <strong>Verifiable.</strong> Every settled call can produce a public receipt with payer,
+          target, fee, and Basescan links.
+        </li>
+        <li>
+          <strong>CDP-secured platform wallet.</strong> Settlement uses Coinbase Agentic / Server
+          Wallet credentials — not raw private keys in application config.
         </li>
       </ul>
-
-      <h2 id="roadmap">What we are building toward</h2>
-      <ol>
-        <li>
-          <strong>Receipts:</strong> Public, on-chain-verifiable deposit
-          receipts after every settlement.
-        </li>
-        <li>
-          <strong>Merchant endpoints:</strong> Per-merchant deposit routes
-          at <code>/api/merchants/&#123;slug&#125;/deposit</code> with merchant payTo
-          settlement, public catalog, and optional webhooks.
-        </li>
-        <li>
-          <strong>Discovery flywheel:</strong> Bazaar extension,{' '}
-          <code>/.well-known/x402</code> manifest, OpenAPI + llms.txt, and CDP Bazaar
-          indexing after mainnet settlement.
-        </li>
-      </ol>
 
       <h2 id="business-model">Business model</h2>
       <p>
-        We monetize at the <strong>merchant and volume layer</strong> — usage-based settlement
-        fees, webhook automation, and referral revenue share — not by blocking agents with
-        account gates. Agents pay the declared deposit amount via x402 — USDC settles
-        directly to the merchant wallet. Merchants choose a{' '}
-        <a href="/pricing">pricing tier</a> for endpoints, webhooks, and Bazaar discovery.
+        Flat <strong>1% platform fee</strong> on each deposit. No merchant tiers, no prepaid
+        balances, no facilitator marketplace.
       </p>
 
       <h2 id="contact">Contact</h2>
-      <ul>
-        <li>
-          <a href="mailto:support@deposit.now">support@deposit.now</a>
-        </li>
-        <li>
-          API docs: <a href="/docs">deposit.now/docs</a>
-        </li>
-        <li>
-          Technical spec: <a href="/litepaper">litepaper</a>
-        </li>
-      </ul>
+      <p>
+        Email{' '}
+        <a href="mailto:support@deposit.now">support@deposit.now</a> or follow{' '}
+        <a href="https://x.com/Deposit_Now" target="_blank" rel="noopener noreferrer">
+          @Deposit_Now
+        </a>
+        .
+      </p>
     </GuidePage>
   );
 }

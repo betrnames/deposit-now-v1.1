@@ -1,13 +1,18 @@
 import { CdpClient } from '@coinbase/cdp-sdk';
 import { put } from '@vercel/blob';
-import { normalizeTier, TIER_BILLING, type MerchantTier } from '@/lib/billing';
+
+/**
+ * Coinbase Developer Platform (CDP) Agentic / Server Wallet only.
+ * Never store raw EVM private keys for the platform hot wallet.
+ * Secrets: CDP_API_KEY_ID, CDP_API_KEY_SECRET, CDP_WALLET_SECRET (platform env).
+ */
 
 let _cdp: CdpClient | null = null;
 
 function getCdpClient(): CdpClient {
   if (!_cdp) {
     if (!process.env.CDP_API_KEY_ID || !process.env.CDP_API_KEY_SECRET) {
-      throw new Error('CDP credentials required for settlement');
+      throw new Error('CDP credentials required for settlement forwarding');
     }
     _cdp = new CdpClient({
       apiKeyId: process.env.CDP_API_KEY_ID,
@@ -22,36 +27,11 @@ async function getPlatformAccount() {
   return getCdpClient().evm.getOrCreateAccount({ name: 'deposit-now-platform' });
 }
 
-export interface SettlementSplit {
-  gross: number;
-  fee: number;
-  net: number;
-  feePercent: number;
-  bps: number;
-}
-
-export function calculateSplit(
-  grossUsdc: string | null,
-  tier: MerchantTier | undefined
-): SettlementSplit | null {
-  if (!grossUsdc) return null;
-  const gross = parseFloat(grossUsdc);
-  if (!Number.isFinite(gross) || gross <= 0) return null;
-  const bps = TIER_BILLING[normalizeTier(tier)].settlementFeeBps;
-  const feePercent = bps / 100;
-  const fee = Math.round(((gross * bps) / 10_000) * 1e6) / 1e6;
-  const net = Math.round((gross - fee) * 1e6) / 1e6;
-  return { gross, fee, net, feePercent, bps };
-}
-
-async function forwardToMerchant(
-  merchantPayTo: string,
-  netUsdc: number
-): Promise<string> {
+async function forwardToTarget(target: string, netUsdc: number): Promise<string> {
   const account = await getPlatformAccount();
   const atomicAmount = BigInt(Math.round(netUsdc * 1e6));
   const result = await account.transfer({
-    to: merchantPayTo as `0x${string}`,
+    to: target as `0x${string}`,
     amount: atomicAmount,
     token: 'usdc',
     network: 'base',
@@ -63,12 +43,12 @@ const MAX_RETRIES = 3;
 const RETRY_DELAYS = [2_000, 5_000, 10_000];
 
 export async function forwardWithRetry(
-  merchantPayTo: string,
+  target: string,
   netUsdc: number
 ): Promise<{ txHash: string | null; error: string | null }> {
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
-      const txHash = await forwardToMerchant(merchantPayTo, netUsdc);
+      const txHash = await forwardToTarget(target, netUsdc);
       return { txHash, error: null };
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'unknown';
@@ -85,13 +65,14 @@ export async function forwardWithRetry(
 
 export interface SettlementLog {
   depositId: string;
-  merchantSlug: string;
+  target: string;
+  memo: string | null;
   grossAmount: string;
   fee: string;
   feePercent: string;
-  netToMerchant: string;
+  netToTarget: string;
   agentTxHash: string | null;
-  merchantTxHash: string | null;
+  forwardTxHash: string | null;
   status: 'settled' | 'forward_failed';
   error?: string;
   requiresManualReview?: boolean;

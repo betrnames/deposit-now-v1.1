@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { middleware as x402Middleware } from '@/lib/x402';
 
-const X402_PATTERN = /^\/api\/merchants\/[a-z0-9][a-z0-9-]*\/(deposit|renew|topup)\/?$/;
-
 function isX402Route(pathname: string): boolean {
-  return pathname === '/api/deposit' || X402_PATTERN.test(pathname);
+  return pathname === '/api/deposit' || pathname === '/api/deposit/';
 }
 
 export async function middleware(request: NextRequest) {

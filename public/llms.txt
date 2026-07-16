@@ -1,24 +1,27 @@
 # deposit.now
 
-> deposit.now is the first public x402 API that lets AI agents deposit funds autonomously — 0.01 USDC per call on Base mainnet, paid over HTTP 402. No accounts, no API keys, no human sign-up.
+> The Funding Layer for AI Agents. Programmable deposits via one x402 call — fund any wallet (including sub-wallets / child agents). No humans required for secondary/agent-to-agent flows.
 
-Built for machine consumption: any x402 v2 client can read the payment requirements from the HTTP 402 response and pay programmatically. Machine contract: https://deposit.now/openapi.json
+Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-full.txt
 
-## API
+## Core API
 
-- POST https://deposit.now/api/deposit — platform deposit. JSON body (optional): {"amount": "100.00", "account": "agent-wallet-123"}
-- GET https://deposit.now/api/deposit — deposit info, same payment flow
-- GET https://deposit.now/api/merchants — list merchant-scoped deposit endpoints (Phase 2)
-- POST https://deposit.now/api/merchants/{slug}/deposit — merchant deposit; USDC settles to merchant payTo
-- GET https://deposit.now/.well-known/x402 — discovery manifest (OpenAPI, Bazaar, x402scan pointers)
-- GET https://deposit.now/api/discovery — same manifest as JSON API
-- Price: 0.01 USDC (10000 atomic units), x402 v2 `exact` scheme
-- Network: Base mainnet (eip155:8453) in production; Base Sepolia (eip155:84532) for local dev only
-- Unpaid request → HTTP 402 with `Payment-Required` header (base64 JSON: scheme, network, asset, payTo)
-- Paid request → 200 JSON with receiptId, receiptUrl, transactionId + payment-response settlement header
-- Bazaar discovery extension included in the 402 payload (input/output schemas)
+- POST https://deposit.now/api/deposit
+- Body (JSON, required):
+  - target: EVM address receiving net USDC (0x + 40 hex)
+  - amount: net USDC to forward (decimal string, min 0.01, max 100000)
+  - memo: optional string (max 256), e.g. "Fund child trading agent"
+- Price: amount + 1% platform fee (agent pays gross via x402)
+- Network: Base mainnet eip155:8453 (production); Base Sepolia for local dev
+- Unpaid → HTTP 402 + Payment-Required (x402 v2 exact scheme, USDC)
+- Paid → 200 JSON with target, depositAmount, fee, grossPaid, receiptId, receiptUrl
+- After settlement: platform keeps 1%, forwards net to target via Coinbase CDP Agentic Wallet
 
-## Pay with JavaScript (@x402/fetch)
+## Example body
+
+{"target":"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0","amount":"50.00","memo":"Fund child trading agent"}
+
+## Agent pays with JavaScript
 
     npm install @x402/fetch @x402/core @x402/evm viem
 
@@ -27,7 +30,7 @@ Built for machine consumption: any x402 v2 client can read the payment requireme
     import { ExactEvmScheme } from '@x402/evm/exact/client';
     import { privateKeyToAccount } from 'viem/accounts';
 
-    const signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY);
+    const signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY); // paying agent only
     const client = new x402Client();
     client.register('eip155:*', new ExactEvmScheme(signer));
     const fetchWithPayment = wrapFetchWithPayment(fetch, client);
@@ -35,51 +38,33 @@ Built for machine consumption: any x402 v2 client can read the payment requireme
     const res = await fetchWithPayment('https://deposit.now/api/deposit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: '100.00', account: 'agent-wallet-123' })
+      body: JSON.stringify({
+        target: '0xChildWallet',
+        amount: '50.00',
+        memo: 'Fund child trading agent',
+      }),
     });
     console.log(await res.json());
 
-## Pay with Python (x402[httpx])
+## Discovery
 
-    pip install "x402[httpx]" eth-account
+- GET https://deposit.now/api/discovery
+- GET https://deposit.now/.well-known/x402
+- GET https://deposit.now/openapi.json
+- GET https://deposit.now/receipt/{id}
 
-    import asyncio, os
-    from eth_account import Account
-    from x402 import x402Client
-    from x402.http.clients import x402HttpxClient
-    from x402.mechanisms.evm import EthAccountSigner
-    from x402.mechanisms.evm.exact.register import register_exact_evm_client
+## Retired
 
-    async def main():
-        client = x402Client()
-        account = Account.from_key(os.getenv("EVM_PRIVATE_KEY"))
-        register_exact_evm_client(client, EthAccountSigner(account))
-        async with x402HttpxClient(client) as http:
-            r = await http.post("https://deposit.now/api/deposit",
-                                json={"amount": "100.00", "account": "agent-wallet-123"})
-            print(await r.aread())
-
-    asyncio.run(main())
+- Merchant registration, /api/merchants/*, facilitator directory, merchant webhooks — gone (HTTP 410). Use POST /api/deposit only.
 
 ## Docs
 
-- https://deposit.now/docs — endpoints, 402 flow, JS/Python/curl examples, FAQ
-- https://deposit.now/pricing — merchant tiers (Catalog / Rail / Network), settlement fees, webhook automation, referral rev-share
-- https://deposit.now/litepaper — technical and economic overview (litepaper)
-- https://deposit.now/about — mission, roadmap, investor contact
-- https://deposit.now/openapi.json — OpenAPI 3.1 contract with x-payment-info pricing
-- https://deposit.now/ecosystem — related x402 tooling
-
-- https://deposit.now/privacy — privacy policy
-- https://deposit.now/disclosures — crypto and API risk disclosures
-- https://deposit.now/terms — terms of service
+- https://deposit.now/docs
+- https://deposit.now/pricing — flat 1%
+- https://deposit.now/llms-full.txt — extended agent guide
 
 ## Facts
 
-- Payments verified and settled by an x402 facilitator before the API responds
-- Settlement address: 0x96da70311D3fDb8500B9AB0855E17F213dB0C9AA (Base)
-- Mainnet live on Base (eip155:8453) via CDP facilitator; verifiable receipts at /receipt/<id>
-- Bazaar: indexed by CDP after first mainnet settlement; search via CDP discovery/search
-- Merchant webhooks: POST deposit.settled to merchant webhookUrl after settlement (optional)
-- MCP: mcp-server/ package — deposit_now_describe, deposit_now_list_merchants, deposit_now_trigger_deposit, deposit_now_get_receipt
-- Contact: form at https://deposit.now
+- Settlement payTo (platform): 0x96da70311D3fDb8500B9AB0855E17F213dB0C9AA (Base)
+- Facilitator: Coinbase CDP x402 (mainnet)
+- Contact: support@deposit.now

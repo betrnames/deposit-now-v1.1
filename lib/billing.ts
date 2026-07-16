@@ -1,83 +1,15 @@
-import type { Merchant } from '@/lib/merchants';
-
-export type MerchantTier = 'catalog' | 'rail' | 'network';
-
-export interface TierBillingConfig {
-  id: MerchantTier;
-  monthlyFeeUsdc: number | null;
-  settlementFeeBps: number;
-  renewDays: number;
-}
-
-export const TIER_BILLING: Record<MerchantTier, TierBillingConfig> = {
-  catalog: {
-    id: 'catalog',
-    monthlyFeeUsdc: 0,
-    settlementFeeBps: 30,
-    renewDays: 0,
-  },
-  rail: {
-    id: 'rail',
-    monthlyFeeUsdc: 49,
-    settlementFeeBps: 15,
-    renewDays: 30,
-  },
-  network: {
-    id: 'network',
-    monthlyFeeUsdc: null,
-    settlementFeeBps: 10,
-    renewDays: 30,
-  },
-};
+/** Deposit amount caps and platform fee (1%). */
 
 export const DEPOSIT_MIN_USDC = 0.01;
 export const DEPOSIT_MAX_USDC = 100_000;
 
-export const TOPUP_MIN_USDC = 10;
-export const TOPUP_MAX_USDC = 10_000;
+/** Platform fee: 1% of the requested net deposit (100 bps). */
+export const PLATFORM_FEE_BPS = 100;
 
-export function normalizeTier(tier: string | undefined): MerchantTier {
-  if (tier === 'rail' || tier === 'network') return tier;
-  return 'catalog';
-}
+const ADDRESS_RE = /^0x[a-fA-F0-9]{40}$/;
 
-export function isTierActive(merchant: Merchant): boolean {
-  const tier = normalizeTier(merchant.tier);
-  if (tier === 'catalog' || tier === 'network') return true;
-  if (!merchant.tierExpiresAt) return false;
-  return new Date(merchant.tierExpiresAt) > new Date();
-}
-
-export function canUseWebhooks(merchant: Merchant): boolean {
-  const tier = normalizeTier(merchant.tier);
-  if (tier === 'catalog') return false;
-  if (tier === 'network') return true;
-  return isTierActive(merchant);
-}
-
-export function settlementFeeMicro(
-  depositAmount: string | null,
-  tier: MerchantTier | undefined
-): number {
-  const bps = TIER_BILLING[normalizeTier(tier)].settlementFeeBps;
-  if (!depositAmount) return 0;
-  const amount = parseFloat(depositAmount);
-  if (!Number.isFinite(amount) || amount <= 0) return 0;
-  return Math.ceil((amount * 1_000_000 * bps) / 10_000);
-}
-
-export function microToUsdc(micro: number): string {
-  return (micro / 1_000_000).toFixed(6);
-}
-
-export function usdcToMicro(usdc: number): number {
-  return Math.round(usdc * 1_000_000);
-}
-
-export function extendTierExpiry(current: string | undefined, days: number): string {
-  const base = current && new Date(current) > new Date() ? new Date(current) : new Date();
-  base.setUTCDate(base.getUTCDate() + days);
-  return base.toISOString();
+export function isValidEvmAddress(value: unknown): value is string {
+  return typeof value === 'string' && ADDRESS_RE.test(value);
 }
 
 export function clampDepositUsdc(amount: unknown): number | null {
@@ -88,35 +20,41 @@ export function clampDepositUsdc(amount: unknown): number | null {
   return Math.round(clamped * 1e6) / 1e6;
 }
 
-export function clampTopupUsdc(amount: unknown): number {
-  const raw = typeof amount === 'number' ? amount : parseFloat(String(amount ?? TOPUP_MIN_USDC).trim());
-  if (!Number.isFinite(raw)) return TOPUP_MIN_USDC;
-  const clamped = Math.min(TOPUP_MAX_USDC, Math.max(TOPUP_MIN_USDC, raw));
-  return Math.round(clamped * 1e6) / 1e6;
+export interface DepositSplit {
+  /** Net USDC forwarded to target wallet */
+  net: number;
+  /** Platform fee USDC (1%) */
+  fee: number;
+  /** Total USDC the agent pays via x402 (net + fee) */
+  gross: number;
+  feePercent: number;
+  bps: number;
 }
 
-export interface MerchantBillingPublic {
-  tier: MerchantTier;
-  tierActive: boolean;
-  tierExpiresAt: string | null;
-  balanceUsdc: string;
-  settlementFeeBps: number;
-  renewUrl: string;
-  topupUrl: string;
-  monthlyFeeUsdc: number | null;
-}
-
-export function toBillingPublic(merchant: Merchant): MerchantBillingPublic {
-  const tier = normalizeTier(merchant.tier);
-  const config = TIER_BILLING[tier];
+/**
+ * `amount` is the intended net funding for the target wallet.
+ * Agent pays gross = amount + 1% fee.
+ */
+export function calculateDepositSplit(amountUsdc: number): DepositSplit | null {
+  if (!Number.isFinite(amountUsdc) || amountUsdc < DEPOSIT_MIN_USDC) return null;
+  const net = Math.round(amountUsdc * 1e6) / 1e6;
+  const fee = Math.round(((net * PLATFORM_FEE_BPS) / 10_000) * 1e6) / 1e6;
+  const gross = Math.round((net + fee) * 1e6) / 1e6;
   return {
-    tier,
-    tierActive: isTierActive(merchant),
-    tierExpiresAt: merchant.tierExpiresAt ?? null,
-    balanceUsdc: microToUsdc(merchant.billingBalanceMicro ?? 0),
-    settlementFeeBps: config.settlementFeeBps,
-    monthlyFeeUsdc: config.monthlyFeeUsdc,
-    renewUrl: `https://deposit.now/api/merchants/${merchant.slug}/renew`,
-    topupUrl: `https://deposit.now/api/merchants/${merchant.slug}/topup`,
+    net,
+    fee,
+    gross,
+    feePercent: PLATFORM_FEE_BPS / 100,
+    bps: PLATFORM_FEE_BPS,
   };
+}
+
+export function formatUsdcPrice(usdc: number): string {
+  // x402 accepts `$` + decimal string; always emit 2–6 fractional digits
+  const rounded = Math.round(usdc * 1e6) / 1e6;
+  let s = rounded.toFixed(6);
+  s = s.replace(/0+$/, '').replace(/\.$/, '');
+  if (!s.includes('.')) s = `${s}.00`;
+  else if (s.split('.')[1].length === 1) s = `${s}0`;
+  return `$${s}`;
 }

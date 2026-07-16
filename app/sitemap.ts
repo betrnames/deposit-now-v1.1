@@ -5,20 +5,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     '',
     '/docs',
-    '/ecosystem',
-    '/api/discovery',
-    '/api/merchants',
-
-    '/about',
     '/pricing',
+    '/about',
     '/litepaper',
+    '/api/discovery',
+    '/llms.txt',
+    '/llms-full.txt',
+    '/openapi.json',
     '/privacy',
     '/disclosures',
     '/terms',
   ].map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: path === '' ? 1 : 0.7,
+    changeFrequency: 'weekly' as const,
+    priority: path === '' ? 1 : path === '/docs' || path === '/llms.txt' ? 0.9 : 0.7,
   }));
 }
