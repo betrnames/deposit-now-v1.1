@@ -4,6 +4,7 @@ import {
   clampDepositUsdc,
   isValidEvmAddress,
 } from '@/lib/billing';
+import { buildIntent, mergeReceipt, saveDepositIntent } from '@/lib/deposit-intent';
 import { receiptIdFromPaymentHeader } from '@/lib/receipts';
 import { X402_NETWORK } from '@/lib/x402';
 
@@ -13,11 +14,16 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Headers': 'Content-Type, X-Payment, payment-signature',
 };
 
-function receiptFields(request: NextRequest) {
-  const header =
+function paymentHeader(request: NextRequest) {
+  return (
     request.headers.get('payment-signature') ??
     request.headers.get('x-payment') ??
-    request.headers.get('payment');
+    request.headers.get('payment')
+  );
+}
+
+function receiptFields(request: NextRequest) {
+  const header = paymentHeader(request);
   const receiptId = header ? receiptIdFromPaymentHeader(header) : null;
   return receiptId
     ? {
@@ -37,7 +43,7 @@ export async function handleDepositGet(request: NextRequest) {
       status: 'ok',
       service: 'deposit.now',
       description:
-        'The Funding Layer for AI Agents. POST /api/deposit with { target, amount, memo? } — pay via x402 (amount + 1% fee), net forwards to target.',
+        'Open x402 funding rail. POST /api/deposit with { target, amount, memo? } — pay amount + 1% via x402; net is forwarded to target after settlement. Optional public receipts when storage is configured.',
       network: networkLabel(),
       x402Network: X402_NETWORK,
       feePercent: 1,
@@ -51,6 +57,10 @@ export async function handleDepositGet(request: NextRequest) {
   );
 }
 
+/**
+ * Runs after x402 payment verification succeeds.
+ * Does not claim funds already arrived at target — forwarding is async in onAfterSettle.
+ */
 export async function handleDepositPost(request: NextRequest) {
   let target: string | null = null;
   let amountRaw: string | number | null = null;
@@ -87,25 +97,51 @@ export async function handleDepositPost(request: NextRequest) {
   }
 
   const split = calculateDepositSplit(net)!;
+  const intent = buildIntent(target, net, memo);
+  if (intent) {
+    try {
+      await saveDepositIntent(intent);
+    } catch {
+      // non-fatal
+    }
+  }
+
+  const receipts = receiptFields(request);
+  const receiptId = 'receiptId' in receipts ? (receipts.receiptId as string) : null;
+
+  if (receiptId) {
+    try {
+      await mergeReceipt(receiptId, {
+        target,
+        memo,
+        depositAmount: split.net.toFixed(6),
+        grossAmount: split.gross.toFixed(6),
+        fee: split.fee.toFixed(6),
+        feePercent: split.feePercent.toFixed(2),
+        netToTarget: split.net.toFixed(6),
+      });
+    } catch {
+      // best-effort
+    }
+  }
 
   return NextResponse.json(
     {
-      status: 'success',
-      message: memo
-        ? `Funded ${split.net.toFixed(6)} USDC to ${target} — ${memo}`
-        : `Funded ${split.net.toFixed(6)} USDC to ${target}`,
+      status: 'payment_received',
+      message: `Payment received for ${split.net.toFixed(6)} USDC net to ${target}. Forwarding is async after settlement — use receiptUrl for payer, target, fee, and Basescan links when available.`,
       target,
       memo,
       depositAmount: split.net.toFixed(6),
       fee: split.fee.toFixed(6),
       feePercent: split.feePercent,
       grossPaid: split.gross.toFixed(6),
+      paymentReceived: true,
+      forwardStatus: 'pending',
       network: networkLabel(),
       x402Network: X402_NETWORK,
-      paymentReceived: true,
       timestamp: new Date().toISOString(),
       transactionId: `txn_${Date.now()}_${crypto.randomUUID().slice(0, 12)}`,
-      ...receiptFields(request),
+      ...receipts,
     },
     { status: 200, headers: CORS_HEADERS }
   );

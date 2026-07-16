@@ -1,5 +1,6 @@
 import { Header } from '@/components/Header';
 import { SiteFooter } from '@/components/SiteFooter';
+import { TerminalTitle } from '@/components/TerminalTitle';
 import Link from 'next/link';
 
 interface ContentPageProps {
@@ -31,9 +32,9 @@ export function ContentPage({ title, subtitle, children, jsonLd }: ContentPagePr
             <li className="text-foreground/80">{title}</li>
           </ol>
         </nav>
-        <h1 className="mt-6 text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <TerminalTitle className="mt-6 text-3xl sm:text-4xl font-black text-white tracking-tight">
           {title}
-        </h1>
+        </TerminalTitle>
         {subtitle && (
           <p className="mt-4 text-lg text-muted-foreground leading-relaxed">{subtitle}</p>
         )}

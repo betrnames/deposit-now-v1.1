@@ -3,20 +3,19 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'API Documentation',
   description:
-    'x402 deposit API for AI agents — fund any wallet with one call. amount + 1% fee, Base mainnet, sub-agent funding.',
+    'Open x402 funding rail docs — POST target + amount, pay amount + 1%, async forward, honest payment_received status.',
   alternates: { canonical: 'https://deposit.now/docs' },
   openGraph: {
     title: 'API Documentation | deposit.now',
     description:
-      'Programmable deposits via one x402 call — fund any wallet including child agents.',
+      'x402 deposit API: pay amount + 1%, net to any EVM target. Complements Coinbase CDP Fund.',
     url: 'https://deposit.now/docs',
     siteName: 'deposit.now',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'API Documentation | deposit.now',
-    description:
-      'AI agent funding layer — POST /api/deposit, pay via x402, net forwards to target.',
+    description: 'Open x402 funding rail — payment_received vs forwardStatus explained.',
   },
   robots: { index: true, follow: true },
 };

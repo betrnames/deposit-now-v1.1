@@ -10,7 +10,7 @@ export function WhyDepositNow({ showPricingLink = true }: { showPricingLink?: bo
         <div className="flex justify-center mb-12 sm:mb-16">
           <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/5 px-4 py-2 text-primary text-[10px] sm:text-xs font-black uppercase tracking-[0.2em]">
             <GitCompare className="h-3 w-3 shrink-0" />
-            Why not a direct transfer?
+            When to use what
           </span>
         </div>
 
@@ -31,7 +31,10 @@ export function WhyDepositNow({ showPricingLink = true }: { showPricingLink?: bo
                   className="flex items-start gap-3 text-sm sm:text-base text-muted-foreground"
                 >
                   <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>{point.body}</span>
+                  <span>
+                    <strong className="text-white font-semibold">{point.title}. </strong>
+                    {point.body}
+                  </span>
                 </li>
               ))}
             </ul>

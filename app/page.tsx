@@ -4,6 +4,8 @@ import { Zap, Coins, CheckCircle2, Sparkles } from 'lucide-react';
 import { SiteFooter } from '@/components/SiteFooter';
 import { Header } from '@/components/Header';
 import { WhyDepositNow } from '@/components/WhyDepositNow';
+import { TerminalTitle } from '@/components/TerminalTitle';
+import { honestPitch } from '@/lib/pricing';
 
 export default function Home() {
   return (
@@ -30,21 +32,21 @@ export default function Home() {
               x402 · Base mainnet
             </Badge>
 
-            <h1 className="text-4xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-4 leading-[1.05]">
-              <div className="text-white mb-2">The Funding Layer</div>
-              <div className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/90 to-accent">
-                for AI Agents
-              </div>
-            </h1>
+            <TerminalTitle className="text-4xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-4 leading-[1.05] text-left sm:text-center">
+              <span className="inline-block align-top">
+                <span className="block text-white mb-2">Open x402</span>
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/90 to-accent">
+                  funding rail
+                </span>
+              </span>
+            </TerminalTitle>
 
             <p className="text-lg sm:text-2xl text-primary font-medium mb-4 sm:mb-8 mt-4 sm:mt-8">
-              Programmable deposits via one x402 call
+              Pay amount + 1% · net to any EVM target
             </p>
 
             <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed">
-              Fund any wallet — including sub-wallets and child agents. No humans required for
-              secondary or agent-to-agent flows. Pay amount + 1%; net USDC lands on-chain at{' '}
-              <code className="text-primary text-sm">target</code>.
+              {honestPitch}
             </p>
 
             <div className="flex justify-center gap-4 mb-12">
@@ -69,7 +71,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2 whitespace-nowrap">
                 <Coins className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground/70" />
-                <span>1% flat fee</span>
+                <span>1% platform fee</span>
               </div>
             </div>
           </div>
@@ -85,9 +87,8 @@ export default function Home() {
             <span className="text-primary not-italic text-3xl sm:text-4xl lg:text-5xl leading-none align-top">
               &ldquo;
             </span>
-            The Funding Layer for AI Agents. Programmable deposits via one x402 call — fund any
-            wallet (including sub-wallets / child agents). No humans required for secondary /
-            agent-to-agent flows.
+            An open x402 funding rail — not a Coinbase Fund replacement. Protocol-shaped deposits
+            to any target, with optional public receipts.
             <span className="text-primary not-italic text-3xl sm:text-4xl lg:text-5xl leading-none align-bottom">
               &rdquo;
             </span>
@@ -113,11 +114,11 @@ export default function Home() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm font-semibold text-white">Any EVM address</span>
+                    <span className="text-sm font-semibold text-white">Any EVM target address</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm font-semibold text-white">Parent → child agents</span>
+                    <span className="text-sm font-semibold text-white">You supply the wallet</span>
                   </div>
                 </div>
               </CardContent>
@@ -130,16 +131,16 @@ export default function Home() {
               <CardContent className="p-10 relative z-10">
                 <h3 className="text-2xl font-bold mb-4 text-white">Pay x402</h3>
                 <p className="text-muted-foreground mb-6">
-                  HTTP 402 with amount + 1% fee. Agent pays USDC to the platform CDP wallet.
+                  HTTP 402 for amount + 1%. Agent pays USDC to the platform wallet via x402.
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm font-semibold text-white">Machine-readable challenge</span>
+                    <span className="text-sm font-semibold text-white">No deposit.now API key</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm font-semibold text-white">No API keys for agents</span>
+                    <span className="text-sm font-semibold text-white">Standard x402 clients</span>
                   </div>
                 </div>
               </CardContent>
@@ -150,19 +151,19 @@ export default function Home() {
                 03
               </div>
               <CardContent className="p-10 relative z-10">
-                <h3 className="text-2xl font-bold mb-4 text-white">Forward net</h3>
+                <h3 className="text-2xl font-bold mb-4 text-white">Forward + receipt</h3>
                 <p className="text-muted-foreground mb-6">
-                  After on-chain confirm, platform takes 1% and forwards net to{' '}
-                  <code className="text-primary text-sm">target</code>.
+                  After settlement, net is forwarded to target. Receipt is optional public proof —
+                  check <code className="text-primary text-sm">forwardStatus</code>.
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm font-semibold text-white">CDP Agentic Wallet</span>
+                    <span className="text-sm font-semibold text-white">Async forward (can fail)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm font-semibold text-white">Public receipt</span>
+                    <span className="text-sm font-semibold text-white">Basescan when hashes exist</span>
                   </div>
                 </div>
               </CardContent>
@@ -176,21 +177,19 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-5xl font-black mb-6 text-white leading-tight">
-                Built for
+                Protocol-shaped
                 <br />
-                Autonomous
-                <br />
-                Agents
+                wallet funding
               </h2>
               <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
-                Stop building brittle API-key funding. Use one x402 deposit call to fund wallets and
-                child agents on Base.
+                Use Coinbase CDP Fund when you already live in their wallet stack. Use deposit.now
+                when you want an open HTTP 402 deposit to any address you specify.
               </p>
               <div className="space-y-4">
                 {[
-                  'Programmatic settlements',
-                  'Sub-wallet / child-agent funding',
-                  'No human sign-off in the loop',
+                  'x402 exact scheme on Base',
+                  'Target = any address you already have',
+                  'Honest status: payment_received vs forward',
                 ].map((label) => (
                   <div key={label} className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
@@ -216,7 +215,7 @@ export default function Home() {
                       <span className="text-purple-400">POST</span> /api/deposit
                     </div>
                     <div className="text-foreground/70 text-xs mt-3 leading-relaxed">
-                      {`{ "target": "0x…", "amount": "50.00", "memo": "Fund child trading agent" }`}
+                      {`{ "target": "0x…", "amount": "50.00", "memo": "optional" }`}
                     </div>
                   </div>
 
@@ -232,7 +231,7 @@ export default function Home() {
                       <div className="text-primary text-xs mb-2">PAY AMOUNT + 1%</div>
                       <div className="text-foreground/80 text-xs leading-relaxed">
                         gross <span className="text-orange-400">50.50</span> USDC → platform · net{' '}
-                        <span className="text-orange-400">50.00</span> → target
+                        <span className="text-orange-400">50.00</span> → target (async)
                       </div>
                     </div>
                   </div>
@@ -240,7 +239,7 @@ export default function Home() {
                   <div className="flex items-center gap-3">
                     <span className="text-muted-foreground/70 text-xs">CONF</span>
                     <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 font-mono text-xs">
-                      200 Success + receipt
+                      200 payment_received
                     </Badge>
                   </div>
                 </div>

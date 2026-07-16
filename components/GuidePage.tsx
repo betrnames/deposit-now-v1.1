@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from 'react';
 import { Header } from '@/components/Header';
 import { SiteFooter } from '@/components/SiteFooter';
+import { TerminalTitle } from '@/components/TerminalTitle';
 import { ChevronRight } from 'lucide-react';
 
 export interface GuideNavItem {
@@ -115,7 +116,9 @@ export function GuidePage({
               </div>
 
               <div className="mb-12">
-                <h1 className="text-2xl font-bold text-white mb-4">{title}</h1>
+                <TerminalTitle className="text-2xl font-bold text-white mb-4 tracking-tight">
+                  {title}
+                </TerminalTitle>
                 {subtitle && (
                   <p className="text-xl text-muted-foreground leading-relaxed">{subtitle}</p>
                 )}

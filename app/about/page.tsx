@@ -5,12 +5,11 @@ import { pageGraph } from '@/lib/seo';
 export const metadata: Metadata = {
   title: 'About',
   description:
-    'deposit.now is the funding layer for AI agents — programmable x402 deposits to fund any wallet, including sub-wallets and child agents.',
+    'deposit.now is an open x402 funding rail — pay amount + 1%, net to any EVM target. Complements Coinbase CDP Fund.',
   alternates: { canonical: 'https://deposit.now/about' },
   openGraph: {
     title: 'About | deposit.now',
-    description:
-      'The Funding Layer for AI Agents. Programmable deposits via one x402 call on Base.',
+    description: 'Open x402 funding rail for agents. Honest scope: not a CDP Fund replacement.',
     url: 'https://deposit.now/about',
     siteName: 'deposit.now',
   },
@@ -23,7 +22,7 @@ const jsonLd = pageGraph(
     name: 'About deposit.now',
     url: 'https://deposit.now/about',
     description:
-      'The Funding Layer for AI Agents — programmable deposits via x402 for agent-to-agent and sub-wallet funding.',
+      'Open x402 funding rail: protocol-shaped deposits to any EVM target with optional public receipts.',
     mainEntity: {
       '@type': 'Organization',
       name: 'deposit.now',
@@ -37,6 +36,7 @@ const jsonLd = pageGraph(
 const nav = [
   { id: 'overview', label: 'Overview' },
   { id: 'what-we-are', label: 'What we are' },
+  { id: 'what-we-are-not', label: 'What we are not' },
   { id: 'business-model', label: 'Business model' },
   { id: 'contact', label: 'Contact' },
 ];
@@ -46,40 +46,49 @@ export default function AboutPage() {
     <GuidePage
       kicker="deposit.now"
       title="About"
-      subtitle="The Funding Layer for AI Agents."
+      subtitle="Open x402 funding rail — honest scope."
       nav={nav}
       jsonLd={jsonLd}
     >
       <p id="overview">
-        <strong>deposit.now</strong> is a public x402 deposit API. Agents fund any wallet —
-        including sub-wallets and child agents — with one HTTP call. No humans required for
-        secondary or agent-to-agent flows.
+        <strong>deposit.now</strong> is a public x402 deposit API. Agents pay amount + 1% over HTTP
+        402; after settlement, net USDC is forwarded to a target address they specify. Optional
+        public receipts when storage is configured.
       </p>
 
       <h2 id="what-we-are">What we are</h2>
       <ul>
         <li>
-          <strong>Funding layer, not a bank.</strong> Agents pay amount + 1% via x402; net USDC is
-          forwarded on-chain to the declared target.
+          <strong>An open funding rail.</strong> Protocol-shaped deposits for agents that can already
+          pay with x402.
         </li>
         <li>
-          <strong>Machine-native.</strong> No accounts or API keys for agents. HTTP 402 + x402
-          clients handle payment.
+          <strong>Target-agnostic.</strong> Any EVM address you pass — we do not create the wallet.
         </li>
         <li>
-          <strong>Verifiable.</strong> Every settled call can produce a public receipt with payer,
-          target, fee, and Basescan links.
+          <strong>Verifiable when configured.</strong> Receipts can include payer, target, fee, and
+          Basescan links. Forward is a separate async step.
+        </li>
+      </ul>
+
+      <h2 id="what-we-are-not">What we are not</h2>
+      <ul>
+        <li>
+          <strong>Not a Coinbase Fund replacement.</strong> CDP Agentic / Server Wallets already fund
+          and send. Use those inside that stack.
         </li>
         <li>
-          <strong>CDP-secured platform wallet.</strong> Settlement uses Coinbase Agentic / Server
-          Wallet credentials — not raw private keys in application config.
+          <strong>Not a wallet factory.</strong> No sub-wallet or child-agent provisioning product.
+        </li>
+        <li>
+          <strong>Not instant delivery guarantees.</strong> HTTP 200 means payment received, not
+          that the target already holds net funds.
         </li>
       </ul>
 
       <h2 id="business-model">Business model</h2>
       <p>
-        Flat <strong>1% platform fee</strong> on each deposit. No merchant tiers, no prepaid
-        balances, no facilitator marketplace.
+        Flat <strong>1% platform fee</strong> on each net deposit. No merchant tiers.
       </p>
 
       <h2 id="contact">Contact</h2>

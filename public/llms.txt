@@ -1,25 +1,39 @@
 # deposit.now
 
-> The Funding Layer for AI Agents. Programmable deposits via one x402 call — fund any wallet (including sub-wallets / child agents). No humans required for secondary/agent-to-agent flows.
+> Open x402 funding rail: pay amount + 1% over HTTP 402, net forwards to any EVM target, optional public receipt. Complements Coinbase CDP Fund — does not create wallets or replace CDP Fund/Send.
 
 Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-full.txt
+
+## Honest pitch
+
+- deposit.now is a **protocol-shaped deposit API**, not a full agent wallet platform.
+- Coinbase Agentic / Server Wallets already include **Fund** and **Send**. Use those if you live in CDP.
+- Use deposit.now when a paying agent should fund **any EVM address** via **x402** without a deposit.now API key.
+
+## Who needs what
+
+- Paying agent: any x402 client + Base USDC wallet/signer. No deposit.now API key. AgentKit optional, not required.
+- Target: any EVM address you already have (we do not create wallets).
+- Platform (server): CDP for hot wallet receive/forward; optional Blob for public receipts.
+- Humans on the website: docs only — no connect-wallet required to use the API.
 
 ## Core API
 
 - POST https://deposit.now/api/deposit
 - Body (JSON, required):
-  - target: EVM address receiving net USDC (0x + 40 hex)
+  - target: EVM address receiving net USDC (0x + 40 hex) — you must already have this address
   - amount: net USDC to forward (decimal string, min 0.01, max 100000)
-  - memo: optional string (max 256), e.g. "Fund child trading agent"
+  - memo: optional string (max 256)
 - Price: amount + 1% platform fee (agent pays gross via x402)
-- Network: Base mainnet eip155:8453 (production); Base Sepolia for local dev
-- Unpaid → HTTP 402 + Payment-Required (x402 v2 exact scheme, USDC)
-- Paid → 200 JSON with target, depositAmount, fee, grossPaid, receiptId, receiptUrl
-- After settlement: platform keeps 1%, forwards net to target via Coinbase CDP Agentic Wallet
+- Network: Base mainnet eip155:8453 (production)
+- Unpaid → HTTP 402 + Payment-Required
+- Paid → 200 with status **payment_received** (not a guarantee that target already holds funds)
+- Forward to target is **async after settlement** and can fail — check receiptUrl / forwardStatus
+- Public receipt requires Blob storage env on the server
 
 ## Example body
 
-{"target":"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0","amount":"50.00","memo":"Fund child trading agent"}
+{"target":"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0","amount":"50.00","memo":"optional note"}
 
 ## Agent pays with JavaScript
 
@@ -39,12 +53,12 @@ Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        target: '0xChildWallet',
+        target: '0xYourTargetWallet',
         amount: '50.00',
-        memo: 'Fund child trading agent',
+        memo: 'optional',
       }),
     });
-    console.log(await res.json());
+    console.log(await res.json()); // expect payment_received + receiptUrl
 
 ## Discovery
 
@@ -53,15 +67,11 @@ Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-
 - GET https://deposit.now/openapi.json
 - GET https://deposit.now/receipt/{id}
 
-## Retired
-
-- Merchant registration, /api/merchants/*, facilitator directory, merchant webhooks — gone (HTTP 410). Use POST /api/deposit only.
-
 ## Docs
 
 - https://deposit.now/docs
 - https://deposit.now/pricing — flat 1%
-- https://deposit.now/llms-full.txt — extended agent guide
+- https://deposit.now/llms-full.txt
 
 ## Facts
 

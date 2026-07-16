@@ -50,7 +50,7 @@ function SocialIcons({
         </svg>
       </a>
       <a
-        href="https://github.com/DepositNow"
+        href="https://github.com/betrnames/deposit-now-v1.1"
         target="_blank"
         rel="noopener noreferrer"
         className={className}
@@ -109,6 +109,17 @@ function FooterLinks() {
         </li>
         <li>
           <a
+            href="https://x402dir.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${linkClass} inline-flex items-center gap-1`}
+          >
+            x402dir.com
+            <ExternalLink className="h-3 w-3 shrink-0" />
+          </a>
+        </li>
+        <li>
+          <a
             href="https://x402.org"
             target="_blank"
             rel="noopener noreferrer"
@@ -151,8 +162,8 @@ export function SiteFooter() {
               <DepositLogo size={40} />
             </Link>
             <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
-              The Funding Layer for AI Agents. Programmable deposits via one x402 call — fund any
-              wallet, including sub-wallets and child agents.
+              Open x402 funding rail — pay amount + 1%, net to any EVM target. Complements Coinbase
+              CDP Fund; does not replace it.
             </p>
           </div>
 
@@ -184,8 +195,8 @@ export function SiteFooter() {
               </div>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed mb-4 max-w-sm">
-              The Funding Layer for AI Agents. Programmable deposits via one x402 call — fund any
-              wallet, including sub-wallets and child agents.
+              Open x402 funding rail — pay amount + 1%, net to any EVM target. Complements Coinbase
+              CDP Fund; does not replace it.
             </p>
             <a
               href="https://x402.org"
@@ -212,7 +223,7 @@ export function SiteFooter() {
             <a href="https://deposit.now" className="hover:text-foreground/80 transition-colors">
               deposit.now
             </a>{' '}
-            · The funding layer for AI agents
+            · Open x402 funding rail
           </p>
         </div>
 
@@ -222,7 +233,7 @@ export function SiteFooter() {
             <a href="https://deposit.now" className="hover:text-foreground/80 transition-colors">
               deposit.now
             </a>{' '}
-            · The funding layer for AI agents
+            · Open x402 funding rail
           </p>
         </div>
       </div>

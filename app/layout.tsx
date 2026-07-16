@@ -6,31 +6,26 @@ import { ThemeInit } from '@/components/ThemeInit';
 export const metadata: Metadata = {
   metadataBase: new URL('https://deposit.now'),
   title: {
-    default: 'deposit.now | The Funding Layer for AI Agents',
+    default: 'deposit.now | Open x402 funding rail',
     template: '%s | deposit.now',
   },
   description:
-    'The Funding Layer for AI Agents. Programmable deposits via one x402 call — fund any wallet (including sub-wallets / child agents). No humans required for agent-to-agent flows.',
+    'Open x402 funding rail for agents: pay amount + 1% over HTTP 402, net forwards to any EVM target, optional public receipt. Complements — does not replace — Coinbase CDP Fund.',
   keywords: [
-    'AI agent funding',
     'x402 deposit API',
-    'agent-to-agent transfers',
-    'programmable deposits',
-    'sub-agent funding',
-    'child agent wallet',
+    'AI agent funding',
     'HTTP 402',
-    'USDC',
-    'Base',
+    'USDC Base',
+    'fund wallet x402',
+    'programmable deposits',
     'machine payments',
-    'agentic commerce',
-    'autonomous agents',
     'deposit.now',
   ],
   alternates: { canonical: 'https://deposit.now' },
   openGraph: {
-    title: 'deposit.now | The Funding Layer for AI Agents',
+    title: 'deposit.now | Open x402 funding rail',
     description:
-      'Programmable deposits via one x402 call — fund any wallet, including sub-wallets and child agents.',
+      'Pay amount + 1% via x402; net to any EVM target. Optional public receipts. Not a CDP Fund replacement.',
     url: 'https://deposit.now',
     siteName: 'deposit.now',
     images: [
@@ -43,9 +38,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'deposit.now | The Funding Layer for AI Agents',
+    title: 'deposit.now | Open x402 funding rail',
     description:
-      'Programmable deposits via one x402 call — fund any wallet, including sub-wallets and child agents.',
+      'Pay amount + 1% via x402; net to any EVM target. Optional public receipts.',
     images: ['/og.png'],
   },
   icons: {
@@ -65,17 +60,16 @@ export default function RootLayout({
     '@graph': [
       {
         '@type': 'WebAPI',
-        name: 'deposit.now — Funding Layer for AI Agents',
+        name: 'deposit.now x402 funding rail',
         description:
-          'Programmable USDC deposits via x402. Fund any wallet (including sub-wallets / child agents) with one POST. Agent pays amount + 1%; net is forwarded on Base.',
+          'Open x402 deposit API: POST target + amount, pay amount + 1% USDC on Base, net forwarded to target. Optional public receipts when storage is configured. Complements Coinbase CDP Fund — does not replace it.',
         url: 'https://deposit.now/api/deposit',
         documentation: 'https://deposit.now/docs',
         provider: { '@type': 'Organization', name: 'deposit.now', url: 'https://deposit.now' },
         offers: {
           '@type': 'Offer',
           priceCurrency: 'USD',
-          description:
-            '1% platform fee on each deposit. Agent pays amount + fee via x402 exact scheme on Base mainnet.',
+          description: '1% platform fee on net deposit amount via x402 exact scheme on Base mainnet.',
         },
       },
       {
@@ -86,23 +80,23 @@ export default function RootLayout({
             name: 'What is deposit.now?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'deposit.now is the funding layer for AI agents: a programmable deposit API using x402 so agents can fund any wallet — including sub-wallets and child agents — without humans in secondary flows.',
+              text: 'deposit.now is an open x402 funding rail: agents pay amount + 1% over HTTP 402 and net USDC is forwarded to a target address they specify. It does not create wallets or replace Coinbase CDP Fund inside the CDP stack.',
             },
           },
           {
             '@type': 'Question',
-            name: 'How do agent-to-agent deposits work?',
+            name: 'How does a deposit work?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'POST /api/deposit with target (EVM address), amount (net USDC), and optional memo. The API returns HTTP 402 for amount + 1%. After payment settles to the platform CDP wallet, net USDC is forwarded to target.',
+              text: 'POST /api/deposit with target and amount. Receive HTTP 402 for amount + 1%. Pay via x402. After settlement, the platform forwards net to target. Response status is payment_received; check receiptUrl for forwardStatus and Basescan links when available.',
             },
           },
           {
             '@type': 'Question',
-            name: 'What does it cost?',
+            name: 'When should I use Coinbase Fund instead?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'A flat 1% platform fee on the net deposit amount. No merchant tiers, accounts, or API keys required for agents.',
+              text: 'If your agents already use Coinbase Agentic or Server Wallets, CDP Fund/Send is usually the right tool. Use deposit.now for a protocol-shaped x402 deposit to any EVM target without a deposit.now API key.',
             },
           },
         ],

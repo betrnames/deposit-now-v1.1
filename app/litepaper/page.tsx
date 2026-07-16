@@ -6,18 +6,17 @@ import { pageGraph } from '@/lib/seo';
 export const metadata: Metadata = {
   title: 'Litepaper',
   description:
-    'Technical overview of deposit.now: the funding layer for AI agents — x402 programmable deposits, 1% fee, Base mainnet, parent-to-child funding.',
+    'Honest technical overview of deposit.now: open x402 funding rail vs direct transfer vs Coinbase CDP Fund.',
   alternates: { canonical: 'https://deposit.now/litepaper' },
   keywords: [
     'deposit.now litepaper',
-    'AI agent funding',
-    'x402 deposit API',
-    'agent-to-agent transfers',
-    'USDC Base',
+    'x402 funding rail',
+    'AI agent deposits',
+    'CDP Fund comparison',
   ],
   openGraph: {
     title: 'Litepaper | deposit.now',
-    description: 'The Funding Layer for AI Agents — technical overview.',
+    description: 'Open x402 funding rail — scope, architecture, and comparison.',
     url: 'https://deposit.now/litepaper',
     siteName: 'deposit.now',
   },
@@ -27,13 +26,13 @@ export const metadata: Metadata = {
 const jsonLd = pageGraph(
   {
     '@type': 'TechArticle',
-    headline: 'deposit.now Litepaper — Funding Layer for AI Agents',
+    headline: 'deposit.now Litepaper — Open x402 funding rail',
     description:
-      'Programmable deposits via x402 for AI agents: fund any wallet including sub-wallets and child agents.',
+      'Protocol-shaped USDC deposits via x402 with optional public receipts. Complements Coinbase CDP Fund.',
     author: { '@type': 'Organization', name: 'deposit.now' },
     publisher: { '@type': 'Organization', name: 'deposit.now' },
     url: 'https://deposit.now/litepaper',
-    dateModified: '2026-07-15',
+    dateModified: '2026-07-16',
   },
   '/litepaper',
   'Litepaper'
@@ -44,9 +43,9 @@ const nav = [
   { id: 'problem', label: 'Problem' },
   { id: 'solution', label: 'Solution' },
   { id: 'architecture', label: 'Architecture' },
-  { id: 'why-compare', label: 'vs direct transfer' },
+  { id: 'compare', label: 'Comparison' },
   { id: 'economics', label: 'Economics' },
-  { id: 'live-facts', label: 'Live facts' },
+  { id: 'limits', label: 'Limits' },
   { id: 'risk', label: 'Risk summary' },
 ];
 
@@ -55,106 +54,90 @@ export default function LitepaperPage() {
     <GuidePage
       kicker="Technical overview"
       title="Litepaper"
-      subtitle="The Funding Layer for AI Agents — programmable deposits over HTTP 402."
+      subtitle="Open x402 funding rail — honest scope and architecture."
       nav={nav}
       jsonLd={jsonLd}
     >
       <p id="overview">
-        <strong>deposit.now</strong> is programmable funding infrastructure for autonomous AI
-        agents. Agents call a single HTTP endpoint with a <strong>target wallet</strong> and net
-        amount, receive <strong>402 Payment Required</strong> for amount + 1%, pay USDC on Base via{' '}
-        <strong>x402</strong>, and receive a JSON response plus a{' '}
-        <strong>verifiable public receipt</strong>. Net funds are forwarded to the target —
-        including sub-wallets and child agents. No humans required for secondary flows.
+        <strong>deposit.now</strong> is programmable funding infrastructure shaped as HTTP 402. An
+        agent declares a <strong>target</strong> address and net <strong>amount</strong>, pays amount
+        + 1% via x402, and after settlement the platform forwards net USDC on Base. Optional public
+        receipts document payer, target, fee, and explorer links when storage is configured.
       </p>
 
       <h2 id="problem">Problem</h2>
       <p>
-        Multi-agent systems need to fund sub-agents and wallets without human checkout, OAuth, or
-        merchant onboarding. Direct transfers lack receipts, standardized 402 flow, and a thin
-        funding abstraction agents can call programmatically.
+        Agents that already hold USDC often need a simple, machine-readable way to deposit into a
+        known address over HTTP — without integrating a full wallet platform. Raw transfers lack a
+        standard 402 flow and productized receipts. CDP Fund solves funding inside Coinbase’s stack,
+        not every open agent integration.
       </p>
 
       <h2 id="solution">Solution</h2>
       <ul>
         <li>
-          <strong>One deposit call</strong> — <code>POST /api/deposit</code> with{' '}
-          <code>target</code>, <code>amount</code>, optional <code>memo</code>.
+          <strong>One deposit call</strong> — <code>POST /api/deposit</code> with target, amount,
+          optional memo.
         </li>
         <li>
-          <strong>x402 v2 exact scheme</strong> — agent pays gross (amount + 1%) in USDC; facilitator
-          verifies on-chain before success.
+          <strong>x402 exact scheme</strong> — gross = amount + 1%; facilitator verifies on-chain.
         </li>
         <li>
-          <strong>CDP forward</strong> — platform retains fee, forwards net to target via Coinbase
-          Agentic / Server Wallet.
+          <strong>Forward after settle</strong> — platform retains fee, forwards net (async; can
+          fail).
         </li>
         <li>
-          <strong>Deterministic receipts</strong> — public proof with payment and forward txs.
+          <strong>Optional receipts</strong> — public page when Blob storage is configured.
         </li>
       </ul>
 
       <h2 id="architecture">Architecture</h2>
       <ol>
         <li>
-          Agent → <code>POST /api/deposit</code> → HTTP 402 + <code>Payment-Required</code>
+          Agent → <code>POST /api/deposit</code> → HTTP 402
         </li>
-        <li>Agent SDK signs payment for gross amount → retry with payment header</li>
-        <li>x402 facilitator (CDP on mainnet) settles USDC to platform wallet</li>
+        <li>Agent pays gross via x402 → retry with payment proof</li>
+        <li>Facilitator settles USDC to platform wallet</li>
         <li>
-          <code>onAfterSettle</code> → fee kept · net forwarded to <code>target</code>
+          Intent recovered from body and/or stored intent → forward net to target
         </li>
         <li>
-          Success + <code>receiptId</code> · public page at <code>/receipt/&lt;id&gt;</code>
+          Response <code>payment_received</code> + receipt URL; poll receipt for{' '}
+          <code>forwardStatus</code>
         </li>
       </ol>
 
-      <h2 id="why-compare">Why not a direct on-chain transfer?</h2>
+      <h2 id="compare">Comparison</h2>
       <p>
-        Direct transfers give a tx hash. deposit.now adds a standardized x402 client path,
-        verifiable receipts, amount+fee accounting, and a single agent-facing API for parent → child
-        funding.
+        Coinbase already funds wallets (Fund/Send). deposit.now is a complementary open rail — not a
+        replacement.
       </p>
       <div className="my-6">
-        <ComparisonTable compact />
+        <ComparisonTable />
       </div>
 
       <h2 id="economics">Economics</h2>
       <ul>
         <li>
-          <strong>Net amount (to target):</strong> the <code>amount</code> field.
+          <strong>Net amount:</strong> the <code>amount</code> field.
         </li>
         <li>
-          <strong>Platform fee:</strong> flat <strong>1%</strong> of net, paid by the agent as part of
-          gross x402 payment.
-        </li>
-        <li>
-          No merchant tiers, renewals, or prepaid balances. See{' '}
-          <a href="/pricing">pricing</a>.
+          <strong>Platform fee:</strong> flat 1% of net, paid as part of gross x402 payment.
         </li>
       </ul>
 
-      <h2 id="live-facts">Live facts (mainnet)</h2>
-      <ul className="min-w-0">
-        <li className="break-words">
-          Endpoint: <code className="break-all">https://deposit.now/api/deposit</code>
-        </li>
-        <li>Network: Base mainnet (<code>eip155:8453</code>)</li>
-        <li>Asset: USDC</li>
-        <li>Price: dynamic — amount + 1%</li>
-        <li>
-          OpenAPI: <a href="/openapi.json">/openapi.json</a>
-        </li>
-        <li>
-          Agents: <a href="/llms.txt">/llms.txt</a>
-        </li>
+      <h2 id="limits">Limits (honest)</h2>
+      <ul>
+        <li>Does not create wallets or sub-accounts.</li>
+        <li>HTTP 200 does not mean target already holds funds.</li>
+        <li>Public receipts require server storage configuration.</li>
+        <li>Forward can fail; operators should monitor CDP hot wallet health.</li>
       </ul>
 
       <h2 id="risk">Risk summary</h2>
       <p>
-        See full <a href="/disclosures">disclosures</a>. deposit.now is experimental
-        infrastructure, not a money transmitter, bank, or investment product. On-chain payments are
-        irreversible. Platform forwarding depends on CDP wallet health and on-chain conditions.
+        See <a href="/disclosures">disclosures</a>. Experimental infrastructure, not a money
+        transmitter or bank. On-chain payments are irreversible.
       </p>
     </GuidePage>
   );

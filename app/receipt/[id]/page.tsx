@@ -1,6 +1,7 @@
 import { head } from '@vercel/blob';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { TerminalTitle } from '@/components/TerminalTitle';
 import {
   DepositReceipt,
   explorerTxUrl,
@@ -56,7 +57,9 @@ export default async function ReceiptPage({
 
         {!receipt ? (
           <div className="mt-10 border border-border/60 rounded-2xl p-8 bg-card/40">
-            <h1 className="text-xl font-bold mb-3">Receipt not found</h1>
+            <TerminalTitle className="text-xl font-bold mb-3 text-white">
+              Receipt not found
+            </TerminalTitle>
             <p className="text-sm text-muted-foreground leading-relaxed">
               No settled deposit matches this receipt ID. If the payment just happened, settlement
               can take a few seconds — refresh shortly. Otherwise, check the receiptUrl returned by
@@ -66,8 +69,10 @@ export default async function ReceiptPage({
         ) : (
           <div className="mt-10 border border-border/60 rounded-2xl p-8 bg-card/40">
             <div className="flex items-center gap-3 mb-1">
-              <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-400" />
-              <h1 className="text-xl font-bold">Deposit settled</h1>
+              <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-400 shrink-0" />
+              <TerminalTitle className="text-xl font-bold text-white">
+                Deposit settled
+              </TerminalTitle>
             </div>
             <p className="text-sm text-muted-foreground mb-6">
               Verifiable x402 payment receipt · {networkLabel(receipt.network)}
@@ -124,8 +129,15 @@ export default async function ReceiptPage({
                 )}
               </Row>
             ) : receipt.forwardStatus === 'forward_failed' ? (
-              <Row label="Forward">Failed — manual review</Row>
+              <Row label="Forward">Failed — manual review may be required</Row>
+            ) : receipt.forwardStatus === 'pending' ? (
+              <Row label="Forward">Pending or not yet available — refresh shortly</Row>
             ) : null}
+            {receipt.note ? <Row label="Note">{receipt.note}</Row> : null}
+            <p className="text-xs text-muted-foreground mt-6 leading-relaxed">
+              Payment to the platform is recorded when the x402 facilitator settles. Forwarding net
+              USDC to the target is a separate step and can lag or fail.
+            </p>
           </div>
         )}
       </div>

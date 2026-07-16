@@ -22,7 +22,8 @@ export interface DepositReceipt {
   feePercent?: string | null;
   netToTarget?: string | null;
   forwardTxHash?: string | null;
-  forwardStatus?: 'settled' | 'forward_failed' | null;
+  forwardStatus?: 'settled' | 'forward_failed' | 'pending' | null;
+  note?: string | null;
 }
 
 // Receipt id is derived from the payment signature/nonce so the route handler

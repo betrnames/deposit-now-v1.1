@@ -1,10 +1,10 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "deposit.now — Funding Layer for AI Agents",
-    "version": "3.0.0",
-    "description": "Programmable deposits via one x402 call. Fund any wallet (including sub-wallets / child agents). Agent pays amount + 1% fee in USDC on Base; net is forwarded to target. No accounts or API keys required for agents.",
-    "x-guidance": "POST /api/deposit with { target, amount, memo? }. Unpaid requests receive HTTP 402 with x402 v2 requirements for gross = amount + 1%. Pay and retry with payment header. Docs: https://deposit.now/docs · llms: https://deposit.now/llms.txt",
+    "title": "deposit.now — Open x402 funding rail",
+    "version": "3.1.0",
+    "description": "Open x402 deposit API: pay amount + 1% USDC on Base; net forwards to target after settlement. Optional public receipts. Complements Coinbase CDP Fund — does not create wallets or replace CDP Fund/Send. HTTP 200 payment_received does not guarantee funds already arrived at target.",
+    "x-guidance": "POST /api/deposit with { target, amount, memo? }. Unpaid → 402 for gross = amount + 1%. Paid → payment_received + receiptUrl. Check forwardStatus on the receipt. Docs: https://deposit.now/docs",
     "contact": { "email": "support@deposit.now" }
   },
   "servers": [{ "url": "https://deposit.now" }],
@@ -12,7 +12,7 @@
     "/api/deposit": {
       "post": {
         "operationId": "createDeposit",
-        "summary": "Fund a target wallet via x402",
+        "summary": "Pay via x402 to fund a target wallet (net forward async)",
         "tags": ["Deposits"],
         "x-payment-info": {
           "price": { "mode": "dynamic", "currency": "USD", "description": "amount + 1% platform fee" },
@@ -28,9 +28,8 @@
                 "properties": {
                   "target": {
                     "type": "string",
-                    "description": "EVM address receiving net USDC",
-                    "pattern": "^0x[a-fA-F0-9]{40}$",
-                    "examples": ["0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0"]
+                    "description": "EVM address receiving net USDC (you must already control or know this address)",
+                    "pattern": "^0x[a-fA-F0-9]{40}$"
                   },
                   "amount": {
                     "type": "string",
@@ -39,8 +38,7 @@
                   },
                   "memo": {
                     "type": "string",
-                    "description": "Optional note (max 256 chars)",
-                    "examples": ["Fund child trading agent"]
+                    "description": "Optional note (max 256 chars)"
                   }
                 }
               }
@@ -49,23 +47,29 @@
         },
         "responses": {
           "200": {
-            "description": "Deposit accepted after x402 payment; net forward initiated.",
+            "description": "Payment accepted. Forwarding is async — inspect receiptUrl / forwardStatus.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": { "type": "string", "examples": ["success"] },
+                    "status": {
+                      "type": "string",
+                      "examples": ["payment_received"],
+                      "description": "payment_received means x402 payment accepted, not that target already holds net funds"
+                    },
+                    "forwardStatus": {
+                      "type": "string",
+                      "examples": ["pending", "settled", "forward_failed"]
+                    },
                     "target": { "type": "string" },
-                    "memo": { "type": "string", "nullable": true },
                     "depositAmount": { "type": "string" },
                     "fee": { "type": "string" },
                     "feePercent": { "type": "number" },
                     "grossPaid": { "type": "string" },
                     "paymentReceived": { "type": "boolean" },
                     "receiptId": { "type": "string" },
-                    "receiptUrl": { "type": "string" },
-                    "transactionId": { "type": "string" }
+                    "receiptUrl": { "type": "string" }
                   }
                 }
               }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Header } from '@/components/Header';
 import { SiteFooter } from '@/components/SiteFooter';
+import { TerminalTitle } from '@/components/TerminalTitle';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { agentRailNote, pricingTiers } from '@/lib/pricing';
 import { pageGraph } from '@/lib/seo';
@@ -10,17 +11,12 @@ import { CheckCircle2 } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Pricing',
   description:
-    'Simple pricing for AI agent funding: 1% platform fee per programmable x402 deposit. No tiers, no accounts.',
+    'Flat 1% platform fee on open x402 deposits. Pay amount + fee; net forwards to target after settlement.',
   alternates: { canonical: 'https://deposit.now/pricing' },
-  keywords: [
-    'deposit.now pricing',
-    'x402 deposit fee',
-    'AI agent funding cost',
-    'agent-to-agent transfer fee',
-  ],
+  keywords: ['deposit.now pricing', 'x402 deposit fee', 'open funding rail'],
   openGraph: {
     title: 'Pricing | deposit.now',
-    description: 'Flat 1% on each agent deposit. Pay amount + fee via x402; net goes to target.',
+    description: 'Flat 1% on each deposit. Complements CDP Fund; not a wallet product fee schedule.',
     url: 'https://deposit.now/pricing',
     siteName: 'deposit.now',
   },
@@ -50,9 +46,9 @@ export default function PricingPage() {
       <Header />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
         <p className="text-primary text-xs font-black uppercase tracking-[0.2em] mb-4">Pricing</p>
-        <h1 className="text-4xl sm:text-5xl font-black text-white mb-4 tracking-tight">
+        <TerminalTitle className="text-4xl sm:text-5xl font-black text-white mb-4 tracking-tight">
           One fee. Any wallet.
-        </h1>
+        </TerminalTitle>
         <p className="text-lg text-muted-foreground mb-12 leading-relaxed">{agentRailNote}</p>
 
         <Card className="bg-card/60 border-primary/40 rounded-3xl mb-10">
@@ -85,7 +81,7 @@ export default function PricingPage() {
             </ul>
             <Link
               href="/docs"
-              className="inline-flex items-center justify-center bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-8 h-12 rounded-xl"
+              className="flex w-full items-center justify-center bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-8 h-12 rounded-xl"
             >
               {tier.cta}
             </Link>
