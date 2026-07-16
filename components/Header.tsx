@@ -8,8 +8,6 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 
 const NAV = [
   { href: '/docs', label: 'Docs' },
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/about', label: 'About' },
 ] as const;
 
 const navLinkClass =
