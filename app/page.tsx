@@ -3,7 +3,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Zap, Coins, CheckCircle2, Sparkles } from 'lucide-react';
 import { SiteFooter } from '@/components/SiteFooter';
 import { Header } from '@/components/Header';
-import { WhyDepositNow } from '@/components/WhyDepositNow';
 import { TerminalTitle } from '@/components/TerminalTitle';
 import { honestPitch } from '@/lib/pricing';
 
@@ -78,26 +77,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section
-        aria-label="Positioning statement"
-        className="border-y border-primary/30 bg-gradient-to-r from-primary/15 via-primary/10 to-primary/15"
-      >
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-          <blockquote className="text-center text-lg sm:text-2xl lg:text-3xl italic text-white/90 leading-snug tracking-tight">
-            <span className="text-primary not-italic text-3xl sm:text-4xl lg:text-5xl leading-none align-top">
-              &ldquo;
-            </span>
-            An open x402 funding rail — not a Coinbase Fund replacement. Protocol-shaped deposits
-            to any target, with optional public receipts.
-            <span className="text-primary not-italic text-3xl sm:text-4xl lg:text-5xl leading-none align-bottom">
-              &rdquo;
-            </span>
-          </blockquote>
-        </div>
-      </section>
-
-      <WhyDepositNow />
-
       <section className="py-20 bg-muted/40 border-t border-primary/25">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-6">
@@ -168,83 +147,6 @@ export default function Home() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 bg-gradient-to-br from-primary/10 to-background/80 border-t border-primary/25">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-5xl font-black mb-6 text-white leading-tight">
-                Protocol-shaped
-                <br />
-                wallet funding
-              </h2>
-              <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
-                Use Coinbase CDP Fund when you already live in their wallet stack. Use deposit.now
-                when you want an open HTTP 402 deposit to any address you specify.
-              </p>
-              <div className="space-y-4">
-                {[
-                  'x402 exact scheme on Base',
-                  'Target = any address you already have',
-                  'Honest status: payment_received vs forward',
-                ].map((label) => (
-                  <div key={label} className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="h-4 w-4 text-white" />
-                    </div>
-                    <span className="text-lg text-white font-medium">{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div className="bg-card/80 border border-border/60 rounded-2xl overflow-hidden backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02]">
-                <div className="bg-muted/80 px-6 py-4 border-b border-border/60 flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <div className="w-3 h-3 rounded-full bg-green-500" />
-                </div>
-                <div className="p-8 font-mono text-sm">
-                  <div className="mb-6">
-                    <div className="text-primary text-xs mb-2">// REQUEST</div>
-                    <div className="text-foreground/80">
-                      <span className="text-purple-400">POST</span> /api/deposit
-                    </div>
-                    <div className="text-foreground/70 text-xs mt-3 leading-relaxed">
-                      {`{ "target": "0x…", "amount": "50.00", "memo": "optional" }`}
-                    </div>
-                  </div>
-
-                  <div className="mb-8 space-y-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-muted-foreground/70 text-xs">RECV</span>
-                      <Badge className="bg-red-500/20 text-red-400 border-red-500/30 font-mono text-xs">
-                        402 Payment Required
-                      </Badge>
-                    </div>
-
-                    <div className="bg-muted/40 border border-border/40 rounded-lg p-4 space-y-2">
-                      <div className="text-primary text-xs mb-2">PAY AMOUNT + 1%</div>
-                      <div className="text-foreground/80 text-xs leading-relaxed">
-                        gross <span className="text-orange-400">50.50</span> USDC → platform · net{' '}
-                        <span className="text-orange-400">50.00</span> → target (async)
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <span className="text-muted-foreground/70 text-xs">CONF</span>
-                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 font-mono text-xs">
-                      200 payment_received
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>

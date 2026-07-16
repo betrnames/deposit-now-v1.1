@@ -67,88 +67,28 @@ function SocialIcons({
 
 function FooterLinks() {
   return (
-    <>
-      <FooterColumn title="Product">
-        <li>
-          <Link href="/docs" className={linkClass}>
-            Docs
-          </Link>
-        </li>
-        <li>
-          <Link href="/pricing" className={linkClass}>
-            Pricing
-          </Link>
-        </li>
-        <li>
-          <a href="/llms.txt" className={linkClass}>
-            llms.txt
-          </a>
-        </li>
-        <li>
-          <a href="/openapi.json" className={linkClass}>
-            OpenAPI
-          </a>
-        </li>
-        <li>
-          <Link href="/litepaper" className={linkClass}>
-            Litepaper
-          </Link>
-        </li>
-      </FooterColumn>
-
-      <FooterColumn title="Company">
-        <li>
-          <Link href="/about" className={linkClass}>
-            About
-          </Link>
-        </li>
-        <li>
-          <a href="mailto:support@deposit.now" className={linkClass}>
-            Contact
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://x402dir.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${linkClass} inline-flex items-center gap-1`}
-          >
-            x402dir.com
-            <ExternalLink className="h-3 w-3 shrink-0" />
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://x402.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${linkClass} inline-flex items-center gap-1`}
-          >
-            x402 Standard
-            <ExternalLink className="h-3 w-3 shrink-0" />
-          </a>
-        </li>
-      </FooterColumn>
-
-      <FooterColumn title="Legal">
-        <li>
-          <Link href="/privacy" className={linkClass}>
-            Privacy
-          </Link>
-        </li>
-        <li>
-          <Link href="/disclosures" className={linkClass}>
-            Disclosures
-          </Link>
-        </li>
-        <li>
-          <Link href="/terms" className={linkClass}>
-            Terms
-          </Link>
-        </li>
-      </FooterColumn>
-    </>
+    <FooterColumn title="Product">
+      <li>
+        <Link href="/docs" className={linkClass}>
+          Docs
+        </Link>
+      </li>
+      <li>
+        <a href="/llms.txt" className={linkClass}>
+          llms.txt
+        </a>
+      </li>
+      <li>
+        <a href="/openapi.json" className={linkClass}>
+          OpenAPI
+        </a>
+      </li>
+      <li>
+        <a href="mailto:support@deposit.now" className={linkClass}>
+          Contact
+        </a>
+      </li>
+    </FooterColumn>
   );
 }
 
