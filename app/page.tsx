@@ -33,7 +33,7 @@ export default function Home() {
             </Badge>
 
             <TerminalTitle className="w-full text-[2.15rem] leading-[1.08] sm:text-7xl lg:text-8xl font-black tracking-tighter mb-4 sm:leading-[1.05] text-center">
-              <span className="inline-flex flex-col items-start text-left align-top">
+              <span className="inline-flex flex-col items-center text-center align-top">
                 <span className="block text-white mb-1 sm:mb-2">Open x402</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/90 to-accent">
                   funding rail
