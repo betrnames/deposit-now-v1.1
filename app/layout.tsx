@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: '%s | deposit.now',
   },
   description:
-    'Open x402 funding rail for agents: pay amount + 1% over HTTP 402, net forwards to any EVM target, optional public receipt. Complements — does not replace — Coinbase CDP Fund.',
+    'Open x402 funding rail for agents: fund any wallet via one HTTP call. Pay amount + 1% over HTTP 402, net to any EVM target. No API key needed.',
   keywords: [
     'x402 deposit API',
     'AI agent funding',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'deposit.now | Open x402 funding rail',
     description:
-      'Pay amount + 1% via x402; net to any EVM target. Optional public receipts. Not a CDP Fund replacement.',
+      'Agents fund any wallet via one HTTP call. Amount + 1% · no humans · no API key needed.',
     url: 'https://deposit.now',
     siteName: 'deposit.now',
     images: [
@@ -33,14 +33,17 @@ export const metadata: Metadata = {
         url: '/og.png',
         width: 1200,
         height: 630,
+        alt: 'deposit.now — Open x402 funding rail for agents',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@Deposit_Now',
+    creator: '@Deposit_Now',
     title: 'deposit.now | Open x402 funding rail',
     description:
-      'Pay amount + 1% via x402; net to any EVM target. Optional public receipts.',
+      'Agents fund any wallet via one HTTP call. Amount + 1% · no API key needed.',
     images: ['/og.png'],
   },
   icons: {

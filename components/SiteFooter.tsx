@@ -1,181 +1,78 @@
-import type { ReactNode } from 'react';
 import { DepositLogo } from '@/components/DepositLogo';
-import { ExternalLink, Github, Mail } from 'lucide-react';
+import { Github, Mail } from 'lucide-react';
 import Link from 'next/link';
 
 const linkClass =
-  'text-muted-foreground hover:text-white transition-colors text-xs sm:text-sm py-1 inline-block leading-snug';
-const socialClass =
-  'text-muted-foreground hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5';
-const desktopSocialClass =
-  'text-muted-foreground hover:text-white transition-colors p-2 -m-2 rounded-lg hover:bg-white/5';
+  'text-muted-foreground hover:text-white transition-colors text-sm';
 
-function FooterColumn({
-  title,
-  children,
-  listClassName = 'space-y-2 sm:space-y-3',
-}: {
-  title: string;
-  children: ReactNode;
-  listClassName?: string;
-}) {
-  return (
-    <div>
-      <h3 className="text-white font-bold text-xs sm:text-sm uppercase tracking-wider mb-3 sm:mb-4">
-        {title}
-      </h3>
-      <ul className={listClassName}>{children}</ul>
-    </div>
-  );
-}
+const iconClass =
+  'text-muted-foreground hover:text-white transition-colors p-1';
 
-function SocialIcons({
-  className = socialClass,
-  iconClassName = 'h-4 w-4',
-}: {
-  className?: string;
-  iconClassName?: string;
-}) {
+function XIcon({ className = 'h-4 w-4' }: { className?: string }) {
   return (
-    <>
-      <a
-        href="https://x.com/Deposit_Now"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={className}
-        aria-label="X / Twitter"
-      >
-        <svg className={iconClassName} fill="currentColor" viewBox="0 0 24 24">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
-      </a>
-      <a
-        href="https://github.com/betrnames/deposit-now-v1.1"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={className}
-        aria-label="GitHub"
-      >
-        <Github className={iconClassName} />
-      </a>
-      <a href="mailto:support@deposit.now" className={className} aria-label="Email">
-        <Mail className={iconClassName} />
-      </a>
-    </>
-  );
-}
-
-function FooterLinks() {
-  return (
-    <FooterColumn title="Product">
-      <li>
-        <Link href="/docs" className={linkClass}>
-          Docs
-        </Link>
-      </li>
-      <li>
-        <a href="/llms.txt" className={linkClass}>
-          llms.txt
-        </a>
-      </li>
-      <li>
-        <a href="/openapi.json" className={linkClass}>
-          OpenAPI
-        </a>
-      </li>
-      <li>
-        <a href="mailto:support@deposit.now" className={linkClass}>
-          Contact
-        </a>
-      </li>
-    </FooterColumn>
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
   );
 }
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border bg-card/60 backdrop-blur py-10 sm:py-16">
+    <footer className="border-t border-border bg-card/60 backdrop-blur py-8 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="md:hidden mb-8 flex flex-col items-start text-left w-full">
-          <div className="flex flex-col items-start gap-3 mb-6 w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <div className="flex items-center gap-4 min-w-0">
             <Link href="/" className="shrink-0" aria-label="deposit.now home">
-              <DepositLogo size={40} />
+              <DepositLogo size={32} />
             </Link>
-            <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
-              Open x402 funding rail — pay amount + 1%, net to any EVM target. Complements Coinbase
-              CDP Fund; does not replace it.
+            <p className="text-muted-foreground text-xs sm:text-sm leading-snug">
+              Open x402 funding rail for agents · amount + 1%
             </p>
           </div>
 
-          <div className="mb-8 w-full">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <Link href="/docs" className={linkClass}>
+              Docs
+            </Link>
+            <a href="/llms.txt" className={linkClass}>
+              llms.txt
+            </a>
             <a
-              href="https://x402.org"
+              href="https://x402dir.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-primary hover:text-primary transition-colors text-xs sm:text-sm font-bold uppercase tracking-wider"
+              className={linkClass}
             >
-              Powered by x402
-              <ExternalLink className="h-3 w-3" />
+              x402dir.com
             </a>
-          </div>
-
-          <div className="grid grid-cols-3 w-full gap-x-4 min-[375px]:gap-x-6 sm:gap-x-10 gap-y-2">
-            <FooterLinks />
-          </div>
-        </div>
-
-        <div className="hidden md:flex md:items-start md:justify-between gap-10 lg:gap-16 mb-12">
-          <div className="max-w-xs lg:max-w-sm shrink-0">
-            <div className="flex flex-nowrap items-center justify-start gap-4 mb-4">
-              <Link href="/" className="shrink-0" aria-label="deposit.now home">
-                <DepositLogo size={40} />
-              </Link>
-              <div className="flex items-center gap-2">
-                <SocialIcons className={desktopSocialClass} iconClassName="h-5 w-5" />
-              </div>
-            </div>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-4 max-w-sm">
-              Open x402 funding rail — pay amount + 1%, net to any EVM target. Complements Coinbase
-              CDP Fund; does not replace it.
-            </p>
             <a
-              href="https://x402.org"
+              href="https://x.com/Deposit_Now"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-primary hover:text-primary transition-colors text-sm font-bold uppercase tracking-wider"
+              className={iconClass}
+              aria-label="deposit.now on X"
+              title="@Deposit_Now"
             >
-              Powered by x402
-              <ExternalLink className="h-3 w-3" />
+              <XIcon />
+            </a>
+            <a
+              href="https://github.com/betrnames/deposit-now-v1.1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={iconClass}
+              aria-label="GitHub"
+            >
+              <Github className="h-4 w-4" />
+            </a>
+            <a href="mailto:support@deposit.now" className={iconClass} aria-label="Email">
+              <Mail className="h-4 w-4" />
             </a>
           </div>
-
-          <div className="flex flex-1 justify-end gap-10 lg:gap-14 xl:gap-20 min-w-0">
-            <FooterLinks />
-          </div>
         </div>
 
-        <div className="md:hidden border-t border-border pt-6 flex flex-col items-start gap-3">
-          <div className="flex items-center gap-1 -ml-2">
-            <SocialIcons />
-          </div>
-          <p className="text-muted-foreground/70 text-xs sm:text-sm text-left">
-            © 2026{' '}
-            <a href="https://deposit.now" className="hover:text-foreground/80 transition-colors">
-              deposit.now
-            </a>{' '}
-            · Open x402 funding rail
-          </p>
-        </div>
-
-        <div className="hidden md:block border-t border-border pt-8">
-          <p className="text-muted-foreground/70 text-sm text-left">
-            © 2026{' '}
-            <a href="https://deposit.now" className="hover:text-foreground/80 transition-colors">
-              deposit.now
-            </a>{' '}
-            · Open x402 funding rail
-          </p>
-        </div>
+        <p className="mt-6 pt-6 border-t border-border text-muted-foreground/70 text-xs">
+          © 2026 deposit.now
+        </p>
       </div>
     </footer>
   );

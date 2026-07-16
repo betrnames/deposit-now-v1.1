@@ -133,10 +133,70 @@ async function main() {
 
   await sharp(headerSvg).png().toFile(path.join(outDir, 'x-header.png'));
 
+  // --- OG / social share 1200×630 (matches current site messaging) ---
+  const ogW = 1200;
+  const ogH = 630;
+  const coinsOg = await sharp(coinsSvg(112, CF.primary, 1.55)).png().toBuffer();
+
+  const ogSvg = Buffer.from(`
+<svg width="${ogW}" height="${ogH}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="oggrid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M 56 0 L 0 0 0 56" fill="none" stroke="#ffffff" stroke-opacity="0.035" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="${ogW}" height="${ogH}" fill="${CF.bg}"/>
+  <rect width="${ogW}" height="${ogH}" fill="url(#oggrid)"/>
+  <rect x="0" y="0" width="8" height="${ogH}" fill="${CF.primary}"/>
+
+  <!-- pill -->
+  <rect x="72" y="88" width="268" height="44" rx="22" ry="22"
+        fill="none" stroke="${CF.primary}" stroke-opacity="0.55" stroke-width="2"/>
+  <g transform="translate(96, 99) scale(0.75)" fill="none" stroke="${CF.primary}" stroke-width="2.25"
+     stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
+  </g>
+  <text x="128" y="110" dominant-baseline="central"
+        font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
+        font-size="16" font-weight="900" fill="${CF.primary}" letter-spacing="0.16em">X402 · BASE MAINNET</text>
+
+  <text x="72" y="220"
+        font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
+        font-size="64" font-weight="800" fill="${CF.foreground}" letter-spacing="-0.03em">Open x402</text>
+  <text x="72" y="300"
+        font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
+        font-size="64" font-weight="800" fill="${CF.primary}" letter-spacing="-0.03em">funding rail</text>
+
+  <text x="72" y="380"
+        font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
+        font-size="28" font-weight="600" fill="${CF.primary}">Agents fund any wallet via one HTTP call</text>
+  <text x="72" y="430"
+        font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
+        font-size="22" font-weight="500" fill="${CF.muted}">amount + 1% · no humans · no API key needed</text>
+
+  <text x="72" y="${ogH - 48}"
+        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="20" fill="${CF.mutedDim}">deposit.now</text>
+  <text x="${ogW - 72}" y="${ogH - 48}" text-anchor="end"
+        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="18" fill="${CF.mutedDim}">@Deposit_Now · Base · x402</text>
+</svg>`);
+
+  const ogPath = path.join(root, 'public', 'og.png');
+  await sharp(ogSvg)
+    .composite([{ input: coinsOg, left: ogW - 72 - 112, top: 72 }])
+    .png()
+    .toFile(ogPath);
+
+  // Also keep a social/ copy for X assets folder
+  await sharp(ogPath).toFile(path.join(outDir, 'open-rail.v1.png'));
+
   console.log('theme: cloudflare (default)');
   console.log('primary', CF.primary, 'bg', CF.bg);
   console.log('OK', path.join(outDir, 'x-profile.png'));
   console.log('OK', path.join(outDir, 'x-header.png'));
+  console.log('OK', ogPath);
+  console.log('OK', path.join(outDir, 'open-rail.v1.png'));
 }
 
 main().catch((e) => {

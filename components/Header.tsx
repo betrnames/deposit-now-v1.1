@@ -2,13 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, ExternalLink } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { DepositLogo } from '@/components/DepositLogo';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
-const NAV = [
-  { href: '/docs', label: 'Docs' },
-] as const;
+const NAV = [{ href: '/docs', label: 'Docs' }] as const;
 
 const navLinkClass =
   'text-sm font-medium text-muted-foreground hover:text-white transition-colors';
@@ -30,17 +28,8 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <a
-              href="https://x402dir.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${navLinkClass} inline-flex items-center gap-1`}
-            >
-              x402dir
-              <ExternalLink className="h-3 w-3 opacity-60" />
-            </a>
             <Link
-              href="/docs"
+              href="/docs#quickstart"
               className="bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-4 h-9 rounded-lg inline-flex items-center"
             >
               Get started
@@ -74,18 +63,8 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <a
-              href="https://x402dir.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
-              className="px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-white hover:bg-muted/50 transition-colors inline-flex items-center gap-1.5"
-            >
-              x402dir.com
-              <ExternalLink className="h-3.5 w-3.5 opacity-60" />
-            </a>
             <Link
-              href="/docs"
+              href="/docs#quickstart"
               onClick={() => setOpen(false)}
               className="mt-2 mx-3 mb-1 bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider h-10 rounded-lg inline-flex items-center justify-center"
             >
