@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   calculateDepositSplit,
   clampDepositUsdc,
-  isValidEvmAddress,
 } from '@/lib/billing';
 import { buildIntent, mergeReceipt, saveDepositIntent } from '@/lib/deposit-intent';
+import { validateDepositTarget } from '@/lib/payment-verification';
 import { receiptIdFromPaymentHeader } from '@/lib/receipts';
-import { X402_NETWORK } from '@/lib/x402';
+import { PLATFORM_PAY_TO, X402_NETWORK } from '@/lib/x402';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -75,15 +75,18 @@ export async function handleDepositPost(request: NextRequest) {
     // empty body handled below
   }
 
-  if (!isValidEvmAddress(target)) {
+  const targetCheck = validateDepositTarget(target, PLATFORM_PAY_TO);
+  if (!targetCheck.ok) {
     return NextResponse.json(
       {
         error: 'invalid_target',
-        message: 'target must be a valid EVM address (0x + 40 hex chars).',
+        code: targetCheck.code,
+        message: targetCheck.message,
       },
       { status: 400, headers: CORS_HEADERS }
     );
   }
+  target = targetCheck.address;
 
   const net = clampDepositUsdc(amountRaw);
   if (net === null) {

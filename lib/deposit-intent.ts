@@ -3,7 +3,7 @@ import { createHash } from 'crypto';
 import {
   calculateDepositSplit,
   clampDepositUsdc,
-  isValidEvmAddress,
+  isNonZeroEvmAddress,
 } from '@/lib/billing';
 
 export interface DepositIntent {
@@ -37,7 +37,7 @@ export function buildIntent(
   amountRaw: string | number | null,
   memo: string | null
 ): DepositIntent | null {
-  if (!isValidEvmAddress(target)) return null;
+  if (!isNonZeroEvmAddress(target)) return null;
   const net = clampDepositUsdc(amountRaw);
   if (net === null) return null;
   const split = calculateDepositSplit(net);

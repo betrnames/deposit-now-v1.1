@@ -27,6 +27,15 @@ CDP_WALLET_SECRET          # CDP Server Wallet auth — not a MetaMask raw key p
 CDP_PLATFORM_ADDRESS       # optional override for payTo
 X402_NETWORK=mainnet
 BLOB_READ_WRITE_TOKEN
+DATABASE_URL               # Neon — guardrails, payment nonces, failed-forward queue
+ADMIN_API_KEY              # GET /api/admin/reconcile (Bearer or x-admin-key)
+```
+
+### Migrations (Neon)
+
+```
+node scripts/run-migration.mjs migrations/001_transaction_guardrails.sql
+node scripts/run-migration.mjs migrations/002_payment_verification.sql
 ```
 
 **Never** put platform hot-wallet private keys or MetaMask secrets in `.env` for production settlement. Agents that *pay* may use their own client-side keys offline only.

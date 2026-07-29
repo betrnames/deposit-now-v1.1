@@ -7,9 +7,15 @@ export const DEPOSIT_MAX_USDC = 100_000;
 export const PLATFORM_FEE_BPS = 100;
 
 const ADDRESS_RE = /^0x[a-fA-F0-9]{40}$/;
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export function isValidEvmAddress(value: unknown): value is string {
   return typeof value === 'string' && ADDRESS_RE.test(value);
+}
+
+/** True for 0x + 40 hex that is not the zero address. */
+export function isNonZeroEvmAddress(value: unknown): value is string {
+  return isValidEvmAddress(value) && value.toLowerCase() !== ZERO_ADDRESS;
 }
 
 export function clampDepositUsdc(amount: unknown): number | null {

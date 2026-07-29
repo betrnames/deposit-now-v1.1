@@ -40,27 +40,27 @@ async function forwardToTarget(target: string, netUsdc: number): Promise<string>
 }
 
 const MAX_RETRIES = 3;
-const RETRY_DELAYS = [2_000, 5_000, 10_000];
+/** Exponential backoff: 2s, 4s, 8s between attempts */
+const RETRY_DELAYS_MS = [2_000, 4_000, 8_000];
 
 export async function forwardWithRetry(
   target: string,
   netUsdc: number
-): Promise<{ txHash: string | null; error: string | null }> {
+): Promise<{ txHash: string | null; error: string | null; attempts: number }> {
+  let lastError = 'max retries exceeded';
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
       const txHash = await forwardToTarget(target, netUsdc);
-      return { txHash, error: null };
+      return { txHash, error: null, attempts: attempt + 1 };
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'unknown';
-      console.error(`forward attempt ${attempt + 1}/${MAX_RETRIES} failed: ${msg}`);
+      lastError = err instanceof Error ? err.message : 'unknown';
+      console.error(`forward attempt ${attempt + 1}/${MAX_RETRIES} failed: ${lastError}`);
       if (attempt < MAX_RETRIES - 1) {
-        await new Promise((r) => setTimeout(r, RETRY_DELAYS[attempt]));
-      } else {
-        return { txHash: null, error: msg };
+        await new Promise((r) => setTimeout(r, RETRY_DELAYS_MS[attempt]));
       }
     }
   }
-  return { txHash: null, error: 'max retries exceeded' };
+  return { txHash: null, error: lastError, attempts: MAX_RETRIES };
 }
 
 export interface SettlementLog {

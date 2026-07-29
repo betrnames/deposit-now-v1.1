@@ -11,7 +11,6 @@ import {
   calculateDepositSplit,
   clampDepositUsdc,
   formatUsdcPrice,
-  isValidEvmAddress,
 } from '@/lib/billing';
 import { forwardWithRetry, logSettlement } from '@/lib/cdp';
 import {
@@ -21,6 +20,18 @@ import {
   saveDepositIntent,
   type DepositIntent,
 } from '@/lib/deposit-intent';
+import {
+  runGuardrails,
+  logTransaction,
+  updateTransactionStatus,
+  logSettlementFailure,
+} from '@/lib/guardrails';
+import {
+  validateDepositTarget,
+  runPaymentVerification,
+  extractPaymentIdentity,
+} from '@/lib/payment-verification';
+import { enqueueFailedForward } from '@/lib/reconciliation';
 import { receiptIdFromPayload } from '@/lib/receipts';
 import type { HTTPRequestContext } from '@x402/core/server';
 
@@ -157,10 +168,15 @@ const server = new x402ResourceServer(facilitatorClient)
   .registerExtension(bazaarResourceServerExtension)
   .onAfterSettle(async (ctx) => {
     try {
-      if (!process.env.BLOB_READ_WRITE_TOKEN) return;
+      // Payment verification + forward run even without Blob.
+      // Receipts/intents still require BLOB_READ_WRITE_TOKEN.
+      const hasBlob = !!process.env.BLOB_READ_WRITE_TOKEN;
 
       const id = receiptIdFromPayload(ctx.paymentPayload);
-      if (!id) return;
+      if (!id) {
+        console.error('settlement: could not derive deposit/receipt id from payment payload');
+        return;
+      }
 
       const transport = ctx.transportContext as
         | { request?: HTTPRequestContext }
@@ -174,9 +190,7 @@ const server = new x402ResourceServer(facilitatorClient)
         ? await parseDepositBody(transport.request)
         : { target: null, amount: null, memo: null };
 
-      const payload = ctx.paymentPayload as {
-        payload?: { authorization?: { from?: string } };
-      };
+      const identity = extractPaymentIdentity(ctx.paymentPayload);
       const req = ctx.requirements as {
         amount?: string;
         maxAmountRequired?: string;
@@ -193,7 +207,7 @@ const server = new x402ResourceServer(facilitatorClient)
       const amountUsdc = amountAtomic ? (Number(amountAtomic) / 1e6).toFixed(6) : null;
 
       const intent = await resolveIntent(depositBody, amountAtomic);
-      const target = intent?.target ?? null;
+      let target = intent?.target ?? null;
       const split = intent
         ? {
             net: intent.net,
@@ -204,59 +218,246 @@ const server = new x402ResourceServer(facilitatorClient)
         : null;
 
       let forwardTxHash: string | null = null;
-      let forwardStatus: 'settled' | 'forward_failed' | 'pending' | null = null;
+      let forwardStatus: 'settled' | 'forward_failed' | 'pending' | 'held' | null = null;
+      let holdReason: string | null = null;
+      const agentWallet =
+        result.payer ?? identity.from ?? 'unknown';
 
-      if (target && split && split.net > 0) {
-        const fwd = await forwardWithRetry(target, split.net);
-        forwardTxHash = fwd.txHash;
-        forwardStatus = fwd.txHash ? 'settled' : 'forward_failed';
-
-        await logSettlement({
-          depositId: id,
-          target,
-          memo: intent?.memo ?? null,
-          grossAmount: split.gross.toFixed(6),
-          fee: split.fee.toFixed(6),
-          feePercent: '1.00',
-          netToTarget: split.net.toFixed(6),
-          agentTxHash: result.transaction ?? null,
-          forwardTxHash: fwd.txHash,
-          status: fwd.txHash ? 'settled' : 'forward_failed',
-          error: fwd.error ?? undefined,
-          requiresManualReview: !fwd.txHash,
-          timestamp: new Date().toISOString(),
-        });
-      } else if (!target) {
-        forwardStatus = 'pending';
-        console.error('settlement: missing target intent — payment recorded, no forward');
+      // Re-validate target before any forward (zero / platform self-deposit)
+      if (target) {
+        const tv = validateDepositTarget(target, PLATFORM_PAY_TO);
+        if (!tv.ok) {
+          console.error(
+            `payment-verify: invalid target ${target} — ${tv.code}: ${tv.message}`
+          );
+          forwardStatus = 'held';
+          holdReason = `TARGET_INVALID: ${tv.code}`;
+          target = null;
+        }
       }
 
-      await mergeReceipt(id, {
-        payer: result.payer ?? payload.payload?.authorization?.from ?? null,
-        amountAtomic: amountAtomic || null,
-        amountUsdc,
-        asset: req.asset ?? null,
-        network: req.network ?? result.network ?? null,
-        payTo: req.payTo ?? null,
-        txHash: result.transaction ?? null,
-        resource,
-        settledAt: new Date().toISOString(),
-        target,
-        memo: intent?.memo ?? depositBody.memo,
-        depositAmount: split ? split.net.toFixed(6) : depositBody.amount,
-        grossAmount: split ? split.gross.toFixed(6) : amountUsdc,
-        fee: split ? split.fee.toFixed(6) : null,
-        feePercent: split ? '1.00' : null,
-        netToTarget: split ? split.net.toFixed(6) : null,
-        forwardTxHash,
-        forwardStatus,
-        note:
-          forwardStatus === 'pending'
-            ? 'Payment settled to platform; target missing from request — forward not attempted.'
-            : forwardStatus === 'forward_failed'
-              ? 'Payment settled; forward to target failed — manual review may be required.'
-              : null,
-      });
+      if (target && split && split.net > 0) {
+        const txnId = id;
+
+        // Log the transaction as pending before checks
+        try {
+          await logTransaction({
+            id: txnId,
+            targetAddress: target,
+            agentWallet,
+            amountUsdc: split.gross,
+            feeUsdc: split.fee,
+            netUsdc: split.net,
+            feeTier: 'catalog',
+            status: 'pending',
+            agentTxHash: result.transaction ?? null,
+            merchantTxHash: null,
+            guardrailFlags: [],
+            errorMessage: null,
+            retryCount: 0,
+          });
+        } catch (dbErr) {
+          console.error(
+            'guardrails: transaction log failed:',
+            dbErr instanceof Error ? dbErr.message : 'unknown'
+          );
+        }
+
+        // --- Payment verification (post-facilitator, pre-forward) ---
+        // 1) token contract  2) amount match  3) nonce replay
+        let blocked = false;
+        const blockFlags: string[] = [];
+
+        try {
+          const payVerify = await runPaymentVerification({
+            asset: req.asset ?? null,
+            network: req.network ?? result.network ?? X402_NETWORK,
+            requirementsAmountAtomic: amountAtomic || null,
+            authorizationValue: identity.authorizationValue,
+            nonce: identity.nonce,
+            signature: identity.signature,
+            quotedGrossUsdc: split.gross,
+            depositId: txnId,
+            agentWallet,
+          });
+
+          if (!payVerify.ok) {
+            blocked = true;
+            blockFlags.push(...payVerify.flags);
+            forwardStatus = 'held';
+            holdReason = `PAYMENT_VERIFY: ${payVerify.code}`;
+            try {
+              await updateTransactionStatus(txnId, 'held', {
+                guardrailFlags: payVerify.flags,
+                errorMessage: holdReason,
+              });
+            } catch {
+              // non-fatal
+            }
+            console.error(
+              `payment-verify: deposit ${txnId} held — ${payVerify.code}: ${payVerify.message}`
+            );
+          }
+        } catch (verifyErr) {
+          // Fail-closed for payment verification errors
+          blocked = true;
+          forwardStatus = 'held';
+          holdReason = 'PAYMENT_VERIFY_ERROR';
+          blockFlags.push('PAYMENT_VERIFY_ERROR');
+          console.error(
+            'payment-verify: check failed (fail-closed):',
+            verifyErr instanceof Error ? verifyErr.message : 'unknown'
+          );
+          try {
+            await updateTransactionStatus(txnId, 'held', {
+              guardrailFlags: blockFlags,
+              errorMessage: holdReason,
+            });
+          } catch {
+            // non-fatal
+          }
+        }
+
+        // --- Existing velocity / rate / amount-cap guardrails ---
+        if (!blocked) {
+          try {
+            const guardrailResult = await runGuardrails({
+              depositId: txnId,
+              targetAddress: target,
+              agentWallet,
+              amountUsdc: split.gross,
+              feeUsdc: split.fee,
+              netUsdc: split.net,
+              method: 'POST',
+              pathname: '/api/deposit',
+              rateLimitKey: agentWallet,
+            });
+
+            if (guardrailResult.blocked) {
+              blocked = true;
+              forwardStatus = 'held';
+              holdReason = `GUARDRAIL_BLOCKED: ${guardrailResult.code}`;
+              try {
+                await updateTransactionStatus(txnId, 'held', {
+                  guardrailFlags: guardrailResult.flags,
+                  errorMessage: holdReason,
+                });
+              } catch {
+                // non-fatal
+              }
+              console.error(
+                `guardrails: deposit ${txnId} held — ${guardrailResult.code}: ${guardrailResult.flags.join(', ')}`
+              );
+            }
+          } catch (guardErr) {
+            console.error(
+              'guardrails: check failed, proceeding with forward:',
+              guardErr instanceof Error ? guardErr.message : 'unknown'
+            );
+          }
+        }
+
+        if (!blocked) {
+          const fwd = await forwardWithRetry(target, split.net);
+          forwardTxHash = fwd.txHash;
+          forwardStatus = fwd.txHash ? 'settled' : 'forward_failed';
+
+          if (!fwd.txHash && fwd.error) {
+            try {
+              await logSettlementFailure(txnId, target, split.gross, fwd.error, fwd.attempts);
+              await updateTransactionStatus(txnId, 'held', {
+                errorMessage: fwd.error,
+                retryCount: fwd.attempts,
+              });
+            } catch {
+              // non-fatal
+            }
+
+            // Reconciliation queue for manual resolution
+            try {
+              await enqueueFailedForward({
+                depositId: txnId,
+                target,
+                netUsdc: split.net,
+                grossUsdc: split.gross,
+                agentTxHash: result.transaction ?? null,
+                error: fwd.error,
+                retryCount: fwd.attempts,
+                memo: intent?.memo ?? null,
+              });
+            } catch (qErr) {
+              console.error(
+                'reconcile enqueue failed:',
+                qErr instanceof Error ? qErr.message : 'unknown'
+              );
+            }
+          } else if (fwd.txHash) {
+            try {
+              await updateTransactionStatus(txnId, 'settled', {
+                merchantTxHash: fwd.txHash,
+              });
+            } catch {
+              // non-fatal
+            }
+          }
+
+          if (hasBlob) {
+            await logSettlement({
+              depositId: id,
+              target,
+              memo: intent?.memo ?? null,
+              grossAmount: split.gross.toFixed(6),
+              fee: split.fee.toFixed(6),
+              feePercent: '1.00',
+              netToTarget: split.net.toFixed(6),
+              agentTxHash: result.transaction ?? null,
+              forwardTxHash: fwd.txHash,
+              status: fwd.txHash ? 'settled' : 'forward_failed',
+              error: fwd.error ?? undefined,
+              requiresManualReview: !fwd.txHash,
+              timestamp: new Date().toISOString(),
+            });
+          }
+        }
+      } else if (!target && !holdReason) {
+        forwardStatus = 'pending';
+        console.error('settlement: missing target intent — payment recorded, no forward');
+      } else if (!target && holdReason) {
+        forwardStatus = 'held';
+      }
+
+      if (hasBlob) {
+        await mergeReceipt(id, {
+          payer: result.payer ?? identity.from ?? null,
+          amountAtomic: amountAtomic || null,
+          amountUsdc,
+          asset: req.asset ?? null,
+          network: req.network ?? result.network ?? null,
+          payTo: req.payTo ?? null,
+          txHash: result.transaction ?? null,
+          resource,
+          settledAt: new Date().toISOString(),
+          target: intent?.target ?? depositBody.target,
+          memo: intent?.memo ?? depositBody.memo,
+          depositAmount: split ? split.net.toFixed(6) : depositBody.amount,
+          grossAmount: split ? split.gross.toFixed(6) : amountUsdc,
+          fee: split ? split.fee.toFixed(6) : null,
+          feePercent: split ? '1.00' : null,
+          netToTarget: split ? split.net.toFixed(6) : null,
+          forwardTxHash,
+          forwardStatus,
+          note:
+            forwardStatus === 'pending'
+              ? 'Payment settled to platform; target missing from request — forward not attempted.'
+              : forwardStatus === 'forward_failed'
+                ? 'Payment settled; forward to target failed after retries — see reconciliation queue.'
+                : forwardStatus === 'held'
+                  ? holdReason
+                    ? `Payment settled to platform; forward held — ${holdReason}. Manual review required.`
+                    : 'Payment settled to platform; forward held by guardrail — manual review required.'
+                  : null,
+        });
+      }
     } catch (error) {
       console.error('settlement failed:', error instanceof Error ? error.message : 'unknown');
     }
@@ -281,18 +482,21 @@ export const middleware = paymentProxy(
       },
       unpaidResponseBody: async (context) => {
         const body = await parseDepositBody(context);
-        await rememberIntentFromBody(body);
         const net = clampDepositUsdc(body.amount);
         const split = net !== null ? calculateDepositSplit(net) : null;
-        const targetOk = isValidEvmAddress(body.target);
+        const targetCheck = validateDepositTarget(body.target, PLATFORM_PAY_TO);
 
-        if (!targetOk || !split) {
+        // Target validation before 402 body is useful to the client
+        // (format, zero address, platform self-deposit loop)
+        if (!targetCheck.ok || !split) {
           return {
             contentType: 'application/json',
             body: {
               error: 'invalid_request',
-              message:
-                'POST JSON { "target": "0x…", "amount": "50.00", "memo?": "…" }. amount is net USDC to target; you pay amount + 1%.',
+              code: !targetCheck.ok ? targetCheck.code : 'invalid_amount',
+              message: !targetCheck.ok
+                ? targetCheck.message
+                : 'POST JSON { "target": "0x…", "amount": "50.00", "memo?": "…" }. amount is net USDC to target; you pay amount + 1%.',
               feePercent: 1,
               minAmount: DEPOSIT_MIN_USDC,
               maxAmount: 100_000,
@@ -302,18 +506,25 @@ export const middleware = paymentProxy(
           };
         }
 
+        // Only remember intents for valid targets
+        await rememberIntentFromBody(body);
+
         return {
           contentType: 'application/json',
           body: {
             service: 'deposit.now',
             action: 'deposit',
-            target: body.target,
+            target: targetCheck.address,
             memo: body.memo,
             netToTarget: split.net.toFixed(6),
             fee: split.fee.toFixed(6),
             feePercent: split.feePercent,
             grossToPay: split.gross.toFixed(6),
             asset: 'USDC',
+            assetAddress:
+              X402_NETWORK === 'eip155:8453'
+                ? '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+                : '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
             network: X402_NETWORK === 'eip155:8453' ? 'base' : 'base-sepolia',
             hint: 'Pay grossToPay via x402, then retry with payment proof. Net is forwarded after settlement; check receiptUrl for forward status.',
           },
