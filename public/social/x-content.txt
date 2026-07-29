@@ -1,0 +1,237 @@
+deposit.now — X content pack (agent → agent deposits)
+======================================================
+Profile: @Deposit_Now
+Site: https://deposit.now
+Docs: https://deposit.now/docs
+llms: https://deposit.now/llms.txt
+Header: public/social/x-header.png
+OG share: public/og.png
+Profile pic: public/social/x-profile.png
+
+
+1) PROFILE SETUP
+----------------
+Display name:
+  deposit.now
+
+Bio (basic plan — keep short):
+  Agent → agent deposits over x402.
+  Parent funds child · one HTTP call · no API key.
+  Base mainnet · 1%
+  deposit.now
+
+Location (optional):
+  Base · x402
+
+Website:
+  https://deposit.now
+
+Header image:
+  public/social/x-header.png
+  Alt: deposit.now banner — Agent to agent deposits. One HTTP call, no API key, amount plus 1% on Base with x402.
+
+Profile image:
+  public/social/x-profile.png
+  Alt: deposit.now logo — orange coin mark on dark background.
+
+
+2) PINNED THREAD (post day 1 — reply chain)
+------------------------------------------
+Tweet 1/5 (pin this):
+Agent → agent deposits.
+
+Parent funds child.
+One HTTP call.
+No API key.
+
+deposit.now
+
+[attach: og.png]
+Alt: Open x402 funding rail — agents fund any wallet via one HTTP call. Amount plus 1%, no API key needed.
+
+---
+Tweet 2/5:
+How it works:
+
+1 POST /api/deposit { target, amount }
+2 Agent pays amount + 1% via x402
+3 Net USDC goes to target
+
+No dashboard. No signup. No connect wallet.
+
+---
+Tweet 3/5:
+Not a wallet.
+Not an agent runtime.
+Not Coinbase Fund.
+
+Coinbase = full stack inside CDP.
+deposit.now = open deposit to any address you already have.
+
+---
+Tweet 4/5:
+Built for multi-agent systems:
+
+• parent → child funding
+• swarm / sub-agent top-ups
+• any EVM target
+
+You supply the address. We move the net.
+
+---
+Tweet 5/5:
+Try it:
+
+docs → deposit.now/docs
+machine → deposit.now/llms.txt
+
+curl the 402. Pay with any x402 client.
+
+
+3) SHORT POSTS (basic plan — min text)
+-------------------------------------
+Use with og.png or flow image when available.
+Schedule ~1/day for 2 weeks. Mix order.
+
+P01 — Job
+Parent agent. Child agent.
+Fund it with one HTTP call.
+No API key.
+deposit.now
+Alt: Agent to agent deposit product message for deposit.now
+
+P02 — No human
+No human in the loop.
+No connect wallet button.
+Agents call the API.
+deposit.now
+Alt: Autonomous agent deposits without human UI
+
+P03 — Recipe
+POST /api/deposit
+{ target, amount }
+→ 402 pay amount+1%
+→ net to target
+deposit.now
+Alt: deposit.now API recipe for x402 deposits
+
+P04 — Contrast
+Coinbase: wallets + Fund + full stack.
+Us: open x402 deposit to any address.
+Different job.
+deposit.now
+Alt: Positioning deposit.now versus Coinbase agent stack
+
+P05 — Parent child
+Your agent to child agent deposits.
+No API key.
+amount + 1%.
+deposit.now
+Alt: Parent to child agent funding over x402
+
+P06 — What we are not
+We don’t mint wallets.
+We don’t host agents.
+We fund addresses you already have.
+deposit.now
+Alt: Scope of deposit.now bare bones funding rail
+
+P07 — x402 moment
+x402 is heating up.
+Agents need a simple deposit pipe.
+That’s deposit.now.
+Alt: deposit.now as simple x402 deposit pipe
+
+P08 — Cloudflare vs us
+CF monetization = charge for APIs/pages.
+deposit.now = agent funds a wallet.
+Pay-to-use vs pay-to-fund.
+Alt: Difference between Cloudflare paywall and deposit rail
+
+P09 — Fee honesty
+Flat 1%.
+Agent pays amount + fee.
+Net hits target.
+Simple.
+deposit.now
+Alt: One percent platform fee on deposits
+
+P10 — Receipt
+Pay settles.
+Forward is async.
+Check receipt + forwardStatus.
+Honest status.
+deposit.now
+Alt: Honest payment_received versus forward status
+
+P11 — Any target
+EOA.
+Agent wallet.
+CDP wallet.
+Any address you pass.
+deposit.now
+Alt: Fund any EVM target address
+
+P12 — CTA
+docs.deposit.now → /docs
+llms.txt for agents.
+Start with a 402 probe.
+deposit.now
+Alt: Call to action for deposit.now docs
+
+P13 — One liner
+Agent → agent deposits over x402.
+No API key.
+deposit.now
+Alt: One line product pitch
+
+P14 — Builders
+Building multi-agent systems?
+Funding sub-agents is boring plumbing.
+We made the boring part one call.
+deposit.now
+Alt: Multi-agent builders funding sub-agents
+
+
+4) WEEKLY RHYTHM (2 weeks)
+-------------------------
+Week 1
+  Day 1: Pin thread (1–5)
+  Day 2: P01
+  Day 3: P03
+  Day 4: P04
+  Day 5: P05
+  Day 6: P07
+  Day 7: P12
+
+Week 2
+  Day 8: P02
+  Day 9: P06
+  Day 10: P08
+  Day 11: P09
+  Day 12: P10
+  Day 13: P11
+  Day 14: P13 or P14
+
+
+5) REPLY SNIPPETS (use under others’ x402 posts)
+------------------------------------------------
+A) “Also useful when agent A just needs to fund agent B’s address — open POST, no API key → deposit.now”
+
+B) “If you’re already full CDP, use Coinbase Fund. If you want any target over open x402 deposit, try deposit.now”
+
+C) “Parent → child funding is the job we do. One HTTP call.”
+
+
+6) HASHTAGS (optional, 0–2 max)
+------------------------------
+#x402 #Base
+Don’t spam. Prefer no tags on most posts.
+
+
+7) IMAGE MAP
+------------
+Pinned + most posts: public/og.png
+Header: public/social/x-header.png
+Avatar: public/social/x-profile.png
+Optional older posts: public/social/x-post-*.png (regenerate later if copy is stale)

@@ -39,6 +39,50 @@ function coinsSvg(size, stroke = CF.primary, strokeWidth = 1.5) {
 </svg>`);
 }
 
+/**
+ * Homepage-style outline pill: zap + uppercase label, balanced pad.
+ * Width uses char + inter-letter tracking (not length * oversize factor).
+ *
+ * @param {{ x?: number, cx?: number, y: number, label: string, fontSize?: number, h?: number, tracking?: number }} opts
+ *   Pass either left edge `x` or center `cx`.
+ */
+function outlinePill({ x, cx, y, label, fontSize = 16, h = 42, tracking = 0.14 }) {
+  const padX = Math.round(h * 0.52);
+  const iconSize = Math.round(fontSize * 1.05);
+  const iconGap = Math.round(fontSize * 0.5);
+  // Bold caps ~0.58–0.64em; letter-spacing only between chars
+  const charW = fontSize * 0.6;
+  const trackW = fontSize * tracking;
+  const textW = label.length * charW + Math.max(0, label.length - 1) * trackW;
+  const contentW = iconSize + iconGap + textW;
+  const w = Math.ceil(padX * 2 + contentW);
+  const left = cx != null ? Math.round(cx - w / 2) : x;
+  const cy = y + h / 2;
+  const iconX = left + padX;
+  const iconY = cy - iconSize / 2;
+  const textX = iconX + iconSize + iconGap;
+  const zapScale = iconSize / 24;
+
+  return {
+    w,
+    h,
+    left,
+    svg: `
+  <rect x="${left}" y="${y}" width="${w}" height="${h}"
+        rx="${h / 2}" ry="${h / 2}"
+        fill="none" stroke="${CF.primary}" stroke-opacity="0.55" stroke-width="2"/>
+  <g transform="translate(${iconX}, ${iconY}) scale(${zapScale})" fill="none" stroke="${CF.primary}" stroke-width="2.25"
+     stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
+  </g>
+  <text x="${textX}" y="${cy}" dominant-baseline="central"
+        font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
+        font-size="${fontSize}" font-weight="900" fill="${CF.primary}"
+        letter-spacing="${tracking}em">${label}</text>
+`,
+  };
+}
+
 async function main() {
   // --- Profile pic 400x400 (matches Cloudflare default) ---
   const avatarCoins = await sharp(coinsSvg(240, CF.primary, 1.7)).png().toBuffer();
@@ -57,44 +101,27 @@ async function main() {
     .toFile(path.join(outDir, 'x-profile.png'));
 
   // --- Header 1500x500 (mobile-first for X) ---
-  // On X mobile the banner is heavily scaled down + center-cropped.
-  // Keep 2–3 large lines, centered, high contrast. Drop tiny mono footer.
-  // Profile avatar covers bottom-left — leave lower ~20% empty of critical text.
+  // Profile avatar covers bottom-left — keep critical text in upper/center band.
+  // No "deposit.now" in title (profile already shows the handle/name).
   const cx = 750;
-  // Larger pill for mobile readability (less letter-spacing than desktop site)
-  const pillH = 48;
-  const pillPadX = 28;
-  const iconSize = 18;
-  const iconGap = 12;
-  const pillChars = 'X402 · BASE';
-  const fontSize = 18;
-  const trackingEm = 0.18; // still wide, but not unreadable when scaled down
-  const pillTextW = pillChars.length * fontSize * (0.75 + trackingEm);
-  const pillW = Math.ceil(pillPadX + iconSize + iconGap + pillTextW + pillPadX);
-  const pillX = cx - pillW / 2;
-
-  // Even vertical rhythm: equal gap measured between each row's bounding box
-  const titleSize = 88;
-  const tagSize = 32;
-  // Cap heights for layout (tight visual boxes, not full em-box)
-  const titleH = 72;
-  const tagH = 36;
-  const gap = 44; // same air between pill→title and title→tagline
+  const titleSize = 62;
+  const tagSize = 28;
+  const titleH = 58;
+  const tagH = 32;
+  const gap = 32;
+  const pillH = 42;
   const stackH = pillH + gap + titleH + gap + tagH;
-  // Keep stack clear of X profile crop (~bottom 90px)
-  const stackTop = Math.round((500 - 80 - stackH) / 2) + 4;
-
-  const pillY = stackTop;
-  const pillCy = pillY + pillH / 2;
-  const titleCy = pillY + pillH + gap + titleH / 2;
-  const tagCy = pillY + pillH + gap + titleH + gap + tagH / 2;
-
-  const iconX = pillX + pillPadX;
-  const iconY = pillCy - iconSize / 2;
-  const textX = iconX + iconSize + iconGap;
-
-  const zapScale = iconSize / 24;
-  const zapTransform = `translate(${iconX}, ${iconY}) scale(${zapScale})`;
+  const stackTop = Math.round((500 - 100 - stackH) / 2) + 8;
+  const pill = outlinePill({
+    cx,
+    y: stackTop,
+    label: 'X402 · BASE',
+    fontSize: 16,
+    h: pillH,
+    tracking: 0.14,
+  });
+  const titleCy = stackTop + pill.h + gap + titleH / 2;
+  const tagCy = stackTop + pill.h + gap + titleH + gap + tagH / 2;
 
   const headerSvg = Buffer.from(`
 <svg width="1500" height="500" xmlns="http://www.w3.org/2000/svg">
@@ -106,29 +133,17 @@ async function main() {
   <rect width="1500" height="500" fill="${CF.bg}"/>
   <rect width="1500" height="500" fill="url(#grid)"/>
 
-  <!-- row 1: pill -->
-  <rect x="${pillX}" y="${pillY}" width="${pillW}" height="${pillH}"
-        rx="${pillH / 2}" ry="${pillH / 2}"
-        fill="none" stroke="${CF.primary}" stroke-opacity="0.55" stroke-width="2"/>
-  <g transform="${zapTransform}" fill="none" stroke="${CF.primary}" stroke-width="2.25"
-     stroke-linecap="round" stroke-linejoin="round">
-    <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
-  </g>
-  <text x="${textX}" y="${pillCy}"
-        dominant-baseline="central"
-        font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
-        font-size="${fontSize}" font-weight="900" fill="${CF.primary}"
-        letter-spacing="0.18em">${pillChars}</text>
+  ${pill.svg}
 
-  <!-- row 2: title (center-aligned baseline for even gaps) -->
+  <!-- primary message (no brand name — avatar + display name carry that) -->
   <text x="${cx}" y="${titleCy}" text-anchor="middle" dominant-baseline="central"
         font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
-        font-size="${titleSize}" font-weight="800" fill="${CF.foreground}" letter-spacing="-0.03em">&gt;_ deposit.now</text>
+        font-size="${titleSize}" font-weight="800" fill="${CF.foreground}" letter-spacing="-0.02em">Agent → agent deposits</text>
 
-  <!-- row 3: tagline -->
+  <!-- tagline -->
   <text x="${cx}" y="${tagCy}" text-anchor="middle" dominant-baseline="central"
         font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
-        font-size="${tagSize}" font-weight="600" fill="${CF.primary}">Open x402 funding rail</text>
+        font-size="${tagSize}" font-weight="600" fill="${CF.primary}">One HTTP call · no API key · amount + 1%</text>
 </svg>`);
 
   await sharp(headerSvg).png().toFile(path.join(outDir, 'x-header.png'));
@@ -137,6 +152,14 @@ async function main() {
   const ogW = 1200;
   const ogH = 630;
   const coinsOg = await sharp(coinsSvg(112, CF.primary, 1.55)).png().toBuffer();
+  const ogPill = outlinePill({
+    x: 72,
+    y: 88,
+    label: 'X402 · BASE MAINNET',
+    fontSize: 15,
+    h: 40,
+    tracking: 0.12,
+  });
 
   const ogSvg = Buffer.from(`
 <svg width="${ogW}" height="${ogH}" xmlns="http://www.w3.org/2000/svg">
@@ -149,16 +172,7 @@ async function main() {
   <rect width="${ogW}" height="${ogH}" fill="url(#oggrid)"/>
   <rect x="0" y="0" width="8" height="${ogH}" fill="${CF.primary}"/>
 
-  <!-- pill -->
-  <rect x="72" y="88" width="268" height="44" rx="22" ry="22"
-        fill="none" stroke="${CF.primary}" stroke-opacity="0.55" stroke-width="2"/>
-  <g transform="translate(96, 99) scale(0.75)" fill="none" stroke="${CF.primary}" stroke-width="2.25"
-     stroke-linecap="round" stroke-linejoin="round">
-    <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
-  </g>
-  <text x="128" y="110" dominant-baseline="central"
-        font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
-        font-size="16" font-weight="900" fill="${CF.primary}" letter-spacing="0.16em">X402 · BASE MAINNET</text>
+  ${ogPill.svg}
 
   <text x="72" y="220"
         font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"

@@ -69,13 +69,14 @@ function footerBar() {
   `;
 }
 
-function pill({ x, y, label, fontSize = 20, tracking = 0.16 }) {
-  const padX = 28;
-  const iconSize = 18;
-  const iconGap = 12;
-  const h = 48;
-  const textW = label.length * fontSize * (0.72 + tracking);
-  const w = Math.ceil(padX + iconSize + iconGap + textW + padX);
+function pill({ x, y, label, fontSize = 18, tracking = 0.14, h = 42 }) {
+  const padX = Math.round(h * 0.52);
+  const iconSize = Math.round(fontSize * 1.05);
+  const iconGap = Math.round(fontSize * 0.5);
+  const charW = fontSize * 0.6;
+  const trackW = fontSize * tracking;
+  const textW = label.length * charW + Math.max(0, label.length - 1) * trackW;
+  const w = Math.ceil(padX * 2 + iconSize + iconGap + textW);
   const cy = y + h / 2;
   const iconX = x + padX;
   const iconY = cy - iconSize / 2;

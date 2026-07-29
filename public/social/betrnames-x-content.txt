@@ -1,0 +1,249 @@
+@BetrNames — personal progress + lessons (piggyback on @deposit_now)
+====================================================================
+Voice: Gabe building in public. Short. Honest. Not product-bot copy.
+Tag: @deposit_now when relevant.
+Link: deposit.now or deposit.now/docs
+Images: attach public/og.png or a screenshot; or none (text-first works for you)
+
+
+WHY THIS ACCOUNT (not only @deposit_now)
+---------------------------------------
+@deposit_now  = product (what it is / how to call it)
+@BetrNames    = builder diary (what you learned / what broke / why you chose bare bones)
+
+People follow people. Use personal for story; product for docs/recipe.
+
+
+BIO TWEAK (optional)
+--------------------
+Vibe coding my portfolio · shipping @deposit_now
+agent → agent deposits on x402 · Base mainnet
+deposit.now
+
+
+RULES
+-----
+1. Lead with a lesson or tension, not "check out my product"
+2. One concrete takeaway per post
+3. End with @deposit_now or a quiet link — not both every time
+4. Quote/reply bigger accounts (CF, Coinbase, x402) with YOUR learnings
+5. Basic plan: keep short. Thread only when the lesson needs steps.
+
+
+PINNED / FLAGSHIP THREAD (post once, pin on @BetrNames if you want)
+------------------------------------------------------------------
+1/
+I've been shipping @deposit_now live on Base mainnet.
+
+Not a wallet.
+Not an agent runtime.
+Agent → agent deposits over x402.
+
+Here's what I actually learned.
+
+2/
+Lesson 1: Coinbase already does a lot of this.
+
+That almost stopped me.
+Then I realized: full stack ≠ thin open pipe.
+
+Someone still needs "fund any address, one HTTP call, no API key."
+
+3/
+Lesson 2: Cloudflare's x402 waitlist is a different job.
+
+They monetize pages/APIs at the edge.
+I move net USDC to a target wallet after a 402.
+
+Pay-to-use vs pay-to-fund.
+Don't compete with a headline. Compete with a job.
+
+4/
+Lesson 3: Overclaiming kills trust.
+
+I stripped "funding layer for all agents."
+Now it's honest: open x402 funding rail.
+You bring the address. We don't mint wallets.
+
+5/
+Lesson 4: Status honesty matters.
+
+payment_received ≠ funds already at target.
+Forward is async. Receipts + forwardStatus aren't optional for agents.
+
+6/
+Still building. Still learning.
+If you're wiring multi-agent funding, docs are on deposit.now
+
+@deposit_now
+
+
+14 SHORT POSTS (progress + lessons) — schedule ~1 every 1–2 days
+----------------------------------------------------------------
+B01 — Start
+Shipping @deposit_now on Base mainnet taught me more than any tutorial.
+
+Biggest surprise: the hard part isn't the 402.
+It's saying what you ARE NOT.
+
+B02 — Bare bones
+I deleted pricing pages, dashboards, and merchant flows.
+
+Bare bones isn't lazy.
+It's a product decision.
+
+@deposit_now = one job: agent deposits.
+
+B03 — Coinbase
+"Coinbase already does this" is true.
+
+So I stopped trying to be Coinbase.
+I'm the open deposit pipe for any target address.
+
+Different job. Same protocol (x402).
+
+B04 — Cloudflare quote angle
+(CF monetization posts — reply/quote)
+Same protocol. Different lane.
+
+They're building paywalls for the web.
+I'm building parent → child funding for agents.
+
+Both can win.
+
+B05 — No API key
+I kept almost writing "no deposit.now API key."
+
+Then cut the brand from the line.
+"No API key needed" scans faster.
+
+Marketing is editing.
+
+B06 — Async truth
+Agents lie to themselves with 200 OK.
+
+I learned: return payment_received,
+document that forward can fail,
+put forwardStatus on the receipt.
+
+Honesty > happy path demos.
+
+B07 — Hero test
+If a dev can't see POST /api/deposit in 30 seconds, the landing failed.
+
+I put the recipe next to the headline.
+Left = job. Right = curl.
+
+B08 — Strip session
+Today's progress: strip bloat, fix hero, slim footer.
+
+Learned: every extra nav link is a decision tax for cold visitors.
+
+B09 — Social images
+Spent too long on OG/header pills.
+
+Learned: width math lies.
+If the capsule looks empty on the right, your formula is wrong.
+
+Ship the message, then polish pixels.
+
+B10 — Positioning
+I'm marketing @deposit_now as:
+
+Agent → agent deposits.
+One HTTP call.
+No API key.
+
+Not "the funding layer for AI."
+Specific > grandiose.
+
+B11 — What we don't do
+Progress log: still no wallet provisioning.
+Still no agent hosting.
+
+That's intentional.
+Complement Coinbase. Don't cosplay it.
+
+B12 — Multi-agent
+Building for parent → child funding.
+
+If your swarm can't top up a sub-agent without a human,
+you don't have autonomy — you have a demo.
+
+B13 — Live vs waitlist
+I care less about waitlists and more about a mainnet 402.
+
+Live beats vapor.
+(Even if the graph is quiet.)
+
+@deposit_now
+
+B14 — Invite
+Building multi-agent stuff on Base?
+
+I'm documenting what breaks while shipping @deposit_now.
+Follow along. Roast the copy. Steal the recipe.
+
+
+REPLY SNIPPETS (under x402 / agent / Coinbase / CF posts)
+---------------------------------------------------------
+R1
+Building the thin version of this in public with @deposit_now —
+agent → agent deposits, no API key. Happy to compare notes.
+
+R2
+What I learned shipping mainnet x402: discovery + receipts matter as much as settlement.
+
+R3
+If you're already deep in CDP Fund, stay there.
+If you need any-target open deposit over 402, that's the lane I'm in.
+
+R4
+Same protocol, different product surface.
+Paywall ≠ wallet funding.
+
+
+2-WEEK RHYTHM (@BetrNames)
+--------------------------
+Week 1
+  Day 1: Flagship thread (or B01 + B03)
+  Day 2: B02
+  Day 3: Quote a CF/x402 post with B04 / R2
+  Day 4: B05
+  Day 5: B06
+  Day 6: B07
+  Day 7: B10
+
+Week 2
+  Day 8: B08 (progress)
+  Day 9: B11
+  Day 10: B12
+  Day 11: B09 (builder humor)
+  Day 12: B13
+  Day 13: Reply day — 3–5 thoughtful replies on x402 threads
+  Day 14: B14
+
+
+CROSS-PROMOTE (light touch)
+---------------------------
+- On big personal threads: tag @deposit_now once
+- On @deposit_now: RT your personal lesson posts (human > corporate)
+- Don't double-post the same copy on both accounts
+
+
+FIRST POST TO PUBLISH TODAY (copy-paste)
+----------------------------------------
+I've been shipping @deposit_now live on Base.
+
+Not trying to beat Coinbase.
+Trying to be the bare-bones option:
+
+agent → agent deposits
+one HTTP call
+no API key
+
+What I learned: if you overclaim, nobody trusts the 402.
+
+deposit.now
+
+[optional: attach og.png]
