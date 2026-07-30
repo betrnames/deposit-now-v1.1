@@ -1,39 +1,46 @@
 # deposit.now
 
-> Open x402 funding rail: pay amount + 1% over HTTP 402, net forwards to any EVM target, optional public receipt. Complements Coinbase CDP Fund — does not create wallets or replace CDP Fund/Send.
+> Open x402 funding rail: pay amount + 1% over HTTP 402, net forwards to any EVM target — or provision a managed child wallet with provision:true. Optional public receipt. Complements Coinbase CDP Fund/Send.
 
 Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-full.txt
 
 ## Honest pitch
 
-- deposit.now is a **protocol-shaped deposit API**, not a full agent wallet platform.
-- Coinbase Agentic / Server Wallets already include **Fund** and **Send**. Use those if you live in CDP.
-- Use deposit.now when a paying agent should fund **any EVM address** via **x402** without a deposit.now API key.
+- deposit.now is a **protocol-shaped deposit API** plus optional **managed child wallets**.
+- Coinbase Agentic / Server Wallets already include **Fund** and **Send**. Use those if you live fully in CDP.
+- Use deposit.now when a paying agent should fund **any EVM address** via **x402** without a deposit.now API key — or create+fund a child address in one call.
 
 ## Who needs what
 
 - Paying agent: any x402 client + Base USDC wallet/signer. No deposit.now API key. AgentKit optional, not required.
-- Target: any EVM address you already have (we do not create wallets).
-- Platform (server): CDP for hot wallet receive/forward; optional Blob for public receipts.
+- Target: any EVM address you already have, **or** set provision:true to mint a managed CDP child wallet.
+- Managed children: keys stay in deposit.now’s CDP project (platform_managed). v1 does **not** export keys or offer child spend APIs. For full custody, generate your own address and pass target.
+- Platform (server): CDP for hot wallet receive/forward + child provision; optional Blob for public receipts.
 - Humans on the website: docs only — no connect-wallet required to use the API.
 
 ## Core API
 
 - POST https://deposit.now/api/deposit
-- Body (JSON, required):
-  - target: EVM address receiving net USDC (0x + 40 hex) — you must already have this address
-  - amount: net USDC to forward (decimal string, min 0.01, max 100000)
+- Body (JSON):
+  - amount: net USDC to forward (decimal string, min 0.01, max 100000) — **required**
+  - target: EVM address receiving net USDC — **required unless provision**
+  - provision: true — create/resolve managed child wallet (do not send target)
+  - label: stable child id (e.g. trading-agent-1) — **required with provision** unless Idempotency-Key header
   - memo: optional string (max 256)
+- Header (optional): Idempotency-Key — stable provision identity
 - Price: amount + 1% platform fee (agent pays gross via x402)
 - Network: Base mainnet eip155:8453 (production)
-- Unpaid → HTTP 402 + Payment-Required
+- Unpaid → HTTP 402 + Payment-Required (includes target + child when provisioned)
 - Paid → 200 with status **payment_received** (not a guarantee that target already holds funds)
 - Forward to target is **async after settlement** and can fail — check receiptUrl / forwardStatus
-- Public receipt requires Blob storage env on the server
 
-## Example body
+## Example — fund existing address
 
 {"target":"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0","amount":"50.00","memo":"optional note"}
+
+## Example — provision + fund child
+
+{"provision":true,"label":"trading-agent-1","amount":"50.00","memo":"Fund child trading agent"}
 
 ## Agent pays with JavaScript
 
@@ -53,12 +60,13 @@ Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        target: '0xYourTargetWallet',
+        provision: true,
+        label: 'trading-agent-1',
         amount: '50.00',
-        memo: 'optional',
+        memo: 'Fund child trading agent',
       }),
     });
-    console.log(await res.json()); // expect payment_received + receiptUrl
+    console.log(await res.json()); // payment_received + child + receiptUrl
 
 ## Discovery
 
@@ -70,7 +78,6 @@ Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-
 ## Docs
 
 - https://deposit.now/docs
-- https://deposit.now/pricing — flat 1%
 - https://deposit.now/llms-full.txt
 
 ## Facts

@@ -15,9 +15,9 @@ Display name:
   deposit.now
 
 Bio (basic plan — keep short):
-  Agent → agent deposits over x402.
-  Parent funds child · one HTTP call · no API key.
-  Base mainnet · 1%
+  Open x402 funding rail for agents.
+  Fund any wallet or provision a managed child.
+  Amount + 1% · Base · no API key
   deposit.now
 
 Location (optional):
@@ -38,45 +38,46 @@ Profile image:
 2) PINNED THREAD (post day 1 — reply chain)
 ------------------------------------------
 Tweet 1/5 (pin this):
-Agent → agent deposits.
+Open x402 funding rail.
 
-Parent funds child.
-One HTTP call.
-No API key.
+Agents fund any wallet —
+or provision a managed child —
+via one HTTP call.
 
 deposit.now
 
 [attach: og.png]
-Alt: Open x402 funding rail — agents fund any wallet via one HTTP call. Amount plus 1%, no API key needed.
+Alt: Open x402 funding rail — agents fund any wallet or provision a managed child via one HTTP call. Amount plus 1%, no API key needed.
 
 ---
 Tweet 2/5:
 How it works:
 
-1 POST /api/deposit { target, amount }
+1 POST /api/deposit
+   { target, amount }
+   or { provision: true, label, amount }
 2 Agent pays amount + 1% via x402
-3 Net USDC goes to target
+3 Net USDC goes to target / child
 
 No dashboard. No signup. No connect wallet.
 
 ---
 Tweet 3/5:
-Not a wallet.
-Not an agent runtime.
-Not Coinbase Fund.
+Complements Coinbase Fund.
+Not a full CDP replacement.
 
-Coinbase = full stack inside CDP.
-deposit.now = open deposit to any address you already have.
+Coinbase = Fund/Send inside CDP.
+deposit.now = open x402 deposit to any address
+or a managed child (platform_managed in CDP).
 
 ---
 Tweet 4/5:
 Built for multi-agent systems:
 
 • parent → child funding
+• provision + fund in one call
 • swarm / sub-agent top-ups
-• any EVM target
-
-You supply the address. We move the net.
+• any EVM target you already control
 
 ---
 Tweet 5/5:
@@ -95,10 +96,10 @@ Schedule ~1/day for 2 weeks. Mix order.
 
 P01 — Job
 Parent agent. Child agent.
-Fund it with one HTTP call.
-No API key.
+Fund any wallet — or provision a managed child —
+via one HTTP call. No API key.
 deposit.now
-Alt: Agent to agent deposit product message for deposit.now
+Alt: Agent funds any wallet or provisions a managed child via deposit.now
 
 P02 — No human
 No human in the loop.
@@ -123,18 +124,20 @@ deposit.now
 Alt: Positioning deposit.now versus Coinbase agent stack
 
 P05 — Parent child
-Your agent to child agent deposits.
-No API key.
-amount + 1%.
+Your agent → child agent deposits.
+Fund an address you have —
+or provision a managed child.
+amount + 1%. No API key.
 deposit.now
 Alt: Parent to child agent funding over x402
 
-P06 — What we are not
-We don’t mint wallets.
-We don’t host agents.
-We fund addresses you already have.
+P06 — Honest scope
+Open x402 funding rail.
+Not a full CDP replacement.
+Managed children = platform_managed in CDP
+(no key export in v1).
 deposit.now
-Alt: Scope of deposit.now bare bones funding rail
+Alt: Honest product boundaries for deposit.now
 
 P07 — x402 moment
 x402 is heating up.

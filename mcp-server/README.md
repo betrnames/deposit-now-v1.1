@@ -8,7 +8,7 @@ Thin MCP wrapper around the deposit.now x402 API for Cursor, Claude Desktop, and
 |------|-------------|
 | `deposit_now_describe` | Discovery manifest (no payment) |
 | `deposit_now_list_merchants` | Merchant catalog (no payment) |
-| `deposit_now_trigger_deposit` | Paid x402 deposit (needs `EVM_PRIVATE_KEY`) |
+| `deposit_now_trigger_deposit` | Paid x402 deposit (target **or** provision+label; needs `EVM_PRIVATE_KEY`) |
 | `deposit_now_get_receipt` | Receipt URL lookup by ID |
 
 ## Setup

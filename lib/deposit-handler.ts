@@ -3,9 +3,15 @@ import {
   calculateDepositSplit,
   clampDepositUsdc,
 } from '@/lib/billing';
+import {
+  provisionChild,
+  resolveDepositTargetMode,
+  type ChildAgentInfo,
+} from '@/lib/child-agents';
 import { buildIntent, mergeReceipt, saveDepositIntent } from '@/lib/deposit-intent';
 import { validateDepositTarget } from '@/lib/payment-verification';
 import { receiptIdFromPaymentHeader } from '@/lib/receipts';
+import { PRODUCT } from '@/lib/product-copy';
 import { PLATFORM_PAY_TO, X402_NETWORK } from '@/lib/x402';
 
 const CORS_HEADERS = {
@@ -42,8 +48,7 @@ export async function handleDepositGet(request: NextRequest) {
     {
       status: 'ok',
       service: 'deposit.now',
-      description:
-        'Open x402 funding rail. POST /api/deposit with { target, amount, memo? } — pay amount + 1% via x402; net is forwarded to target after settlement. Optional public receipts when storage is configured.',
+      description: PRODUCT.apiDescription,
       network: networkLabel(),
       x402Network: X402_NETWORK,
       feePercent: 1,
@@ -65,14 +70,64 @@ export async function handleDepositPost(request: NextRequest) {
   let target: string | null = null;
   let amountRaw: string | number | null = null;
   let memo: string | null = null;
+  let provision = false;
+  let label: string | null = null;
 
   try {
     const body = await request.json();
     if (typeof body.target === 'string') target = body.target.trim();
     if (body.amount !== undefined && body.amount !== null) amountRaw = body.amount;
     if (typeof body.memo === 'string') memo = body.memo.slice(0, 256).trim() || null;
+    if (body.provision === true) provision = true;
+    if (typeof body.label === 'string') label = body.label.trim() || null;
   } catch {
     // empty body handled below
+  }
+
+  const mode = resolveDepositTargetMode({ target, provision });
+  let child: ChildAgentInfo | null = null;
+
+  if (mode.mode === 'error') {
+    return NextResponse.json(
+      {
+        error: 'invalid_request',
+        code: mode.code,
+        message: mode.message,
+      },
+      { status: 400, headers: CORS_HEADERS }
+    );
+  }
+
+  if (mode.mode === 'provision') {
+    const provisioned = await provisionChild({
+      label,
+      idempotencyKey: request.headers.get('idempotency-key'),
+      rateLimitKey:
+        request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+        request.headers.get('x-real-ip') ??
+        'unknown',
+    });
+    if (!provisioned.ok) {
+      return NextResponse.json(
+        {
+          error: 'provision_failed',
+          code: provisioned.code,
+          message: provisioned.message,
+          ...(provisioned.retryAfter != null ? { retryAfter: provisioned.retryAfter } : {}),
+        },
+        {
+          status: provisioned.status,
+          headers: {
+            ...CORS_HEADERS,
+            ...(provisioned.retryAfter != null
+              ? { 'Retry-After': String(provisioned.retryAfter) }
+              : {}),
+          },
+        }
+      );
+    }
+    child = provisioned.child;
+    target = provisioned.child.address;
   }
 
   const targetCheck = validateDepositTarget(target, PLATFORM_PAY_TO);
@@ -100,7 +155,19 @@ export async function handleDepositPost(request: NextRequest) {
   }
 
   const split = calculateDepositSplit(net)!;
-  const intent = buildIntent(target, net, memo);
+  const intent = buildIntent(
+    target,
+    net,
+    memo,
+    child
+      ? {
+          provisioned: true,
+          childName: child.name,
+          childAddress: child.address,
+          childLabel: child.label,
+        }
+      : null
+  );
   if (intent) {
     try {
       await saveDepositIntent(intent);
@@ -122,6 +189,10 @@ export async function handleDepositPost(request: NextRequest) {
         fee: split.fee.toFixed(6),
         feePercent: split.feePercent.toFixed(2),
         netToTarget: split.net.toFixed(6),
+        provisioned: !!child,
+        childName: child?.name ?? null,
+        childLabel: child?.label ?? null,
+        childAddress: child?.address ?? null,
       });
     } catch {
       // best-effort
@@ -131,9 +202,13 @@ export async function handleDepositPost(request: NextRequest) {
   return NextResponse.json(
     {
       status: 'payment_received',
-      message: `Payment received for ${split.net.toFixed(6)} USDC net to ${target}. Forwarding is async after settlement — use receiptUrl for payer, target, fee, and Basescan links when available.`,
+      message: child
+        ? `Payment received for ${split.net.toFixed(6)} USDC net to managed child ${child.address}. Forwarding is async — keys are platform-managed in CDP (no export in v1).`
+        : `Payment received for ${split.net.toFixed(6)} USDC net to ${target}. Forwarding is async after settlement — use receiptUrl for payer, target, fee, and Basescan links when available.`,
       target,
       memo,
+      provisioned: !!child,
+      ...(child ? { child } : {}),
       depositAmount: split.net.toFixed(6),
       fee: split.fee.toFixed(6),
       feePercent: split.feePercent,

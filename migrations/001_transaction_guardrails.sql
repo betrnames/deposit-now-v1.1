@@ -38,12 +38,13 @@ CREATE TABLE IF NOT EXISTS target_velocity_config (
 );
 
 -- Rate limiting (sliding window counters)
+-- "window" is quoted: WINDOW is reserved in PostgreSQL
 CREATE TABLE IF NOT EXISTS rate_limits (
   key       TEXT NOT NULL,
   endpoint  TEXT NOT NULL,
-  window    BIGINT NOT NULL,
+  "window"  BIGINT NOT NULL,
   count     INTEGER NOT NULL DEFAULT 1,
-  PRIMARY KEY (key, endpoint, window)
+  PRIMARY KEY (key, endpoint, "window")
 );
 
 -- Guardrail audit log

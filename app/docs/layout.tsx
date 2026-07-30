@@ -1,21 +1,20 @@
 import type { Metadata } from 'next';
+import { PRODUCT } from '@/lib/product-copy';
 
 export const metadata: Metadata = {
   title: 'API Documentation',
-  description:
-    'Open x402 funding rail docs — POST target + amount, pay amount + 1%, async forward, honest payment_received status.',
+  description: PRODUCT.description,
   alternates: { canonical: 'https://deposit.now/docs' },
   openGraph: {
-    title: 'API Documentation | deposit.now',
-    description:
-      'x402 deposit API: pay amount + 1%, net to any EVM target. Complements Coinbase CDP Fund.',
+    title: `API Documentation | ${PRODUCT.name}`,
+    description: PRODUCT.description,
     url: 'https://deposit.now/docs',
-    siteName: 'deposit.now',
+    siteName: PRODUCT.name,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'API Documentation | deposit.now',
-    description: 'Open x402 funding rail — payment_received vs forwardStatus explained.',
+    title: `API Documentation | ${PRODUCT.name}`,
+    description: `${PRODUCT.productLine} — fund any wallet or provision a managed child. payment_received vs forwardStatus explained.`,
   },
   robots: { index: true, follow: true },
 };

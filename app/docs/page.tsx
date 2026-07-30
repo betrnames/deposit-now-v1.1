@@ -5,6 +5,7 @@ import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { SiteFooter } from '@/components/SiteFooter';
 import { TerminalTitle } from '@/components/TerminalTitle';
+import { PRODUCT } from '@/lib/product-copy';
 import { ChevronRight, Copy, CheckCircle2 } from 'lucide-react';
 
 const SECTIONS = [
@@ -49,21 +50,26 @@ const client = new x402Client();
 client.register('eip155:*', new ExactEvmScheme(signer));
 const fetchWithPayment = wrapFetchWithPayment(fetch, client);
 
+// Option A: fund an address you already have
+// body: { target: '0x…', amount: '50.00' }
+
+// Option B: provision + fund a managed child wallet
 const res = await fetchWithPayment('https://deposit.now/api/deposit', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    target: '0xChildOrSubWalletAddress',
+    provision: true,
+    label: 'trading-agent-1',
     amount: '50.00',
     memo: 'Fund child trading agent',
   }),
 });
-console.log(await res.json());`;
+console.log(await res.json()); // includes child.address when provisioned`;
 
   const curlExample = `curl -i -X POST https://deposit.now/api/deposit \\
   -H 'Content-Type: application/json' \\
-  -d '{"target":"0x...","amount":"50.00","memo":"Fund child trading agent"}'
-# → HTTP 402 + Payment-Required header (pay amount + 1%)`;
+  -d '{"provision":true,"label":"trading-agent-1","amount":"50.00","memo":"Fund child trading agent"}'
+# → HTTP 402 + Payment-Required (pay amount + 1%); body includes child.address`;
 
   const jsHighlighted = (
     <>
@@ -143,9 +149,15 @@ console.log(await res.json());`;
       <span className="text-green-400">stringify</span>
       <span className="text-white">({'{'}{'\n'}</span>
       {'    '}
-      <span className="text-green-400">target</span>
+      <span className="text-green-400">provision</span>
       <span className="text-white">:</span>{' '}
-      <span className="text-orange-400">&apos;0xChildOrSubWalletAddress&apos;</span>
+      <span className="text-orange-400">true</span>
+      <span className="text-white">,</span>
+      {'\n'}
+      {'    '}
+      <span className="text-green-400">label</span>
+      <span className="text-white">:</span>{' '}
+      <span className="text-orange-400">&apos;trading-agent-1&apos;</span>
       <span className="text-white">,</span>
       {'\n'}
       {'    '}
@@ -189,11 +201,11 @@ console.log(await res.json());`;
       {'  '}
       <span className="text-yellow-300">-d</span>{' '}
       <span className="text-orange-400">
-        &apos;{`{"target":"0x...","amount":"50.00","memo":"Fund child trading agent"}`}&apos;
+        &apos;{`{"provision":true,"label":"trading-agent-1","amount":"50.00","memo":"Fund child trading agent"}`}&apos;
       </span>
       {'\n'}
       <span className="text-muted-foreground/70">
-        # → HTTP 402 + Payment-Required header (pay amount + 1%)
+        # → HTTP 402 + Payment-Required (pay amount + 1%); includes child.address
       </span>
     </>
   );
@@ -238,8 +250,11 @@ console.log(await res.json());`;
                   deposit.now documentation
                 </p>
                 <TerminalTitle className="text-3xl font-black text-white tracking-tight">
-                  Open x402 funding rail
+                  {PRODUCT.productLine}
                 </TerminalTitle>
+                <p className="mt-3 text-base text-primary font-medium max-w-2xl">
+                  {PRODUCT.tagline}
+                </p>
               </div>
 
               <section id="introduction" className="space-y-4">
@@ -248,22 +263,32 @@ console.log(await res.json());`;
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     <strong className="text-white">deposit.now</strong> is an open{' '}
                     <strong className="text-white">x402 funding rail</strong>: call{' '}
-                    <code className="text-primary">POST /api/deposit</code> with a target address
-                    and net amount, pay <strong className="text-white">amount + 1%</strong> via
-                    x402, and the platform forwards net USDC after settlement. It does{' '}
-                    <strong className="text-white">not</strong> create wallets and does{' '}
-                    <strong className="text-white">not</strong> replace Coinbase CDP Fund/Send
-                    inside Agentic or Server Wallets.
+                    <code className="text-primary">POST /api/deposit</code> with either a{' '}
+                    <code className="text-primary">target</code> address or{' '}
+                    <code className="text-primary">provision: true</code> +{' '}
+                    <code className="text-primary">label</code>, pay{' '}
+                    <strong className="text-white">amount + 1%</strong> via x402, and the platform
+                    forwards net USDC after settlement. Optional managed children are{' '}
+                    <strong className="text-white">platform_managed</strong> in CDP (no key export
+                    in v1). Complements Coinbase CDP Fund/Send — does not replace it inside that
+                    stack.
                   </p>
                 </div>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    Network: Base mainnet (eip155:8453) in production
+                    Network: {PRODUCT.networkLabel}
                   </li>
                   <li className="flex gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    Fee: flat 1% of net · response status is <code className="text-primary">payment_received</code> (forward is async)
+                    Fee: flat 1% of net · status{' '}
+                    <code className="text-primary">payment_received</code> means paid, not delivered
+                    — check <code className="text-primary">forwardStatus</code>
+                  </li>
+                  <li className="flex gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    Two modes: fund any EVM <code className="text-primary">target</code>, or{' '}
+                    <code className="text-primary">provision</code> a managed child + fund it
                   </li>
                   <li className="flex gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
@@ -282,8 +307,7 @@ console.log(await res.json());`;
               <section id="who-needs-what" className="space-y-4">
                 <h2 className="text-2xl font-bold text-white">Who needs what</h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  deposit.now is an agent / API rail. You do not connect a browser wallet on this
-                  site to use the product. Credentials differ by role:
+                  {PRODUCT.noBrowserWallet} Credentials differ by role:
                 </p>
                 <div className="overflow-x-auto rounded-xl border border-border/60">
                   <table className="w-full text-sm text-left">
@@ -315,10 +339,13 @@ console.log(await res.json());`;
                       <tr className="border-b border-white/5">
                         <td className="px-4 py-3 text-white font-medium align-top">Target wallet</td>
                         <td className="px-4 py-3 align-top">
-                          An EVM address you already have (EOA, agent wallet, CDP wallet, etc.)
+                          An EVM address you already have, <strong className="text-white">or</strong>{' '}
+                          <code className="text-primary">provision: true</code> +{' '}
+                          <code className="text-primary">label</code> for a managed child
                         </td>
                         <td className="px-4 py-3 align-top">
-                          To be created by deposit.now — we do not mint sub-wallets
+                          Private keys in the API response — managed children are platform-managed in
+                          CDP (no export in v1)
                         </td>
                       </tr>
                       <tr className="border-b border-white/5">
@@ -354,8 +381,15 @@ console.log(await res.json());`;
                   <p>
                     <strong className="text-white">CDP Fund / Send:</strong> great inside Coinbase&apos;s
                     stack. deposit.now is the open HTTP 402 deposit call when you want any{' '}
-                    <code className="text-primary">target</code> + optional public receipt without a
-                    deposit.now API key.
+                    <code className="text-primary">target</code>, optional managed child via{' '}
+                    <code className="text-primary">provision</code>, and optional public receipt
+                    without a deposit.now API key.
+                  </p>
+                  <p>
+                    <strong className="text-white">Managed children:</strong> custody is{' '}
+                    <code className="text-primary">platform_managed</code>. For a child that signs under
+                    your own key, generate an address yourself and pass{' '}
+                    <code className="text-primary">target</code>.
                   </p>
                   <p>
                     <strong className="text-white">Auth model:</strong> payment is auth. Unpaid
@@ -370,10 +404,14 @@ console.log(await res.json());`;
                 <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
                   <li>Install an x402 client (e.g. @x402/fetch + viem for JS).</li>
                   <li>
-                    POST JSON: <code className="text-primary">{`{ target, amount, memo? }`}</code>
+                    POST JSON — either{' '}
+                    <code className="text-primary">{`{ target, amount, memo? }`}</code> or{' '}
+                    <code className="text-primary">
+                      {`{ provision: true, label, amount, memo? }`}
+                    </code>
                   </li>
-                  <li>Handle 402 — pay gross (amount + 1%) in USDC.</li>
-                  <li>Retry with payment proof; read receiptId / receiptUrl from the 200 body.</li>
+                  <li>Handle 402 — pay gross (amount + 1%) in USDC. Provision mode includes child.address.</li>
+                  <li>Retry with the same body + payment proof; read receiptId / receiptUrl from the 200 body.</li>
                 </ol>
               </section>
 
@@ -382,14 +420,19 @@ console.log(await res.json());`;
                 <ol className="space-y-3 text-sm text-muted-foreground">
                   <li>
                     <strong className="text-white">1.</strong> Agent calls{' '}
-                    <code className="text-primary">POST /api/deposit</code> with{' '}
+                    <code className="text-primary">POST /api/deposit</code> with either{' '}
                     <code className="text-primary">
-                      {`{ target: "0x…", amount: "50.00", memo?: "…" }`}
+                      {`{ target: "0x…", amount: "50.00" }`}
+                    </code>{' '}
+                    or{' '}
+                    <code className="text-primary">
+                      {`{ provision: true, label: "child-1", amount: "50.00" }`}
                     </code>
                   </li>
                   <li>
                     <strong className="text-white">2.</strong> Server returns 402 + x402 payment
-                    request for amount + 1% fee.
+                    request for amount + 1% fee (and <code className="text-primary">child</code>{' '}
+                    when provisioned).
                   </li>
                   <li>
                     <strong className="text-white">3.</strong> Agent pays full gross via x402 to the
@@ -397,7 +440,8 @@ console.log(await res.json());`;
                   </li>
                   <li>
                     <strong className="text-white">4.</strong> Backend confirms settlement → keeps
-                    fee → forwards net to <code className="text-primary">target</code> via CDP.
+                    fee → forwards net to <code className="text-primary">target</code> (or the
+                    managed child) via CDP.
                   </li>
                   <li>
                     <strong className="text-white">5.</strong> Returns{' '}
@@ -416,9 +460,13 @@ console.log(await res.json());`;
                     <div>
                       <code className="text-primary font-mono">POST /api/deposit</code>
                       <p className="text-muted-foreground mt-2">
-                        Body: <code className="text-white">target</code> (required EVM address),{' '}
-                        <code className="text-white">amount</code> (required net USDC 0.01–100000),{' '}
-                        <code className="text-white">memo</code> (optional, max 256 chars).
+                        Body: <code className="text-white">amount</code> (required net USDC
+                        0.01–100000) plus either <code className="text-white">target</code> (EVM
+                        address) <strong className="text-white">or</strong>{' '}
+                        <code className="text-white">provision: true</code> with{' '}
+                        <code className="text-white">label</code> (stable child id). Optional{' '}
+                        <code className="text-white">memo</code> (max 256). Optional header{' '}
+                        <code className="text-white">Idempotency-Key</code> for provision identity.
                       </p>
                     </div>
                     <div>
@@ -494,8 +542,9 @@ console.log(await res.json());`;
                 <h2 className="text-2xl font-bold text-white">Security</h2>
                 <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
                   <li>Platform hot wallet via Coinbase CDP / Agentic Wallet only — no raw platform private keys in app code.</li>
-                  <li>Strict validation: EVM address + amount caps (0.01–100000 USDC).</li>
-                  <li>Rate limiting on /api/* (stricter on deposit).</li>
+                  <li>Managed children are platform_managed in CDP — API never returns private keys.</li>
+                  <li>Strict validation: EVM address + amount caps (0.01–100000 USDC); provision rate limits.</li>
+                  <li>Rate limiting on /api/* (stricter on deposit and provision).</li>
                   <li>x402 facilitator verifies payment on-chain before success response.</li>
                   <li>Forward to target only after settlement; retries + settlement logs on failure.</li>
                 </ul>
@@ -504,24 +553,12 @@ console.log(await res.json());`;
               <section id="faq" className="space-y-4">
                 <h2 className="text-2xl font-bold text-white">FAQ</h2>
                 <div className="space-y-4 text-sm text-muted-foreground">
-                  <div>
-                    <p className="text-white font-semibold mb-1">Can I fund any wallet?</p>
-                    <p>
-                      You can set <code className="text-primary">target</code> to any EVM address you
-                      already have (including another agent’s wallet). deposit.now does not create
-                      wallets. Net forward is async after settlement.
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold mb-1">
-                      Why not just use Coinbase Fund?
-                    </p>
-                    <p>
-                      If you already run on Coinbase Agentic / Server Wallets, CDP Fund/Send is
-                      usually better. deposit.now is for an open x402 deposit call to any target
-                      without a deposit.now API key.
-                    </p>
-                  </div>
+                  {PRODUCT.faq.map((item) => (
+                    <div key={item.q}>
+                      <p className="text-white font-semibold mb-1">{item.q}</p>
+                      <p>{item.a}</p>
+                    </div>
+                  ))}
                   <div>
                     <p className="text-white font-semibold mb-1">
                       Do I need AgentKit or a connect-wallet button?

@@ -1,4 +1,5 @@
 import { DepositLogo } from '@/components/DepositLogo';
+import { PRODUCT } from '@/lib/product-copy';
 import { Github, Mail } from 'lucide-react';
 import Link from 'next/link';
 
@@ -26,7 +27,7 @@ export function SiteFooter() {
               <DepositLogo size={32} />
             </Link>
             <p className="text-muted-foreground text-xs sm:text-sm leading-snug">
-              Open x402 funding rail for agents · amount + 1%
+              {PRODUCT.taglineShort}
             </p>
           </div>
 

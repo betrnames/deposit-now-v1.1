@@ -14,6 +14,12 @@ import {
 } from '@/lib/billing';
 import { forwardWithRetry, logSettlement } from '@/lib/cdp';
 import {
+  provisionChild,
+  recordChildFunded,
+  resolveDepositTargetMode,
+  type ChildAgentInfo,
+} from '@/lib/child-agents';
+import {
   buildIntent,
   loadIntentByGrossAtomic,
   mergeReceipt,
@@ -60,7 +66,8 @@ const depositDiscovery = declareDiscoveryExtension({
     properties: {
       target: {
         type: 'string',
-        description: 'EVM address (0x…) that should receive net USDC after settlement.',
+        description:
+          'EVM address receiving net USDC. Omit when provision: true (managed child wallet).',
       },
       amount: {
         type: 'string',
@@ -71,8 +78,18 @@ const depositDiscovery = declareDiscoveryExtension({
         type: 'string',
         description: 'Optional note (max 256 chars).',
       },
+      provision: {
+        type: 'boolean',
+        description:
+          'If true, create/resolve a managed CDP child wallet and fund it. Requires label or Idempotency-Key. Do not send target.',
+      },
+      label: {
+        type: 'string',
+        description:
+          'Stable child label for provision mode (e.g. trading-agent-1). Required with provision unless Idempotency-Key is set.',
+      },
     },
-    required: ['target', 'amount'],
+    required: ['amount'],
   },
   output: {
     example: {
@@ -84,6 +101,7 @@ const depositDiscovery = declareDiscoveryExtension({
       feePercent: 1,
       grossPaid: '50.500000',
       paymentReceived: true,
+      provisioned: false,
       receiptId: 'a1b2c3d4e5f60718',
       receiptUrl: 'https://deposit.now/receipt/a1b2c3d4e5f60718',
     },
@@ -94,30 +112,76 @@ export interface DepositBody {
   target: string | null;
   amount: string | null;
   memo: string | null;
+  provision: boolean;
+  label: string | null;
+  /** Set after provision resolves; used for intent + settle */
+  resolvedChild?: ChildAgentInfo | null;
 }
 
 /** getBody() is single-consume — cache per request context */
 const depositBodyCache = new WeakMap<object, DepositBody>();
+
+function readIdempotencyKey(context: HTTPRequestContext): string | null {
+  try {
+    const getHeader = (context.adapter as { getHeader?: (name: string) => string | null })
+      .getHeader;
+    if (typeof getHeader === 'function') {
+      const raw =
+        getHeader.call(context.adapter, 'idempotency-key') ??
+        getHeader.call(context.adapter, 'Idempotency-Key');
+      if (typeof raw === 'string' && raw.trim()) return raw.trim().slice(0, 128);
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
+function clientIpFromContext(context: HTTPRequestContext): string {
+  try {
+    const getHeader = (context.adapter as { getHeader?: (name: string) => string | null })
+      .getHeader;
+    if (typeof getHeader === 'function') {
+      const xff = getHeader.call(context.adapter, 'x-forwarded-for');
+      if (xff) return xff.split(',')[0]?.trim() || 'unknown';
+      return getHeader.call(context.adapter, 'x-real-ip') ?? 'unknown';
+    }
+  } catch {
+    // ignore
+  }
+  return 'unknown';
+}
 
 async function parseDepositBody(context: HTTPRequestContext): Promise<DepositBody> {
   const key = context as object;
   const cached = depositBodyCache.get(key);
   if (cached) return cached;
 
-  let result: DepositBody = { target: null, amount: null, memo: null };
+  let result: DepositBody = {
+    target: null,
+    amount: null,
+    memo: null,
+    provision: false,
+    label: null,
+    resolvedChild: null,
+  };
   try {
     if (context.adapter.getBody) {
       const body = (await context.adapter.getBody()) as {
         target?: string;
         amount?: string | number;
         memo?: string;
+        provision?: boolean;
+        label?: string;
       } | undefined;
       const target = typeof body?.target === 'string' ? body.target.trim() : null;
       const amount =
         body?.amount !== undefined && body?.amount !== null ? String(body.amount) : null;
       const memo =
         typeof body?.memo === 'string' ? body.memo.slice(0, 256).trim() || null : null;
-      result = { target, amount, memo };
+      const provision = body?.provision === true;
+      const label = typeof body?.label === 'string' ? body.label.trim() || null : null;
+      result = { target, amount, memo, provision, label, resolvedChild: null };
     }
   } catch {
     // keep empty defaults
@@ -126,9 +190,24 @@ async function parseDepositBody(context: HTTPRequestContext): Promise<DepositBod
   return result;
 }
 
+function childIntentFields(child: ChildAgentInfo | null | undefined) {
+  if (!child) return null;
+  return {
+    provisioned: true as const,
+    childName: child.name,
+    childAddress: child.address,
+    childLabel: child.label,
+  };
+}
+
 async function rememberIntentFromBody(body: DepositBody): Promise<void> {
   if (!body.target || !body.amount) return;
-  const intent = buildIntent(body.target, body.amount, body.memo);
+  const intent = buildIntent(
+    body.target,
+    body.amount,
+    body.memo,
+    childIntentFields(body.resolvedChild)
+  );
   if (!intent) return;
   try {
     await saveDepositIntent(intent);
@@ -137,11 +216,82 @@ async function rememberIntentFromBody(body: DepositBody): Promise<void> {
   }
 }
 
+/**
+ * Resolve target for target-mode or provision-mode. Mutates body.target / resolvedChild.
+ * Safe to call multiple times (uses cache fields on body).
+ */
+async function ensureResolvedTarget(
+  body: DepositBody,
+  context: HTTPRequestContext
+): Promise<
+  | { ok: true; target: string; child: ChildAgentInfo | null }
+  | { ok: false; code: string; message: string; status: number; retryAfter?: number }
+> {
+  // After a successful provision on this request, body.target is filled server-side.
+  // Reuse that before XOR checks so price + unpaid body don't false-flag ambiguous_target.
+  if (body.resolvedChild && body.target) {
+    return { ok: true, target: body.target, child: body.resolvedChild };
+  }
+
+  const mode = resolveDepositTargetMode({
+    target: body.target,
+    provision: body.provision,
+  });
+
+  if (mode.mode === 'error') {
+    return { ok: false, code: mode.code, message: mode.message, status: 400 };
+  }
+
+  if (mode.mode === 'target') {
+    const tv = validateDepositTarget(body.target, PLATFORM_PAY_TO);
+    if (!tv.ok) {
+      return { ok: false, code: tv.code ?? 'invalid_target', message: tv.message, status: 400 };
+    }
+    body.target = tv.address;
+    return { ok: true, target: tv.address, child: null };
+  }
+
+  const provisioned = await provisionChild({
+    label: body.label,
+    idempotencyKey: readIdempotencyKey(context),
+    rateLimitKey: clientIpFromContext(context),
+  });
+
+  if (!provisioned.ok) {
+    return {
+      ok: false,
+      code: provisioned.code,
+      message: provisioned.message,
+      status: provisioned.status,
+      retryAfter: provisioned.retryAfter,
+    };
+  }
+
+  const tv = validateDepositTarget(provisioned.child.address, PLATFORM_PAY_TO);
+  if (!tv.ok) {
+    return {
+      ok: false,
+      code: 'provision_failed',
+      message: 'Provisioned address failed validation.',
+      status: 502,
+    };
+  }
+
+  body.target = tv.address;
+  body.resolvedChild = provisioned.child;
+  // keep cache in sync
+  return { ok: true, target: tv.address, child: provisioned.child };
+}
+
 /** x402 price = net amount + 1% platform fee */
 async function resolveDepositPrice(context: HTTPRequestContext): Promise<string> {
   try {
     const body = await parseDepositBody(context);
-    await rememberIntentFromBody(body);
+    // Resolve provision early so intent has a concrete target before pay
+    const resolved = await ensureResolvedTarget(body, context);
+    if (resolved.ok) {
+      await rememberIntentFromBody(body);
+    }
     const net = clampDepositUsdc(body.amount);
     if (net === null) return formatUsdcPrice(DEPOSIT_MIN_USDC * 1.01);
     const split = calculateDepositSplit(net);
@@ -157,7 +307,12 @@ async function resolveIntent(
   amountAtomic: string
 ): Promise<DepositIntent | null> {
   if (body.target && body.amount) {
-    const fromBody = buildIntent(body.target, body.amount, body.memo);
+    const fromBody = buildIntent(
+      body.target,
+      body.amount,
+      body.memo,
+      childIntentFields(body.resolvedChild)
+    );
     if (fromBody) return fromBody;
   }
   return loadIntentByGrossAtomic(amountAtomic);
@@ -188,7 +343,19 @@ const server = new x402ResourceServer(facilitatorClient)
 
       const depositBody = transport?.request
         ? await parseDepositBody(transport.request)
-        : { target: null, amount: null, memo: null };
+        : {
+            target: null,
+            amount: null,
+            memo: null,
+            provision: false,
+            label: null,
+            resolvedChild: null,
+          };
+
+      // Re-resolve provision so settle has target even if intent blob is missing
+      if (transport?.request && (depositBody.provision || depositBody.target)) {
+        await ensureResolvedTarget(depositBody, transport.request);
+      }
 
       const identity = extractPaymentIdentity(ctx.paymentPayload);
       const req = ctx.requirements as {
@@ -399,6 +566,9 @@ const server = new x402ResourceServer(facilitatorClient)
             } catch {
               // non-fatal
             }
+            if (intent?.provisioned || depositBody.provision || depositBody.resolvedChild) {
+              await recordChildFunded(target, agentWallet);
+            }
           }
 
           if (hasBlob) {
@@ -446,6 +616,14 @@ const server = new x402ResourceServer(facilitatorClient)
           netToTarget: split ? split.net.toFixed(6) : null,
           forwardTxHash,
           forwardStatus,
+          provisioned: !!(intent?.provisioned || depositBody.resolvedChild),
+          childName: intent?.childName ?? depositBody.resolvedChild?.name ?? null,
+          childLabel: intent?.childLabel ?? depositBody.resolvedChild?.label ?? null,
+          childAddress:
+            intent?.childAddress ??
+            depositBody.resolvedChild?.address ??
+            (intent?.provisioned ? intent?.target : null) ??
+            null,
           note:
             forwardStatus === 'pending'
               ? 'Payment settled to platform; target missing from request — forward not attempted.'
@@ -475,7 +653,7 @@ export const middleware = paymentProxy(
         },
       ],
       description:
-        'Open x402 funding rail: POST target + amount, pay amount + 1% via x402, net forwarded to target on Base. Optional public receipt when storage is configured.',
+        'Open x402 funding rail: POST target+amount or provision:true+label+amount; pay amount + 1% via x402; net forwarded on Base. Optional managed child wallets (CDP). Optional public receipt when storage is configured.',
       mimeType: 'application/json',
       extensions: {
         ...depositDiscovery,
@@ -484,19 +662,15 @@ export const middleware = paymentProxy(
         const body = await parseDepositBody(context);
         const net = clampDepositUsdc(body.amount);
         const split = net !== null ? calculateDepositSplit(net) : null;
-        const targetCheck = validateDepositTarget(body.target, PLATFORM_PAY_TO);
 
-        // Target validation before 402 body is useful to the client
-        // (format, zero address, platform self-deposit loop)
-        if (!targetCheck.ok || !split) {
+        if (!split) {
           return {
             contentType: 'application/json',
             body: {
               error: 'invalid_request',
-              code: !targetCheck.ok ? targetCheck.code : 'invalid_amount',
-              message: !targetCheck.ok
-                ? targetCheck.message
-                : 'POST JSON { "target": "0x…", "amount": "50.00", "memo?": "…" }. amount is net USDC to target; you pay amount + 1%.',
+              code: 'invalid_amount',
+              message:
+                'POST JSON { "target": "0x…", "amount": "50.00" } or { "provision": true, "label": "child-1", "amount": "50.00" }. amount is net USDC; you pay amount + 1%.',
               feePercent: 1,
               minAmount: DEPOSIT_MIN_USDC,
               maxAmount: 100_000,
@@ -506,7 +680,24 @@ export const middleware = paymentProxy(
           };
         }
 
-        // Only remember intents for valid targets
+        const resolved = await ensureResolvedTarget(body, context);
+        if (!resolved.ok) {
+          return {
+            contentType: 'application/json',
+            body: {
+              error: 'invalid_request',
+              code: resolved.code,
+              message: resolved.message,
+              ...(resolved.retryAfter != null ? { retryAfter: resolved.retryAfter } : {}),
+              feePercent: 1,
+              minAmount: DEPOSIT_MIN_USDC,
+              maxAmount: 100_000,
+              docs: 'https://deposit.now/docs',
+              llms: 'https://deposit.now/llms.txt',
+            },
+          };
+        }
+
         await rememberIntentFromBody(body);
 
         return {
@@ -514,8 +705,10 @@ export const middleware = paymentProxy(
           body: {
             service: 'deposit.now',
             action: 'deposit',
-            target: targetCheck.address,
+            target: resolved.target,
             memo: body.memo,
+            provisioned: !!resolved.child,
+            ...(resolved.child ? { child: resolved.child } : {}),
             netToTarget: split.net.toFixed(6),
             fee: split.fee.toFixed(6),
             feePercent: split.feePercent,
@@ -526,7 +719,9 @@ export const middleware = paymentProxy(
                 ? '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
                 : '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
             network: X402_NETWORK === 'eip155:8453' ? 'base' : 'base-sepolia',
-            hint: 'Pay grossToPay via x402, then retry with payment proof. Net is forwarded after settlement; check receiptUrl for forward status.',
+            hint: resolved.child
+              ? 'Managed child wallet provisioned. Pay grossToPay via x402, then retry with the same body + payment proof. Keys are platform-managed in CDP (no export in v1).'
+              : 'Pay grossToPay via x402, then retry with payment proof. Net is forwarded after settlement; check receiptUrl for forward status.',
           },
         };
       },

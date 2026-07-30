@@ -1,11 +1,11 @@
 import type { MetadataRoute } from 'next';
+import { PRODUCT } from '@/lib/product-copy';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Deposit Now',
+    name: 'deposit.now',
     short_name: 'deposit.now',
-    description:
-      'Agents pay. Merchants get found. Autonomous USDC deposits via x402 on Base mainnet.',
+    description: PRODUCT.description,
     start_url: '/',
     display: 'standalone',
     background_color: '#0f172a',

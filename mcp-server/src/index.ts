@@ -51,22 +51,77 @@ server.tool(
 
 server.tool(
   'deposit_now_trigger_deposit',
-  'Fund a target wallet via x402. Pays amount + 1% fee; net is forwarded to target. Requires EVM_PRIVATE_KEY on the paying agent with USDC on Base.',
+  'Fund a wallet via x402 (amount + 1%). Pass target for an existing address, or provision+label to create/fund a managed child wallet. Requires EVM_PRIVATE_KEY on the paying agent with USDC on Base. Managed children are platform_managed (no key export).',
   {
     target: z
       .string()
       .regex(/^0x[a-fA-F0-9]{40}$/)
-      .describe('EVM address receiving net USDC (child agent / sub-wallet / any wallet)'),
+      .optional()
+      .describe('EVM address receiving net USDC (omit when provision is true)'),
     amount: z.string().describe('Net USDC to forward to target (e.g. "50.00")'),
     memo: z.string().max(256).optional().describe('Optional memo, e.g. Fund child trading agent'),
+    provision: z
+      .boolean()
+      .optional()
+      .describe('If true, create/resolve a managed CDP child wallet and fund it (do not pass target)'),
+    label: z
+      .string()
+      .max(36)
+      .optional()
+      .describe('Stable child label when provision=true (e.g. trading-agent-1)'),
   },
-  async ({ target, amount, memo }) => {
+  async ({ target, amount, memo, provision, label }) => {
     const path = '/api/deposit';
+    if (provision && target) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              error: 'ambiguous_target',
+              message: 'Pass either target or provision, not both.',
+            }),
+          },
+        ],
+        isError: true,
+      };
+    }
+    if (!provision && !target) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              error: 'missing_target',
+              message: 'Pass target, or provision:true with label.',
+            }),
+          },
+        ],
+        isError: true,
+      };
+    }
+    if (provision && !label) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              error: 'missing_provision_identity',
+              message: 'provision requires label for a stable child wallet.',
+            }),
+          },
+        ],
+        isError: true,
+      };
+    }
     const paidFetch = paymentFetch();
+    const payload = provision
+      ? { provision: true, label, amount, memo }
+      : { target, amount, memo };
     const res = await paidFetch(`${API_BASE}${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ target, amount, memo }),
+      body: JSON.stringify(payload),
     });
     const body = await res.json();
     return {

@@ -2,38 +2,28 @@ import './globals.css';
 import Script from 'next/script';
 import type { Metadata } from 'next';
 import { ThemeInit } from '@/components/ThemeInit';
+import { PRODUCT } from '@/lib/product-copy';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://deposit.now'),
   title: {
-    default: 'deposit.now | Open x402 funding rail',
-    template: '%s | deposit.now',
+    default: PRODUCT.titleDefault,
+    template: PRODUCT.titleTemplate,
   },
-  description:
-    'Open x402 funding rail for agents: fund any wallet via one HTTP call. Pay amount + 1% over HTTP 402, net to any EVM target. No API key needed.',
-  keywords: [
-    'x402 deposit API',
-    'AI agent funding',
-    'HTTP 402',
-    'USDC Base',
-    'fund wallet x402',
-    'programmable deposits',
-    'machine payments',
-    'deposit.now',
-  ],
+  description: PRODUCT.description,
+  keywords: [...PRODUCT.keywords],
   alternates: { canonical: 'https://deposit.now' },
   openGraph: {
-    title: 'deposit.now | Open x402 funding rail',
-    description:
-      'Agents fund any wallet via one HTTP call. Amount + 1% · no humans · no API key needed.',
+    title: PRODUCT.titleDefault,
+    description: `${PRODUCT.tagline} Amount + 1% · no humans · no API key needed.`,
     url: 'https://deposit.now',
-    siteName: 'deposit.now',
+    siteName: PRODUCT.name,
     images: [
       {
         url: '/og.png',
         width: 1200,
         height: 630,
-        alt: 'deposit.now — Open x402 funding rail for agents',
+        alt: PRODUCT.ogImageAlt,
       },
     ],
   },
@@ -41,9 +31,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@Deposit_Now',
     creator: '@Deposit_Now',
-    title: 'deposit.now | Open x402 funding rail',
-    description:
-      'Agents fund any wallet via one HTTP call. Amount + 1% · no API key needed.',
+    title: PRODUCT.titleDefault,
+    description: `${PRODUCT.tagline} Amount + 1% · no API key needed.`,
     images: ['/og.png'],
   },
   icons: {
@@ -63,46 +52,27 @@ export default function RootLayout({
     '@graph': [
       {
         '@type': 'WebAPI',
-        name: 'deposit.now x402 funding rail',
-        description:
-          'Open x402 deposit API: POST target + amount, pay amount + 1% USDC on Base, net forwarded to target. Optional public receipts when storage is configured. Complements Coinbase CDP Fund — does not replace it.',
+        name: `${PRODUCT.name} ${PRODUCT.productLine}`,
+        description: PRODUCT.apiDescription,
         url: 'https://deposit.now/api/deposit',
         documentation: 'https://deposit.now/docs',
-        provider: { '@type': 'Organization', name: 'deposit.now', url: 'https://deposit.now' },
+        provider: { '@type': 'Organization', name: PRODUCT.name, url: 'https://deposit.now' },
         offers: {
           '@type': 'Offer',
           priceCurrency: 'USD',
-          description: '1% platform fee on net deposit amount via x402 exact scheme on Base mainnet.',
+          description: PRODUCT.feeNote,
         },
       },
       {
         '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'What is deposit.now?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'deposit.now is an open x402 funding rail: agents pay amount + 1% over HTTP 402 and net USDC is forwarded to a target address they specify. It does not create wallets or replace Coinbase CDP Fund inside the CDP stack.',
-            },
+        mainEntity: PRODUCT.faq.map((item) => ({
+          '@type': 'Question',
+          name: item.q,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: item.a,
           },
-          {
-            '@type': 'Question',
-            name: 'How does a deposit work?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'POST /api/deposit with target and amount. Receive HTTP 402 for amount + 1%. Pay via x402. After settlement, the platform forwards net to target. Response status is payment_received; check receiptUrl for forwardStatus and Basescan links when available.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'When should I use Coinbase Fund instead?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'If your agents already use Coinbase Agentic or Server Wallets, CDP Fund/Send is usually the right tool. Use deposit.now for a protocol-shaped x402 deposit to any EVM target without a deposit.now API key.',
-            },
-          },
-        ],
+        })),
       },
     ],
   };

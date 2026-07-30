@@ -14,6 +14,11 @@ export interface DepositIntent {
   fee: number;
   gross: number;
   createdAt: string;
+  /** Managed child wallet provisioned in this deposit flow */
+  provisioned?: boolean;
+  childName?: string | null;
+  childAddress?: string | null;
+  childLabel?: string | null;
 }
 
 function intentBlobPath(key: string) {
@@ -35,7 +40,13 @@ export function intentKeyFromFields(
 export function buildIntent(
   target: string,
   amountRaw: string | number | null,
-  memo: string | null
+  memo: string | null,
+  child?: {
+    provisioned?: boolean;
+    childName?: string | null;
+    childAddress?: string | null;
+    childLabel?: string | null;
+  } | null
 ): DepositIntent | null {
   if (!isNonZeroEvmAddress(target)) return null;
   const net = clampDepositUsdc(amountRaw);
@@ -50,6 +61,10 @@ export function buildIntent(
     fee: split.fee,
     gross: split.gross,
     createdAt: new Date().toISOString(),
+    provisioned: child?.provisioned ?? false,
+    childName: child?.childName ?? null,
+    childAddress: child?.childAddress ?? (child?.provisioned ? target : null),
+    childLabel: child?.childLabel ?? null,
   };
 }
 

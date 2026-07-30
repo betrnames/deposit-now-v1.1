@@ -1,17 +1,19 @@
+import { PRODUCT } from '@/lib/product-copy';
 import { PLATFORM_PAY_TO, X402_NETWORK } from '@/lib/x402';
 
 export function discoveryManifest() {
   return {
-    name: 'deposit.now',
-    version: '3.1.0',
-    description:
-      'Open x402 funding rail: pay amount + 1% over HTTP 402, net forwards to any EVM target. Optional public receipts. Complements Coinbase CDP Fund — does not create wallets or replace CDP Fund/Send.',
+    name: PRODUCT.name,
+    version: '3.2.0',
+    description: PRODUCT.apiDescription,
+    tagline: PRODUCT.tagline,
     network: X402_NETWORK,
     platformPayTo: PLATFORM_PAY_TO,
     feePercent: 1,
-    feeNote: 'Agent pays amount + 1% platform fee; net is forwarded to target after settlement (async; can fail).',
-    honestPitch:
-      'Use CDP Fund inside Coinbase agent wallets. Use deposit.now for a protocol-shaped deposit to any target without a deposit.now API key.',
+    feeNote: PRODUCT.feeNote,
+    honestPitch: PRODUCT.cdpVsDeposit,
+    managedChildren: PRODUCT.managedChildren,
+    paymentNote: PRODUCT.paymentReceivedHonesty,
     discovery: {
       openapi: 'https://deposit.now/openapi.json',
       llms: 'https://deposit.now/llms.txt',
@@ -27,13 +29,14 @@ export function discoveryManifest() {
         method: 'POST',
         url: 'https://deposit.now/api/deposit',
         body: {
-          target: '0x… EVM address receiving net USDC',
+          target: '0x… EVM address receiving net USDC (omit when provision: true)',
           amount: 'net USDC decimal string (min 0.01)',
           memo: 'optional string',
+          provision: 'optional boolean — create/resolve managed child wallet',
+          label: 'required with provision unless Idempotency-Key header (stable child id)',
         },
         price: 'dynamic — amount + 1% platform fee',
-        responseNote:
-          'status payment_received does not mean funds already arrived at target; check receipt forwardStatus.',
+        responseNote: PRODUCT.paymentReceivedHonesty,
       },
     ],
   };

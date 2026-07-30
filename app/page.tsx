@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Zap, Coins, CheckCircle2, Sparkles } from 'lucide-react';
 import { SiteFooter } from '@/components/SiteFooter';
 import { Header } from '@/components/Header';
+import { PRODUCT } from '@/lib/product-copy';
 
 export default function Home() {
   return (
@@ -39,10 +40,10 @@ export default function Home() {
               </h1>
 
               <p className="text-lg sm:text-2xl text-primary font-medium mb-2 sm:mb-3">
-                Agents fund any wallet via one HTTP call
+                {PRODUCT.tagline}
               </p>
               <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8 max-w-md leading-relaxed">
-                Autonomous deposits · amount + 1% · no humans · no API key needed
+                {PRODUCT.valueProps}
               </p>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6 sm:mb-8 w-full sm:w-auto">
@@ -78,11 +79,23 @@ export default function Home() {
                 <span className="text-purple-400">POST</span>
                 {' /api/deposit\n'}
                 <span className="text-muted-foreground">
+                  {`// fund existing`}
+                </span>
+                {'\n'}
+                <span className="text-muted-foreground">
                   {`{ "target": "0x…", "amount": "50.00" }`}
                 </span>
                 {'\n'}
+                <span className="text-muted-foreground">
+                  {`// or provision + fund child`}
+                </span>
+                {'\n'}
+                <span className="text-muted-foreground">
+                  {`{ "provision": true, "label": "child-1", "amount": "50.00" }`}
+                </span>
+                {'\n'}
                 <span className="text-muted-foreground/80">
-                  → 402 pay amount+1% → net to target
+                  → 402 pay amount+1% → net to target / child
                 </span>
                 {'\n\n'}
                 <span className="text-muted-foreground/70">
@@ -94,7 +107,7 @@ export default function Home() {
                 </span>
                 {'\n'}
                 <span className="text-muted-foreground/70">
-                  {`  -d '{"target":"0x…","amount":"50.00"}'`}
+                  {`  -d '{"provision":true,"label":"child-1","amount":"50.00"}'`}
                 </span>
               </pre>
             </div>
@@ -112,8 +125,10 @@ export default function Home() {
               <CardContent className="p-10 relative z-10">
                 <h3 className="text-2xl font-bold mb-4 text-white">Call deposit</h3>
                 <p className="text-muted-foreground mb-6">
-                  Agent posts <code className="text-primary text-sm">target</code>,{' '}
-                  <code className="text-primary text-sm">amount</code>, optional memo.
+                  Agent posts net <code className="text-primary text-sm">amount</code> plus either{' '}
+                  <code className="text-primary text-sm">target</code> or{' '}
+                  <code className="text-primary text-sm">provision</code> +{' '}
+                  <code className="text-primary text-sm">label</code>.
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
@@ -122,7 +137,9 @@ export default function Home() {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm font-semibold text-white">You supply the wallet</span>
+                    <span className="text-sm font-semibold text-white">
+                      Or provision a managed child
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -157,8 +174,8 @@ export default function Home() {
               <CardContent className="p-10 relative z-10">
                 <h3 className="text-2xl font-bold mb-4 text-white">Forward + receipt</h3>
                 <p className="text-muted-foreground mb-6">
-                  After settlement, net is forwarded to target. Receipt is optional public proof —
-                  check <code className="text-primary text-sm">forwardStatus</code>.
+                  After settlement, net is forwarded to target (or provisioned child). Check{' '}
+                  <code className="text-primary text-sm">forwardStatus</code> — 200 is not delivery.
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">

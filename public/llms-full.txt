@@ -4,36 +4,60 @@
 
 An **open x402 funding rail** on Base:
 
-1. You already have a **target** EVM address (deposit.now does not create wallets).
-2. You POST net `amount` + `target`.
+1. Choose a destination:
+   - **target** — an EVM address you already control, or
+   - **provision: true** + **label** — deposit.now creates/resolves a managed CDP Server Wallet child and uses it as target.
+2. You POST net `amount` (+ target or provision fields).
 3. You pay **amount + 1%** via x402 to the platform.
 4. After settlement, the platform **forwards net** to `target` (async; can fail).
 5. Optional **public receipt** at `/receipt/{id}` when storage is configured.
 
 ## What this is not
 
-- Not a replacement for **Coinbase CDP Fund / Send** inside Agentic or Server Wallets.
-- Not a wallet factory or sub-account product.
+- Not a full replacement for **Coinbase CDP Fund / Send** inside Agentic or Server Wallets.
 - Not a guarantee that funds are on `target` when HTTP 200 returns.
+- Managed children are **not** exported private keys. Custody is `platform_managed` in deposit.now’s CDP project. v1 has **no** child spend/sign API.
 
 ## When to use what
 
 | Situation | Prefer |
 |-----------|--------|
 | Agents already on Coinbase Agentic / Server Wallets | CDP **Fund** / **Send** |
-| Need open HTTP 402 deposit to any address | **deposit.now** |
+| Need open HTTP 402 deposit to an address you have | **deposit.now** + `target` |
+| Need create+fund a receive wallet in one call | **deposit.now** + `provision: true` + `label` |
+| Need child that signs freely under your key | Generate key client-side, pass `target` |
 | One-off raw transfer you fully control | Direct on-chain USDC transfer |
 
 ## Protocol
 
+### Fund existing
+
+```json
+{ "target": "0x…", "amount": "50.00", "memo": "optional" }
+```
+
+### Provision + fund child
+
+```json
+{ "provision": true, "label": "trading-agent-1", "amount": "50.00", "memo": "Fund child trading agent" }
+```
+
+Optional header: `Idempotency-Key: <stable-string>` (required if you omit `label`).
+
+Rules:
+
+- Exactly one of `target` or `provision: true`.
+- `label`: lowercase letters, digits, hyphens; max 36. Same label (+ optional idempotency) → same child wallet.
+- Unpaid **402** body includes `target`, and when provisioned: `provisioned: true` + `child: { name, address, label, custody, control }`.
+- Retry the **same body** with payment proof so x402 settles to the same gross and intent.
+
+Flow:
+
 1. `POST https://deposit.now/api/deposit`
-   ```json
-   { "target": "0x…", "amount": "50.00", "memo": "optional" }
-   ```
 2. **402** with gross price = amount + 1%.
 3. Pay with any x402 v2 exact client; retry with payment proof.
 4. **200** body uses `status: "payment_received"` and `forwardStatus: "pending"` until settlement finishes forwarding.
-5. Poll or open `receiptUrl` for `forwardStatus` (`settled` | `forward_failed` | `pending`), `forwardTxHash`, payer, target, Basescan links.
+5. Poll or open `receiptUrl` for `forwardStatus` (`settled` | `forward_failed` | `pending` | `held`), `forwardTxHash`, payer, target, child fields, Basescan links.
 
 ## Success does not mean delivered
 
@@ -43,21 +67,27 @@ An **open x402 funding rail** on Base:
 | status: payment_received | Same — not “target funded” |
 | forwardStatus: settled | Net forward tx recorded |
 | forwardStatus: forward_failed | Payment in; forward failed |
+| forwardStatus: held | Guardrail or payment verify held forward |
+| provisioned: true | Destination is a managed child wallet |
 | receipt missing | Storage may be unconfigured or settlement lag |
 
 ## Field reference
 
-| Field  | Required | Description |
+| Field | Required | Description |
 |--------|----------|-------------|
-| target | yes | EVM address receiving net funds |
 | amount | yes | Net USDC for target, 0.01 – 100000 |
-| memo   | no  | ≤ 256 chars |
+| target | xor provision | EVM address receiving net funds |
+| provision | xor target | true → mint/resolve managed child |
+| label | with provision* | Stable child id (*or Idempotency-Key) |
+| memo | no | ≤ 256 chars |
 
 ## Security notes
 
-- Paying agent holds its own key; deposit.now server uses CDP for platform hot wallet.
+- Paying agent holds its own key; deposit.now server uses CDP for platform hot wallet and managed children.
 - Never put platform private keys in client code.
+- Managed child keys are **not** returned in API responses.
 - Concurrent deposits of the same gross amount may race on intent recovery — always send the same JSON body on the paid retry.
+- Provision rate limit: 5/hour per client IP (approx).
 
 ## Links
 

@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Deposit Receipt',
   description:
-    'Verifiable x402 deposit receipt: payer, target, fee, and on-chain forward transaction.',
+    'Verifiable x402 deposit receipt: payer, target or managed child, fee, and on-chain forward transaction. payment_received does not mean target already holds funds.',
   robots: { index: false },
 };
 
@@ -80,6 +80,13 @@ export default async function ReceiptPage({
 
             <Row label="Receipt ID">{receipt.id}</Row>
             {receipt.target ? <Row label="Target">{receipt.target}</Row> : null}
+            {receipt.provisioned ? (
+              <Row label="Managed child">
+                yes
+                {receipt.childName ? ` · ${receipt.childName}` : ''}
+                {receipt.childLabel ? ` · label ${receipt.childLabel}` : ''}
+              </Row>
+            ) : null}
             {receipt.memo ? <Row label="Memo">{receipt.memo}</Row> : null}
             {receipt.grossAmount ? (
               <Row label="Gross paid">{receipt.grossAmount} USDC</Row>
@@ -130,13 +137,16 @@ export default async function ReceiptPage({
               </Row>
             ) : receipt.forwardStatus === 'forward_failed' ? (
               <Row label="Forward">Failed — manual review may be required</Row>
+            ) : receipt.forwardStatus === 'held' ? (
+              <Row label="Forward">Held — guardrail or verification; manual review may be required</Row>
             ) : receipt.forwardStatus === 'pending' ? (
               <Row label="Forward">Pending or not yet available — refresh shortly</Row>
             ) : null}
             {receipt.note ? <Row label="Note">{receipt.note}</Row> : null}
             <p className="text-xs text-muted-foreground mt-6 leading-relaxed">
               Payment to the platform is recorded when the x402 facilitator settles. Forwarding net
-              USDC to the target is a separate step and can lag or fail.
+              USDC to the target (or managed child) is a separate step and can lag or fail.
+              Managed children are platform_managed in CDP — this receipt is not a key export.
             </p>
           </div>
         )}

@@ -17,7 +17,7 @@ People follow people. Use personal for story; product for docs/recipe.
 BIO TWEAK (optional)
 --------------------
 Vibe coding my portfolio · shipping @deposit_now
-agent → agent deposits on x402 · Base mainnet
+open x402 funding rail · fund wallet or provision child
 deposit.now
 
 
@@ -35,9 +35,9 @@ PINNED / FLAGSHIP THREAD (post once, pin on @BetrNames if you want)
 1/
 I've been shipping @deposit_now live on Base mainnet.
 
-Not a wallet.
-Not an agent runtime.
-Agent → agent deposits over x402.
+Open x402 funding rail for agents.
+Fund any wallet — or provision a managed child —
+via one HTTP call.
 
 Here's what I actually learned.
 

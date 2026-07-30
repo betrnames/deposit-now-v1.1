@@ -22,8 +22,13 @@ export interface DepositReceipt {
   feePercent?: string | null;
   netToTarget?: string | null;
   forwardTxHash?: string | null;
-  forwardStatus?: 'settled' | 'forward_failed' | 'pending' | null;
+  forwardStatus?: 'settled' | 'forward_failed' | 'pending' | 'held' | null;
   note?: string | null;
+  /** Managed child wallet fields when provisioned */
+  provisioned?: boolean | null;
+  childName?: string | null;
+  childLabel?: string | null;
+  childAddress?: string | null;
 }
 
 // Receipt id is derived from the payment signature/nonce so the route handler

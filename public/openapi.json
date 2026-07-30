@@ -2,9 +2,9 @@
   "openapi": "3.1.0",
   "info": {
     "title": "deposit.now — Open x402 funding rail",
-    "version": "3.1.0",
-    "description": "Open x402 deposit API: pay amount + 1% USDC on Base; net forwards to target after settlement. Optional public receipts. Complements Coinbase CDP Fund — does not create wallets or replace CDP Fund/Send. HTTP 200 payment_received does not guarantee funds already arrived at target.",
-    "x-guidance": "POST /api/deposit with { target, amount, memo? }. Unpaid → 402 for gross = amount + 1%. Paid → payment_received + receiptUrl. Check forwardStatus on the receipt. Docs: https://deposit.now/docs",
+    "version": "3.2.0",
+    "description": "Open x402 deposit API: pay amount + 1% USDC on Base; net forwards to target after settlement. Optional managed child wallets via provision:true (CDP Server Wallet, platform-managed keys — no key export in v1). Optional public receipts. Complements Coinbase CDP Fund/Send. HTTP 200 payment_received does not guarantee funds already arrived at target.",
+    "x-guidance": "POST /api/deposit with { target, amount, memo? } OR { provision: true, label, amount, memo? }. Unpaid → 402 for gross = amount + 1%. Paid → payment_received + receiptUrl. Check forwardStatus on the receipt. Docs: https://deposit.now/docs",
     "contact": { "email": "support@deposit.now" }
   },
   "servers": [{ "url": "https://deposit.now" }],
@@ -12,8 +12,17 @@
     "/api/deposit": {
       "post": {
         "operationId": "createDeposit",
-        "summary": "Pay via x402 to fund a target wallet (net forward async)",
+        "summary": "Pay via x402 to fund a target or provisioned child wallet (net forward async)",
         "tags": ["Deposits"],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "maxLength": 128 },
+            "description": "Stable key for provision mode when label is omitted or for extra uniqueness"
+          }
+        ],
         "x-payment-info": {
           "price": { "mode": "dynamic", "currency": "USD", "description": "amount + 1% platform fee" },
           "protocols": [{ "x402": {} }]
@@ -24,11 +33,11 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["target", "amount"],
+                "required": ["amount"],
                 "properties": {
                   "target": {
                     "type": "string",
-                    "description": "EVM address receiving net USDC (you must already control or know this address)",
+                    "description": "EVM address receiving net USDC. Omit when provision is true.",
                     "pattern": "^0x[a-fA-F0-9]{40}$"
                   },
                   "amount": {
@@ -39,6 +48,15 @@
                   "memo": {
                     "type": "string",
                     "description": "Optional note (max 256 chars)"
+                  },
+                  "provision": {
+                    "type": "boolean",
+                    "description": "If true, create/resolve a managed CDP child wallet and fund it. Do not send target."
+                  },
+                  "label": {
+                    "type": "string",
+                    "description": "Stable child label (lowercase, digits, hyphens). Required with provision unless Idempotency-Key is set.",
+                    "examples": ["trading-agent-1"]
                   }
                 }
               }
@@ -60,9 +78,20 @@
                     },
                     "forwardStatus": {
                       "type": "string",
-                      "examples": ["pending", "settled", "forward_failed"]
+                      "examples": ["pending", "settled", "forward_failed", "held"]
                     },
                     "target": { "type": "string" },
+                    "provisioned": { "type": "boolean" },
+                    "child": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" },
+                        "address": { "type": "string" },
+                        "label": { "type": "string", "nullable": true },
+                        "custody": { "type": "string", "examples": ["cdp_server_wallet"] },
+                        "control": { "type": "string", "examples": ["platform_managed"] }
+                      }
+                    },
                     "depositAmount": { "type": "string" },
                     "fee": { "type": "string" },
                     "feePercent": { "type": "number" },
@@ -76,13 +105,19 @@
             }
           },
           "402": {
-            "description": "Payment required. Pay amount + 1% USDC via x402 exact scheme on Base mainnet."
+            "description": "Payment required. Pay amount + 1% USDC via x402 exact scheme on Base mainnet. Body includes target and optional child when provisioned."
           },
           "400": {
-            "description": "Invalid target or amount."
+            "description": "Invalid target, amount, or provision parameters (ambiguous_target, missing_target, invalid_label, missing_provision_identity)."
           },
           "429": {
-            "description": "Rate limit exceeded."
+            "description": "Rate limit exceeded (including provision rate limit)."
+          },
+          "502": {
+            "description": "Child wallet provisioning failed (CDP error)."
+          },
+          "503": {
+            "description": "Provisioning unavailable (CDP credentials not configured)."
           }
         }
       },

@@ -183,9 +183,9 @@ export async function checkRateLimitDb(
   const db = getDb();
 
   const rows = await db`
-    INSERT INTO rate_limits (key, endpoint, window, count)
+    INSERT INTO rate_limits (key, endpoint, "window", count)
     VALUES (${keyValue}, ${pathname}, ${windowStart}, 1)
-    ON CONFLICT (key, endpoint, window)
+    ON CONFLICT (key, endpoint, "window")
     DO UPDATE SET count = rate_limits.count + 1
     RETURNING count
   `;
@@ -218,7 +218,7 @@ export async function checkRateLimitDb(
 export async function cleanupExpiredRateLimits(): Promise<void> {
   const db = getDb();
   const cutoff = Math.floor(Date.now() / 1000) - 7200;
-  await db`DELETE FROM rate_limits WHERE window < ${cutoff}`;
+  await db`DELETE FROM rate_limits WHERE "window" < ${cutoff}`;
 }
 
 // ---------------------------------------------------------------------------

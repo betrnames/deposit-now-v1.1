@@ -27,6 +27,29 @@ async function getPlatformAccount() {
   return getCdpClient().evm.getOrCreateAccount({ name: 'deposit-now-platform' });
 }
 
+/** True when CDP Server Wallet credentials are present (required to provision children). */
+export function isCdpProvisioningAvailable(): boolean {
+  return !!(
+    process.env.CDP_API_KEY_ID &&
+    process.env.CDP_API_KEY_SECRET &&
+    process.env.CDP_WALLET_SECRET
+  );
+}
+
+/**
+ * Create or resolve a named CDP Server Wallet for a managed child agent.
+ * Keys stay in CDP under the deposit.now project — never exported here.
+ */
+export async function createChildCdpAccount(
+  name: string
+): Promise<{ address: string; name: string }> {
+  if (!isCdpProvisioningAvailable()) {
+    throw new Error('CDP credentials required for child agent provisioning');
+  }
+  const account = await getCdpClient().evm.getOrCreateAccount({ name });
+  return { address: account.address, name };
+}
+
 async function forwardToTarget(target: string, netUsdc: number): Promise<string> {
   const account = await getPlatformAccount();
   const atomicAmount = BigInt(Math.round(netUsdc * 1e6));

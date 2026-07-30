@@ -1,28 +1,35 @@
-# Deposit Now
+# deposit.now
 
-Agent-to-agent funding rail built on the x402 protocol. Enables autonomous AI agents to send and receive payments on-chain.
+**Open x402 funding rail for agents.** Fund any EVM wallet — or provision a managed child — via one HTTP call. Pay amount + 1% over HTTP 402; net forwards after settlement. No deposit.now API key.
 
-**Live:** [deposit-now-v11.vercel.app](https://deposit-now-v11.vercel.app)
+**Live:** [deposit.now](https://deposit.now)
 
 ## What it does
 
-Deposit Now provides the payment infrastructure for agentic commerce — letting AI agents autonomously fund, transact, and settle without human intervention.
+- **x402 deposits** — `POST /api/deposit` with `{ target, amount }` or `{ provision: true, label, amount }`
+- **Managed children** — optional CDP Server Wallet provision (platform-managed keys; no export in v1)
+- **CDP settlement** — platform receive + forward on Base
+- **MCP server** — agents can call the funding rail from Cursor / Claude Desktop
+- **Public receipts** — optional `/receipt/{id}` when Blob storage is configured
 
-- **x402 protocol** — HTTP-native payment negotiation between agents
-- - **CDP platform wallets** — Coinbase Developer Platform wallet integration for on-chain settlement
-  - - **MCP server** — Model Context Protocol server so LLMs can interact with the funding layer directly
-    - - **On-chain billing** — Transparent, verifiable transaction records
-     
-      - ## Tech stack
-     
-      - | Layer | Tech |
-      - |-------|------|
-      - | Frontend | Next.js, TypeScript, Tailwind v4 |
-      - | Backend | Supabase (Postgres + migrations) |
-      - | Payments | x402 protocol, CDP wallets |
-      - | AI integration | MCP server |
-      - | Hosting | Vercel |
-     
-      - ## Why it matters
-     
-      - As AI agents begin acting autonomously — booking services, purchasing resources, delegating tasks — they need payment rails designed for machine-to-machine commerce. Deposit Now is that infrastructure layer.
+## Honest boundaries
+
+- Complements Coinbase **CDP Fund/Send** inside Agentic / Server Wallets — does not replace that stack.
+- `payment_received` ≠ funds already on target — check `forwardStatus`.
+- Managed children are **platform_managed**; for full custody, generate your own address and pass `target`.
+
+## Tech stack
+
+| Layer | Tech |
+|-------|------|
+| Frontend | Next.js, TypeScript, Tailwind v4 |
+| Database | Neon Postgres (guardrails, children) |
+| Payments | x402, CDP Server Wallets |
+| AI integration | MCP server |
+| Hosting | Vercel |
+
+## Docs
+
+- https://deposit.now/docs
+- https://deposit.now/llms.txt
+- https://deposit.now/openapi.json
