@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { DepositLogo } from '@/components/DepositLogo';
-import { ThemeToggle } from '@/components/ThemeToggle';
 
 const NAV = [{ href: '/docs', label: 'Docs' }] as const;
 
@@ -34,7 +33,6 @@ export function Header() {
             >
               Get started
             </Link>
-            <ThemeToggle />
           </div>
 
           <button
@@ -60,10 +58,6 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <div className="flex items-center justify-between px-3 py-2.5 rounded-lg">
-              <span className="text-sm font-medium text-muted-foreground">Theme</span>
-              <ThemeToggle />
-            </div>
             <Link
               href="/docs#quickstart"
               onClick={() => setOpen(false)}

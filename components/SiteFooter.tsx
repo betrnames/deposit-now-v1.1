@@ -1,4 +1,5 @@
 import { DepositLogo } from '@/components/DepositLogo';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { PRODUCT } from '@/lib/product-copy';
 import { Github, Mail } from 'lucide-react';
 import Link from 'next/link';
@@ -85,9 +86,12 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <p className="mt-6 pt-6 border-t border-border text-muted-foreground/70 text-xs">
-          © 2026 deposit.now
-        </p>
+        <div className="mt-6 pt-6 border-t border-border flex flex-wrap items-center justify-between gap-3">
+          <p className="text-muted-foreground/70 text-[11px] leading-none">
+            © 2026 deposit.now
+          </p>
+          <ThemeToggle variant="footer" />
+        </div>
       </div>
     </footer>
   );
