@@ -37,18 +37,15 @@ export function Header() {
             <ThemeToggle />
           </div>
 
-          <div className="flex md:hidden items-center gap-2">
-            <ThemeToggle />
-            <button
-              type="button"
-              onClick={() => setOpen((v) => !v)}
-              className="p-2 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5 transition-colors"
-              aria-expanded={open}
-              aria-label={open ? 'Close menu' : 'Open menu'}
-            >
-              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5 transition-colors"
+            aria-expanded={open}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
 
         {open && (
@@ -63,6 +60,10 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            <div className="flex items-center justify-between px-3 py-2.5 rounded-lg">
+              <span className="text-sm font-medium text-muted-foreground">Theme</span>
+              <ThemeToggle />
+            </div>
             <Link
               href="/docs#quickstart"
               onClick={() => setOpen(false)}
