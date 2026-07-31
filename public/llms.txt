@@ -1,8 +1,9 @@
 # deposit.now
 
-> Open x402 funding rail: pay amount + 1% over HTTP 402, net forwards to any EVM target — or provision a managed child wallet with provision:true. Optional public receipt. Complements Coinbase CDP Fund/Send.
+> deposit.now — open x402 agent funding rail (USDC on Base). Pay amount + 1% over HTTP 402; net forwards to any EVM target — or provision a managed child wallet with provision:true. Optional public receipt. Complements Coinbase CDP Fund/Send.
 
-Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-full.txt
+Homepage: https://deposit.now · Docs: https://deposit.now/docs  
+Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-full.txt · Discovery: https://deposit.now/api/discovery
 
 ## Honest pitch
 

@@ -1,24 +1,12 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
+import { absoluteUrl, SITEMAP_PATHS } from '@/lib/seo';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = 'https://deposit.now';
-  return [
-    '',
-    '/docs',
-    '/pricing',
-    '/about',
-    '/litepaper',
-    '/api/discovery',
-    '/llms.txt',
-    '/llms-full.txt',
-    '/openapi.json',
-    '/privacy',
-    '/disclosures',
-    '/terms',
-  ].map((path) => ({
-    url: `${base}${path}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: path === '' ? 1 : path === '/docs' || path === '/llms.txt' ? 0.9 : 0.7,
+  const lastModified = new Date();
+  return SITEMAP_PATHS.map(({ path, changeFrequency, priority }) => ({
+    url: absoluteUrl(path),
+    lastModified,
+    changeFrequency,
+    priority,
   }));
 }

@@ -7,8 +7,14 @@ export const PRODUCT = {
   name: 'deposit.now',
   /** Short product identity used in titles */
   productLine: 'Open x402 funding rail',
-  titleDefault: 'deposit.now | Open x402 funding rail',
+  /**
+   * Default <title> — brand first so Google brand queries disambiguate from
+   * banking "Deposit Now" / college deposit pages.
+   */
+  titleDefault: 'deposit.now — x402 Agent Funding Rail (USDC on Base)',
   titleTemplate: '%s | deposit.now',
+  /** Docs page title (with template → "… | deposit.now") */
+  docsTitle: 'API Docs — x402 Deposit Endpoint for AI Agents',
 
   /** Primary one-liner (homepage subhead, OG, Twitter) */
   tagline: 'Agents fund any wallet — or provision a managed child — via one HTTP call',
@@ -19,9 +25,9 @@ export const PRODUCT = {
   /** Supporting line under hero */
   valueProps: 'Autonomous deposits · amount + 1% · no humans · no API key needed',
 
-  /** Meta / SEO description */
+  /** Meta / SEO description (~155 chars; brand + niche terms for ranking) */
   description:
-    'Open x402 funding rail for agents: fund any EVM wallet or provision a managed child via one HTTP call. Pay amount + 1% over HTTP 402; net forwards after settlement. No deposit.now API key.',
+    'deposit.now is the open x402 agent funding rail: POST /api/deposit to fund any EVM wallet or provision a managed child. Pay amount + 1% USDC on Base via HTTP 402. No API key.',
 
   /** Docs intro (plain text, no JSX) */
   intro:
@@ -78,19 +84,27 @@ export const PRODUCT = {
   ] as const,
 
   keywords: [
+    'deposit.now',
+    'x402',
     'x402 deposit API',
+    'x402 agent payments',
     'AI agent funding',
-    'HTTP 402',
+    'agent wallet funding',
+    'HTTP 402 payment',
     'USDC Base',
+    'Base mainnet USDC',
+    'fund EVM wallet API',
     'fund wallet x402',
     'child agent wallet',
     'provision agent wallet',
+    'managed CDP wallet',
     'programmable deposits',
     'machine payments',
-    'deposit.now',
+    'autonomous agent USDC',
+    'Coinbase x402',
   ],
 
-  ogImageAlt: 'deposit.now — Open x402 funding rail for agents',
+  ogImageAlt: 'deposit.now — Open x402 funding rail for AI agents (USDC on Base)',
 } as const;
 
 export type ProductCopy = typeof PRODUCT;

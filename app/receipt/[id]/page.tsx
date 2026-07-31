@@ -16,7 +16,12 @@ export const metadata: Metadata = {
   title: 'Deposit Receipt',
   description:
     'Verifiable x402 deposit receipt: payer, target or managed child, fee, and on-chain forward transaction. payment_received does not mean target already holds funds.',
-  robots: { index: false },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: { index: false, follow: false, noimageindex: true },
+  },
 };
 
 async function loadReceipt(id: string): Promise<DepositReceipt | null> {

@@ -35,8 +35,14 @@ export function SiteFooter() {
             <Link href="/docs" className={linkClass}>
               Docs
             </Link>
+            <a href="/openapi.json" className={linkClass}>
+              OpenAPI
+            </a>
             <a href="/llms.txt" className={linkClass}>
               llms.txt
+            </a>
+            <a href="/api/discovery" className={linkClass}>
+              Discovery
             </a>
             <a
               href="https://x402dir.com"
@@ -45,6 +51,14 @@ export function SiteFooter() {
               className={linkClass}
             >
               x402dir.com
+            </a>
+            <a
+              href="https://www.x402scan.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+            >
+              x402scan
             </a>
             <a
               href="https://x.com/Deposit_Now"

@@ -1,9 +1,22 @@
+import type { Metadata } from 'next';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Zap, Coins, CheckCircle2, Sparkles } from 'lucide-react';
 import { SiteFooter } from '@/components/SiteFooter';
 import { Header } from '@/components/Header';
 import { PRODUCT } from '@/lib/product-copy';
+import { SITE } from '@/lib/seo';
+
+export const metadata: Metadata = {
+  title: { absolute: PRODUCT.titleDefault },
+  description: PRODUCT.description,
+  alternates: { canonical: SITE.base },
+  openGraph: {
+    title: PRODUCT.titleDefault,
+    description: PRODUCT.description,
+    url: SITE.base,
+  },
+};
 
 export default function Home() {
   return (
@@ -33,9 +46,9 @@ export default function Home() {
               </Badge>
 
               <h1 className="font-mono text-[2.15rem] leading-[1.08] sm:text-6xl lg:text-7xl font-black tracking-tighter mb-4 sm:leading-[1.05] text-left">
-                <span className="block text-white mb-1 sm:mb-2">Open x402</span>
+                <span className="block text-white mb-1 sm:mb-2">{PRODUCT.name}</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/90 to-accent">
-                  funding rail
+                  x402 funding rail
                 </span>
               </h1>
 
@@ -43,7 +56,7 @@ export default function Home() {
                 {PRODUCT.tagline}
               </p>
               <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8 max-w-md leading-relaxed">
-                {PRODUCT.valueProps}
+                {PRODUCT.valueProps} USDC on Base · open x402 agent payments.
               </p>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6 sm:mb-8 w-full sm:w-auto">

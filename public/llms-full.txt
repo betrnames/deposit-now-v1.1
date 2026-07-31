@@ -1,8 +1,10 @@
 # deposit.now — full agent guide (honest)
 
+Site: https://deposit.now · Docs: https://deposit.now/docs · OpenAPI: https://deposit.now/openapi.json
+
 ## What this is
 
-An **open x402 funding rail** on Base:
+**deposit.now** is an **open x402 agent funding rail** (USDC on Base):
 
 1. Choose a destination:
    - **target** — an EVM address you already control, or

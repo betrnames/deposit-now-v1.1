@@ -3,20 +3,46 @@ import Script from 'next/script';
 import type { Metadata } from 'next';
 import { ThemeInit } from '@/components/ThemeInit';
 import { PRODUCT } from '@/lib/product-copy';
+import { SITE, siteJsonLd } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://deposit.now'),
+  metadataBase: new URL(SITE.base),
   title: {
     default: PRODUCT.titleDefault,
     template: PRODUCT.titleTemplate,
   },
   description: PRODUCT.description,
   keywords: [...PRODUCT.keywords],
-  alternates: { canonical: 'https://deposit.now' },
+  applicationName: PRODUCT.name,
+  authors: [{ name: PRODUCT.name, url: SITE.base }],
+  creator: PRODUCT.name,
+  publisher: PRODUCT.name,
+  category: 'technology',
+  classification: 'Agent payments, x402, USDC, Base',
+  alternates: {
+    canonical: SITE.base,
+    types: {
+      'application/llms.txt': `${SITE.base}/llms.txt`,
+      'application/json': `${SITE.base}/openapi.json`,
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
   openGraph: {
+    type: 'website',
+    locale: 'en_US',
     title: PRODUCT.titleDefault,
-    description: `${PRODUCT.tagline} Amount + 1% · no humans · no API key needed.`,
-    url: 'https://deposit.now',
+    description: PRODUCT.description,
+    url: SITE.base,
     siteName: PRODUCT.name,
     images: [
       {
@@ -29,16 +55,19 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@Deposit_Now',
-    creator: '@Deposit_Now',
+    site: SITE.twitter,
+    creator: SITE.twitter,
     title: PRODUCT.titleDefault,
-    description: `${PRODUCT.tagline} Amount + 1% · no API key needed.`,
+    description: PRODUCT.description,
     images: ['/og.png'],
   },
   icons: {
     icon: [{ url: '/icon', type: 'image/png', sizes: '32x32' }],
     apple: [{ url: '/apple-icon', type: 'image/png', sizes: '180x180' }],
     shortcut: ['/icon'],
+  },
+  other: {
+    'theme-color': '#0f172a',
   },
 };
 
@@ -47,35 +76,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebAPI',
-        name: `${PRODUCT.name} ${PRODUCT.productLine}`,
-        description: PRODUCT.apiDescription,
-        url: 'https://deposit.now/api/deposit',
-        documentation: 'https://deposit.now/docs',
-        provider: { '@type': 'Organization', name: PRODUCT.name, url: 'https://deposit.now' },
-        offers: {
-          '@type': 'Offer',
-          priceCurrency: 'USD',
-          description: PRODUCT.feeNote,
-        },
-      },
-      {
-        '@type': 'FAQPage',
-        mainEntity: PRODUCT.faq.map((item) => ({
-          '@type': 'Question',
-          name: item.q,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: item.a,
-          },
-        })),
-      },
-    ],
-  };
+  const jsonLd = siteJsonLd(PRODUCT);
 
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
@@ -110,3 +111,4 @@ export default function RootLayout({
     </html>
   );
 }
+

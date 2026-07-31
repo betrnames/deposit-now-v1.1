@@ -1,24 +1,61 @@
 import type { Metadata } from 'next';
 import { PRODUCT } from '@/lib/product-copy';
+import { SITE, pageGraph } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'API Documentation',
+  title: PRODUCT.docsTitle,
   description: PRODUCT.description,
-  alternates: { canonical: 'https://deposit.now/docs' },
+  keywords: [...PRODUCT.keywords],
+  alternates: { canonical: `${SITE.base}/docs` },
   openGraph: {
-    title: `API Documentation | ${PRODUCT.name}`,
+    type: 'article',
+    title: `${PRODUCT.docsTitle} | ${PRODUCT.name}`,
     description: PRODUCT.description,
-    url: 'https://deposit.now/docs',
+    url: `${SITE.base}/docs`,
     siteName: PRODUCT.name,
+    images: [
+      {
+        url: '/og.png',
+        width: 1200,
+        height: 630,
+        alt: PRODUCT.ogImageAlt,
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `API Documentation | ${PRODUCT.name}`,
-    description: `${PRODUCT.productLine} — fund any wallet or provision a managed child. payment_received vs forwardStatus explained.`,
+    site: SITE.twitter,
+    creator: SITE.twitter,
+    title: `${PRODUCT.docsTitle} | ${PRODUCT.name}`,
+    description: PRODUCT.description,
+    images: ['/og.png'],
   },
   robots: { index: true, follow: true },
 };
 
+const docsJsonLd = pageGraph(
+  {
+    '@type': 'TechArticle',
+    headline: PRODUCT.docsTitle,
+    name: `${PRODUCT.name} API Documentation`,
+    description: PRODUCT.description,
+    url: `${SITE.base}/docs`,
+    author: { '@type': 'Organization', name: PRODUCT.name, url: SITE.base },
+    publisher: { '@type': 'Organization', name: PRODUCT.name, url: SITE.base },
+    mainEntityOfPage: `${SITE.base}/docs`,
+  },
+  '/docs',
+  'API Documentation'
+);
+
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(docsJsonLd) }}
+      />
+      {children}
+    </>
+  );
 }
