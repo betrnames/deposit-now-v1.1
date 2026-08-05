@@ -1,7 +1,6 @@
 'use client';
 
 import { useLayoutEffect, useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
 import {
   applyTheme,
   getStoredTheme,
@@ -10,10 +9,14 @@ import {
 } from '@/lib/theme';
 
 type ThemeToggleProps = {
-  /** Footer: compact text control (x.ai-style). Default: icon button for nav. */
+  /** Footer: slightly smaller switch. Default: standard size. */
   variant?: 'default' | 'footer';
 };
 
+/**
+ * Visual switch between cloudflare (orange) and classic (blue) palettes.
+ * No text labels — pure switch with inset stroke.
+ */
 export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
   const [theme, setTheme] = useState<SiteTheme>('cloudflare');
 
@@ -27,38 +30,44 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
     applyTheme(next);
   };
 
-  const nextTheme = toggleTheme(theme);
-  const ThemeIcon = nextTheme === 'cloudflare' ? Sun : Moon;
-  const label = nextTheme === 'cloudflare' ? 'Light' : 'Dark';
-
-  if (variant === 'footer') {
-    return (
-      <button
-        type="button"
-        onClick={handleToggle}
-        aria-label={`Switch to ${nextTheme} theme`}
-        title={`Switch to ${nextTheme} theme`}
-        className="inline-flex items-center gap-1 text-[11px] leading-none text-muted-foreground/70 hover:text-muted-foreground transition-colors shrink-0"
-        style={{ touchAction: 'manipulation' }}
-      >
-        <ThemeIcon className="h-3 w-3 opacity-80" aria-hidden />
-        <span>Theme</span>
-        <span className="text-muted-foreground/40">·</span>
-        <span className="capitalize">{label}</span>
-      </button>
-    );
-  }
+  // "on" = classic (right); "off" = cloudflare (left)
+  const isOn = theme === 'classic';
+  const compact = variant === 'footer';
 
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={isOn}
       onClick={handleToggle}
-      aria-label={`Switch to ${nextTheme} theme`}
-      title={`Switch to ${nextTheme} theme`}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border/60 bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors shrink-0"
+      aria-label={isOn ? 'Switch to Cloudflare theme' : 'Switch to Classic theme'}
+      title={isOn ? 'Classic theme' : 'Cloudflare theme'}
+      className={[
+        'relative shrink-0 rounded-full transition-colors',
+        'border border-border/50 bg-muted/25',
+        // inset stroke + soft inner depth
+        'shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06),inset_0_1px_2px_rgba(0,0,0,0.35)]',
+        'hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-border/70',
+        compact ? 'h-4 w-7' : 'h-5 w-9',
+      ].join(' ')}
       style={{ touchAction: 'manipulation' }}
     >
-      <ThemeIcon className="h-4 w-4" aria-hidden />
+      <span
+        aria-hidden
+        className={[
+          'pointer-events-none absolute top-1/2 -translate-y-1/2 rounded-full',
+          'bg-foreground/85 shadow-sm',
+          'border border-border/40',
+          'shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]',
+          'transition-transform duration-200 ease-out',
+          compact ? 'left-0.5 h-2.5 w-2.5' : 'left-0.5 h-3.5 w-3.5',
+          isOn
+            ? compact
+              ? 'translate-x-3'
+              : 'translate-x-4'
+            : 'translate-x-0',
+        ].join(' ')}
+      />
     </button>
   );
 }
