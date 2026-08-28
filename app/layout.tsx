@@ -3,7 +3,7 @@ import Script from 'next/script';
 import type { Metadata } from 'next';
 import { ThemeInit } from '@/components/ThemeInit';
 import { PRODUCT } from '@/lib/product-copy';
-import { SITE, siteJsonLd } from '@/lib/seo';
+import { OG_IMAGE, SITE, openGraphImages, siteJsonLd, twitterImages } from '@/lib/seo';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.base),
@@ -44,14 +44,7 @@ export const metadata: Metadata = {
     description: PRODUCT.description,
     url: SITE.base,
     siteName: PRODUCT.name,
-    images: [
-      {
-        url: '/og.png',
-        width: 1200,
-        height: 630,
-        alt: PRODUCT.ogImageAlt,
-      },
-    ],
+    images: openGraphImages(PRODUCT.ogImageAlt),
   },
   twitter: {
     card: 'summary_large_image',
@@ -59,7 +52,7 @@ export const metadata: Metadata = {
     creator: SITE.twitter,
     title: PRODUCT.titleDefault,
     description: PRODUCT.description,
-    images: ['/og.png'],
+    images: twitterImages(),
   },
   icons: {
     icon: [{ url: '/icon', type: 'image/png', sizes: '32x32' }],
@@ -92,6 +85,17 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        {/* LinkedIn reads og:image only (not twitter:image). Keep these in <head>
+            so a page-level openGraph override cannot drop the share card. */}
+        <meta property="og:image" content={OG_IMAGE.jpg} />
+        <meta property="og:image:secure_url" content={OG_IMAGE.jpg} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content={String(OG_IMAGE.width)} />
+        <meta property="og:image:height" content={String(OG_IMAGE.height)} />
+        <meta property="og:image:alt" content={PRODUCT.ogImageAlt} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content={PRODUCT.name} />
+        <meta property="og:locale" content="en_US" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -111,4 +115,3 @@ export default function RootLayout({
     </html>
   );
 }
-
