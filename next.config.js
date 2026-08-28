@@ -19,6 +19,14 @@ const nextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
       },
+      {
+        source: '/og.:ext(png|jpg|jpeg)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=86400, immutable' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+        ],
+      },
     ];
   },
 };

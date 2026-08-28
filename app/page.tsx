@@ -5,16 +5,22 @@ import { Zap, Coins, CheckCircle2, Sparkles } from 'lucide-react';
 import { SiteFooter } from '@/components/SiteFooter';
 import { Header } from '@/components/Header';
 import { PRODUCT } from '@/lib/product-copy';
-import { SITE } from '@/lib/seo';
+import { SITE, openGraphImages } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: { absolute: PRODUCT.titleDefault },
   description: PRODUCT.description,
   alternates: { canonical: SITE.base },
+  // Next.js replaces parent openGraph when a page sets it — include images or
+  // LinkedIn gets title/description with no preview image.
   openGraph: {
+    type: 'website',
+    locale: 'en_US',
     title: PRODUCT.titleDefault,
     description: PRODUCT.description,
     url: SITE.base,
+    siteName: PRODUCT.name,
+    images: openGraphImages(PRODUCT.ogImageAlt),
   },
 };
 

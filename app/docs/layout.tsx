@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { PRODUCT } from '@/lib/product-copy';
-import { SITE, pageGraph } from '@/lib/seo';
+import { SITE, openGraphImages, pageGraph, twitterImages } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: PRODUCT.docsTitle,
@@ -13,14 +13,7 @@ export const metadata: Metadata = {
     description: PRODUCT.description,
     url: `${SITE.base}/docs`,
     siteName: PRODUCT.name,
-    images: [
-      {
-        url: '/og.png',
-        width: 1200,
-        height: 630,
-        alt: PRODUCT.ogImageAlt,
-      },
-    ],
+    images: openGraphImages(PRODUCT.ogImageAlt),
   },
   twitter: {
     card: 'summary_large_image',
@@ -28,7 +21,7 @@ export const metadata: Metadata = {
     creator: SITE.twitter,
     title: `${PRODUCT.docsTitle} | ${PRODUCT.name}`,
     description: PRODUCT.description,
-    images: ['/og.png'],
+    images: twitterImages(),
   },
   robots: { index: true, follow: true },
 };

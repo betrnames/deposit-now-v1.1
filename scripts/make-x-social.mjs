@@ -202,6 +202,12 @@ async function main() {
     .png()
     .toFile(ogPath);
 
+  // JPEG (no alpha) — LinkedIn is unreliable with PNG-with-alpha share cards
+  await sharp(ogPath)
+    .flatten({ background: CF.bg })
+    .jpeg({ quality: 92, progressive: true })
+    .toFile(path.join(root, 'public', 'og.jpg'));
+
   // Also keep a social/ copy for X assets folder
   await sharp(ogPath).toFile(path.join(outDir, 'open-rail.v1.png'));
 

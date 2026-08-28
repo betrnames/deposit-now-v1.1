@@ -18,6 +18,50 @@ export const SITE = {
   ],
 } as const;
 
+/**
+ * LinkedIn (and others) cache og:image by URL. Bump this when the file changes
+ * so crawlers fetch a fresh card. JPEG is first: LinkedIn is picky about
+ * PNG-with-alpha and ignores Twitter-only tags.
+ */
+export const OG_IMAGE_VERSION = '20260828';
+
+const OG_JPG = `${BASE}/og.jpg?v=${OG_IMAGE_VERSION}`;
+const OG_PNG = `${BASE}/og.png?v=${OG_IMAGE_VERSION}`;
+
+export const OG_IMAGE = {
+  jpg: OG_JPG,
+  png: OG_PNG,
+  width: 1200,
+  height: 630,
+  type: 'image/jpeg' as const,
+};
+
+/** Absolute 1200×630 images for Open Graph (LinkedIn reads only these). */
+export function openGraphImages(alt: string) {
+  return [
+    {
+      url: OG_IMAGE.jpg,
+      secureUrl: OG_IMAGE.jpg,
+      type: 'image/jpeg' as const,
+      width: OG_IMAGE.width,
+      height: OG_IMAGE.height,
+      alt,
+    },
+    {
+      url: OG_IMAGE.png,
+      secureUrl: OG_IMAGE.png,
+      type: 'image/png' as const,
+      width: OG_IMAGE.width,
+      height: OG_IMAGE.height,
+      alt,
+    },
+  ];
+}
+
+export function twitterImages() {
+  return [OG_IMAGE.jpg, OG_IMAGE.png];
+}
+
 /** Indexable public URLs for sitemap.xml (must return 200). */
 export const SITEMAP_PATHS: {
   path: string;
