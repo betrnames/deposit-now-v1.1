@@ -614,7 +614,7 @@ const server = new x402ResourceServer(facilitatorClient)
           depositAmount: split ? split.net.toFixed(6) : depositBody.amount,
           grossAmount: split ? split.gross.toFixed(6) : amountUsdc,
           fee: split ? split.fee.toFixed(6) : null,
-          feePercent: split ? '1.00' : null,
+          feePercent: split ? split.feePercent.toFixed(2) : null,
           netToTarget: split ? split.net.toFixed(6) : null,
           forwardTxHash,
           forwardStatus,
