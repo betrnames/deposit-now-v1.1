@@ -23,7 +23,7 @@ export const SITE = {
  * so crawlers fetch a fresh card. JPEG is first: LinkedIn is picky about
  * PNG-with-alpha and ignores Twitter-only tags.
  */
-export const OG_IMAGE_VERSION = '20260828';
+export const OG_IMAGE_VERSION = '20260829';
 
 const OG_JPG = `${BASE}/og.jpg?v=${OG_IMAGE_VERSION}`;
 const OG_PNG = `${BASE}/og.png?v=${OG_IMAGE_VERSION}`;
