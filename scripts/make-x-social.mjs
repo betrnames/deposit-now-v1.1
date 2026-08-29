@@ -143,7 +143,7 @@ async function main() {
   <!-- tagline -->
   <text x="${cx}" y="${tagCy}" text-anchor="middle" dominant-baseline="central"
         font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
-        font-size="${tagSize}" font-weight="600" fill="${CF.primary}">One HTTP call · no API key · amount + 1%</text>
+        font-size="${tagSize}" font-weight="600" fill="${CF.primary}">One HTTP call · no API key · 0.25% fee, $0.25 cap</text>
 </svg>`);
 
   await sharp(headerSvg).png().toFile(path.join(outDir, 'x-header.png'));
@@ -186,7 +186,7 @@ async function main() {
         font-size="28" font-weight="600" fill="${CF.primary}">Agents fund any wallet via one HTTP call</text>
   <text x="72" y="430"
         font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
-        font-size="22" font-weight="500" fill="${CF.muted}">amount + 1% · no humans · no API key needed</text>
+        font-size="22" font-weight="500" fill="${CF.muted}">0.25% fee · $0.25 cap · no humans · no API key</text>
 
   <text x="72" y="${ogH - 48}"
         font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"

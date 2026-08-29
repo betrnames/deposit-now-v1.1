@@ -51,7 +51,7 @@ server.tool(
 
 server.tool(
   'deposit_now_trigger_deposit',
-  'Fund a wallet via x402 (amount + 1%). Pass target for an existing address, or provision+label to create/fund a managed child wallet. Requires EVM_PRIVATE_KEY on the paying agent with USDC on Base. Managed children are platform_managed (no key export).',
+  'Fund a wallet via x402 (0.25% fee, min $0.001, max $0.25). Pass target for an existing address, or provision+label to create/fund a managed child wallet. Requires EVM_PRIVATE_KEY on the paying agent with USDC on Base. Managed children are platform_managed (no key export).',
   {
     target: z
       .string()

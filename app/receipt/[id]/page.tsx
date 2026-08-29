@@ -100,7 +100,7 @@ export default async function ReceiptPage({
             ) : null}
             {receipt.fee ? (
               <Row label="Platform fee">
-                {receipt.fee} USDC ({receipt.feePercent ?? '1'}%)
+                {receipt.fee} USDC ({receipt.feePercent ?? '0.25'}%)
               </Row>
             ) : null}
             {receipt.netToTarget || receipt.depositAmount ? (

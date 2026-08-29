@@ -8,8 +8,10 @@ import {
 import { facilitator as cdpFacilitator } from '@coinbase/x402';
 import {
   DEPOSIT_MIN_USDC,
+  PLATFORM_FEE_PERCENT,
   calculateDepositSplit,
   clampDepositUsdc,
+  fallbackGrossPrice,
   formatUsdcPrice,
 } from '@/lib/billing';
 import { forwardWithRetry, logSettlement } from '@/lib/cdp';
@@ -72,7 +74,7 @@ const depositDiscovery = declareDiscoveryExtension({
       amount: {
         type: 'string',
         description:
-          'Net USDC to forward to target (min $0.01, max $100000). Agent pays amount + 1% platform fee via x402.',
+          'Net USDC to forward to target (min $0.01, max $100000). Agent pays amount + 0.25% (min $0.001, max $0.25) via x402.',
       },
       memo: {
         type: 'string',
@@ -97,9 +99,9 @@ const depositDiscovery = declareDiscoveryExtension({
       forwardStatus: 'settled',
       target: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
       depositAmount: '50.000000',
-      fee: '0.500000',
-      feePercent: 1,
-      grossPaid: '50.500000',
+      fee: '0.125000',
+      feePercent: 0.25,
+      grossPaid: '50.125000',
       paymentReceived: true,
       provisioned: false,
       receiptId: 'a1b2c3d4e5f60718',
@@ -283,7 +285,7 @@ async function ensureResolvedTarget(
   return { ok: true, target: tv.address, child: provisioned.child };
 }
 
-/** x402 price = net amount + 1% platform fee */
+/** x402 price = net + clamp(net × 0.25%, $0.001, $0.25) */
 async function resolveDepositPrice(context: HTTPRequestContext): Promise<string> {
   try {
     const body = await parseDepositBody(context);
@@ -293,12 +295,12 @@ async function resolveDepositPrice(context: HTTPRequestContext): Promise<string>
       await rememberIntentFromBody(body);
     }
     const net = clampDepositUsdc(body.amount);
-    if (net === null) return formatUsdcPrice(DEPOSIT_MIN_USDC * 1.01);
+    if (net === null) return fallbackGrossPrice();
     const split = calculateDepositSplit(net);
-    if (!split) return formatUsdcPrice(DEPOSIT_MIN_USDC * 1.01);
+    if (!split) return fallbackGrossPrice();
     return formatUsdcPrice(split.gross);
   } catch {
-    return formatUsdcPrice(DEPOSIT_MIN_USDC * 1.01);
+    return fallbackGrossPrice();
   }
 }
 
@@ -380,7 +382,7 @@ const server = new x402ResourceServer(facilitatorClient)
             net: intent.net,
             fee: intent.fee,
             gross: intent.gross,
-            feePercent: 1,
+            feePercent: PLATFORM_FEE_PERCENT,
           }
         : null;
 
@@ -578,7 +580,7 @@ const server = new x402ResourceServer(facilitatorClient)
               memo: intent?.memo ?? null,
               grossAmount: split.gross.toFixed(6),
               fee: split.fee.toFixed(6),
-              feePercent: '1.00',
+              feePercent: split.feePercent.toFixed(2),
               netToTarget: split.net.toFixed(6),
               agentTxHash: result.transaction ?? null,
               forwardTxHash: fwd.txHash,
@@ -612,7 +614,7 @@ const server = new x402ResourceServer(facilitatorClient)
           depositAmount: split ? split.net.toFixed(6) : depositBody.amount,
           grossAmount: split ? split.gross.toFixed(6) : amountUsdc,
           fee: split ? split.fee.toFixed(6) : null,
-          feePercent: split ? '1.00' : null,
+          feePercent: split ? split.feePercent.toFixed(2) : null,
           netToTarget: split ? split.net.toFixed(6) : null,
           forwardTxHash,
           forwardStatus,
@@ -653,7 +655,7 @@ export const middleware = paymentProxy(
         },
       ],
       description:
-        'Open x402 funding rail: POST target+amount or provision:true+label+amount; pay amount + 1% via x402; net forwarded on Base. Optional managed child wallets (CDP). Optional public receipt when storage is configured.',
+        'Open x402 funding rail: POST target+amount or provision:true+label+amount; pay 0.25% (min $0.001, max $0.25) via x402; net forwarded on Base. Optional managed child wallets (CDP). Optional public receipt when storage is configured.',
       mimeType: 'application/json',
       extensions: {
         ...depositDiscovery,
@@ -670,8 +672,8 @@ export const middleware = paymentProxy(
               error: 'invalid_request',
               code: 'invalid_amount',
               message:
-                'POST JSON { "target": "0x…", "amount": "50.00" } or { "provision": true, "label": "child-1", "amount": "50.00" }. amount is net USDC; you pay amount + 1%.',
-              feePercent: 1,
+                'POST JSON { "target": "0x…", "amount": "50.00" } or { "provision": true, "label": "child-1", "amount": "50.00" }. amount is net USDC; you pay amount + 0.25% (min $0.001, max $0.25).',
+              feePercent: PLATFORM_FEE_PERCENT,
               minAmount: DEPOSIT_MIN_USDC,
               maxAmount: 100_000,
               docs: 'https://deposit.now/docs',
@@ -689,7 +691,7 @@ export const middleware = paymentProxy(
               code: resolved.code,
               message: resolved.message,
               ...(resolved.retryAfter != null ? { retryAfter: resolved.retryAfter } : {}),
-              feePercent: 1,
+              feePercent: PLATFORM_FEE_PERCENT,
               minAmount: DEPOSIT_MIN_USDC,
               maxAmount: 100_000,
               docs: 'https://deposit.now/docs',

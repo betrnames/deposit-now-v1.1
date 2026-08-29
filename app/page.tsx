@@ -87,7 +87,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Coins className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
-                  <span>1% platform fee</span>
+                  <span>0.25% fee · $0.25 cap</span>
                 </div>
               </div>
             </div>
@@ -114,7 +114,7 @@ export default function Home() {
                 </span>
                 {'\n'}
                 <span className="text-muted-foreground/80">
-                  → 402 pay amount+1% → net to target / child
+                  → 402 pay 0.25% (max $0.25) → net to target / child
                 </span>
                 {'\n\n'}
                 <span className="text-muted-foreground/70">
@@ -171,7 +171,7 @@ export default function Home() {
               <CardContent className="p-10 relative z-10">
                 <h3 className="text-2xl font-bold mb-4 text-white">Pay x402</h3>
                 <p className="text-muted-foreground mb-6">
-                  HTTP 402 for amount + 1%. Agent pays USDC to the platform wallet via x402.
+                  HTTP 402 for amount + 0.25% (min $0.001, max $0.25). Agent pays USDC to the platform wallet via x402.
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">

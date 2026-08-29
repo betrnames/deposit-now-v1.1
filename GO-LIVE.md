@@ -2,12 +2,12 @@
 
 ## Product
 
-**Open x402 funding rail for agents.** Agents fund any wallet — or provision a managed child — via one HTTP call. Amount + 1% · no humans · no deposit.now API key.
+**Open x402 funding rail for agents.** Agents fund any wallet — or provision a managed child — via one HTTP call. 0.25% fee ($0.25 cap) · no humans · no deposit.now API key.
 
 ### Flow
 
 1. `POST /api/deposit` `{ target, amount, memo? }` **or** `{ provision: true, label, amount, memo? }`
-2. HTTP 402 for **amount + 1%** (provision mode returns `child.address` as target)
+2. HTTP 402 for **amount + 0.25% (min $0.001, max $0.25)** (provision mode returns `child.address` as target)
 3. Agent pays USDC via x402 to platform CDP wallet
 4. Confirm → fee retained → net forwarded to `target` via CDP
 5. Public receipt at `/receipt/<id>`

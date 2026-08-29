@@ -135,7 +135,7 @@ async function main() {
       )}
       <text x="80" y="560"
             font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
-            font-size="32" font-weight="500" fill="${CF.primary}">Pay amount + 1%  ·  net to any EVM target</text>
+            font-size="32" font-weight="500" fill="${CF.primary}">Pay 0.25% (max $0.25)  ·  net to any EVM target</text>
       <text x="80" y="620"
             font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
             font-size="28" font-weight="400" fill="${CF.muted}">No deposit.now API key  ·  optional public receipt</text>
@@ -239,7 +239,7 @@ async function main() {
             font-size="64" font-weight="800" fill="${CF.foreground}">&gt;_ POST /api/deposit</text>
       <text x="80" y="400"
             font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-            font-size="36" font-weight="600" fill="${CF.primary}">target + amount  →  pay amount + 1%</text>
+            font-size="36" font-weight="600" fill="${CF.primary}">target + amount  →  pay 0.25% (max $0.25)</text>
       <text x="80" y="480"
             font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
             font-size="36" font-weight="600" fill="${CF.primary}">→  net forward  →  /receipt/{id}</text>
@@ -272,7 +272,7 @@ async function main() {
             font-size="36" font-weight="600" fill="${CF.primary}">Open x402 funding rail</text>
       <text x="72" y="540"
             font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
-            font-size="28" font-weight="400" fill="${CF.muted}">Pay amount + 1%</text>
+            font-size="28" font-weight="400" fill="${CF.muted}">Pay 0.25% (max $0.25)</text>
       <text x="72" y="590"
             font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
             font-size="28" font-weight="400" fill="${CF.muted}">Net to any EVM target</text>

@@ -1,6 +1,6 @@
 # deposit.now
 
-**Open x402 funding rail for agents.** Fund any EVM wallet — or provision a managed child — via one HTTP call. Pay amount + 1% over HTTP 402; net forwards after settlement. No deposit.now API key.
+**Open x402 funding rail for agents.** Fund any EVM wallet — or provision a managed child — via one HTTP call. Pay 0.25% (min $0.001, max $0.25) over HTTP 402; net forwards after settlement. No deposit.now API key.
 
 **Live:** [deposit.now](https://deposit.now)
 

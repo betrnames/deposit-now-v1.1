@@ -1,6 +1,7 @@
 /**
  * Canonical product messaging for deposit.now.
  * Import from here for UI, metadata, discovery, and agent docs so the story stays consistent.
+ * Fee math lives in lib/billing.ts — these strings must follow that function.
  */
 
 export const PRODUCT = {
@@ -20,24 +21,30 @@ export const PRODUCT = {
   tagline: 'Agents fund any wallet — or provision a managed child — via one HTTP call',
 
   /** Compact tagline without provision (footer, tight spaces) */
-  taglineShort: 'Open x402 funding rail for agents · amount + 1%',
+  taglineShort: 'Open x402 funding rail for agents · 0.25% fee, $0.25 cap',
 
   /** Supporting line under hero */
-  valueProps: 'Autonomous deposits · amount + 1% · no humans · no API key needed',
+  valueProps: 'Autonomous deposits · 0.25% fee ($0.25 cap) · no humans · no API key needed',
 
   /** Meta / SEO description (~155 chars; brand + niche terms for ranking) */
   description:
-    'deposit.now is the open x402 agent funding rail: POST /api/deposit to fund any EVM wallet or provision a managed child. Pay amount + 1% USDC on Base via HTTP 402. No API key.',
+    'deposit.now is the open x402 agent funding rail: POST /api/deposit to fund any EVM wallet or provision a managed child. Pay 0.25% (min $0.001, max $0.25) USDC on Base via HTTP 402. No API key.',
 
   /** Docs intro (plain text, no JSX) */
   intro:
-    'deposit.now is an open x402 funding rail: POST /api/deposit with either a target address or provision:true + label, pay amount + 1% via x402, and the platform forwards net USDC after settlement. Optional managed child wallets are platform-managed in CDP (no key export in v1). Complements Coinbase CDP Fund/Send — does not replace it inside the CDP stack.',
+    'deposit.now is an open x402 funding rail: POST /api/deposit with either a target address or provision:true + label, pay 0.25% (min $0.001, max $0.25) via x402, and the platform forwards net USDC after settlement. Optional managed child wallets are platform-managed in CDP (no key export in v1). Complements Coinbase CDP Fund/Send — does not replace it inside the CDP stack.',
 
   /** WebAPI / structured data */
   apiDescription:
-    'Open x402 deposit API: POST target+amount or provision:true+label+amount; pay amount + 1% USDC on Base; net forwarded after settlement. Optional managed child wallets (CDP, platform-managed). Optional public receipts. Complements Coinbase CDP Fund/Send.',
+    'Open x402 deposit API: POST target+amount or provision:true+label+amount; pay 0.25% USDC on Base (min $0.001, max $0.25); net forwarded after settlement. Optional managed child wallets (CDP, platform-managed). Optional public receipts. Complements Coinbase CDP Fund/Send.',
 
-  feeNote: '1% platform fee on net deposit amount via x402 exact scheme on Base mainnet.',
+  feeNote:
+    '0.25% platform fee, $0.001 minimum, $0.25 maximum — always under the $0.32 average x402 payment.',
+
+  /** Short fee phrase for recipes, 402 bodies, and agent docs */
+  feeGrossPhrase: 'amount + 0.25% (min $0.001, max $0.25)',
+
+  feeShort: '0.25% · $0.001 min · $0.25 max',
 
   networkLabel: 'Base mainnet (eip155:8453) in production',
 
@@ -67,11 +74,11 @@ export const PRODUCT = {
   faq: [
     {
       q: 'What is deposit.now?',
-      a: 'deposit.now is an open x402 funding rail: agents pay amount + 1% over HTTP 402 and net USDC is forwarded to a target they specify, or to a managed child wallet created with provision:true + label. Complements Coinbase CDP Fund/Send; managed children are platform-managed in CDP with no key export in v1.',
+      a: 'deposit.now is an open x402 funding rail: agents pay 0.25% (min $0.001, max $0.25) over HTTP 402 and net USDC is forwarded to a target they specify, or to a managed child wallet created with provision:true + label. Complements Coinbase CDP Fund/Send; managed children are platform-managed in CDP with no key export in v1.',
     },
     {
       q: 'How does a deposit work?',
-      a: 'POST /api/deposit with { target, amount } or { provision: true, label, amount }. Receive HTTP 402 for amount + 1%. Pay via x402. After settlement, the platform forwards net to target (or the provisioned child). Response status is payment_received; check receiptUrl for forwardStatus and Basescan links when available.',
+      a: 'POST /api/deposit with { target, amount } or { provision: true, label, amount }. Receive HTTP 402 for amount + 0.25% (min $0.001, max $0.25). Pay via x402. After settlement, the platform forwards net to target (or the provisioned child). Response status is payment_received; check receiptUrl for forwardStatus and Basescan links when available.',
     },
     {
       q: 'Can I fund any wallet or create a child?',
