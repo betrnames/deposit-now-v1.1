@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
+  PLATFORM_FEE_MAX_USDC,
+  PLATFORM_FEE_MIN_USDC,
+  PLATFORM_FEE_PERCENT,
   calculateDepositSplit,
   clampDepositUsdc,
 } from '@/lib/billing';
@@ -51,7 +54,9 @@ export async function handleDepositGet(request: NextRequest) {
       description: PRODUCT.apiDescription,
       network: networkLabel(),
       x402Network: X402_NETWORK,
-      feePercent: 1,
+      feePercent: PLATFORM_FEE_PERCENT,
+      feeMinUsdc: PLATFORM_FEE_MIN_USDC,
+      feeMaxUsdc: PLATFORM_FEE_MAX_USDC,
       docs: 'https://deposit.now/docs',
       llms: 'https://deposit.now/llms.txt',
       openapi: 'https://deposit.now/openapi.json',

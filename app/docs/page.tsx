@@ -69,7 +69,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
   const curlExample = `curl -i -X POST https://deposit.now/api/deposit \\
   -H 'Content-Type: application/json' \\
   -d '{"provision":true,"label":"trading-agent-1","amount":"50.00","memo":"Fund child trading agent"}'
-# → HTTP 402 + Payment-Required (pay amount + 1%); body includes child.address`;
+# → HTTP 402 + Payment-Required (pay 0.25%, max $0.25); body includes child.address`;
 
   const jsHighlighted = (
     <>
@@ -205,7 +205,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
       </span>
       {'\n'}
       <span className="text-muted-foreground/70">
-        # → HTTP 402 + Payment-Required (pay amount + 1%); includes child.address
+        # → HTTP 402 + Payment-Required (pay 0.25%, max $0.25); includes child.address
       </span>
     </>
   );
@@ -267,7 +267,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                     <code className="text-primary">target</code> address or{' '}
                     <code className="text-primary">provision: true</code> +{' '}
                     <code className="text-primary">label</code>, pay{' '}
-                    <strong className="text-white">amount + 1%</strong> via x402, and the platform
+                    <strong className="text-white">0.25% (min $0.001, max $0.25)</strong> via x402, and the platform
                     forwards net USDC after settlement. Optional managed children are{' '}
                     <strong className="text-white">platform_managed</strong> in CDP (no key export
                     in v1). Complements Coinbase CDP Fund/Send — does not replace it inside that
@@ -281,7 +281,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                   </li>
                   <li className="flex gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    Fee: flat 1% of net · status{' '}
+                    Fee: 0.25% of net, $0.001 min, $0.25 max · status{' '}
                     <code className="text-primary">payment_received</code> means paid, not delivered
                     — check <code className="text-primary">forwardStatus</code>
                   </li>
@@ -410,7 +410,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                       {`{ provision: true, label, amount, memo? }`}
                     </code>
                   </li>
-                  <li>Handle 402 — pay gross (amount + 1%) in USDC. Provision mode includes child.address.</li>
+                  <li>Handle 402 — pay gross (amount + 0.25%, min $0.001, max $0.25) in USDC. Provision mode includes child.address.</li>
                   <li>Retry with the same body + payment proof; read receiptId / receiptUrl from the 200 body.</li>
                 </ol>
               </section>
@@ -431,7 +431,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                   </li>
                   <li>
                     <strong className="text-white">2.</strong> Server returns 402 + x402 payment
-                    request for amount + 1% fee (and <code className="text-primary">child</code>{' '}
+                    request for 0.25% fee (min $0.001, max $0.25) (and <code className="text-primary">child</code>{' '}
                     when provisioned).
                   </li>
                   <li>

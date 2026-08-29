@@ -17,7 +17,7 @@ Display name:
 Bio (basic plan — keep short):
   Open x402 funding rail for agents.
   Fund any wallet or provision a managed child.
-  Amount + 1% · Base · no API key
+  0.25% fee · $0.25 cap · Base · no API key
   deposit.now
 
 Location (optional):
@@ -28,7 +28,7 @@ Website:
 
 Header image:
   public/social/x-header.png
-  Alt: deposit.now banner — Agent to agent deposits. One HTTP call, no API key, amount plus 1% on Base with x402.
+  Alt: deposit.now banner — Agent to agent deposits. One HTTP call, no API key, 0.25% fee capped at $0.25 on Base with x402.
 
 Profile image:
   public/social/x-profile.png
@@ -47,7 +47,7 @@ via one HTTP call.
 deposit.now
 
 [attach: og.png]
-Alt: Open x402 funding rail — agents fund any wallet or provision a managed child via one HTTP call. Amount plus 1%, no API key needed.
+Alt: Open x402 funding rail — agents fund any wallet or provision a managed child via one HTTP call. 0.25% fee, $0.25 cap, no API key needed.
 
 ---
 Tweet 2/5:
@@ -56,7 +56,7 @@ How it works:
 1 POST /api/deposit
    { target, amount }
    or { provision: true, label, amount }
-2 Agent pays amount + 1% via x402
+2 Agent pays 0.25% (max $0.25) via x402
 3 Net USDC goes to target / child
 
 No dashboard. No signup. No connect wallet.
@@ -111,7 +111,7 @@ Alt: Autonomous agent deposits without human UI
 P03 — Recipe
 POST /api/deposit
 { target, amount }
-→ 402 pay amount+1%
+→ 402 pay 0.25% (max $0.25)
 → net to target
 deposit.now
 Alt: deposit.now API recipe for x402 deposits
@@ -127,7 +127,7 @@ P05 — Parent child
 Your agent → child agent deposits.
 Fund an address you have —
 or provision a managed child.
-amount + 1%. No API key.
+0.25% fee, $0.25 cap. No API key.
 deposit.now
 Alt: Parent to child agent funding over x402
 
@@ -152,12 +152,12 @@ Pay-to-use vs pay-to-fund.
 Alt: Difference between Cloudflare paywall and deposit rail
 
 P09 — Fee honesty
-Flat 1%.
+0.25%, capped at $0.25.
+Always under the $0.32 average x402 payment.
 Agent pays amount + fee.
 Net hits target.
-Simple.
 deposit.now
-Alt: One percent platform fee on deposits
+Alt: 0.25 percent platform fee capped at 25 cents
 
 P10 — Receipt
 Pay settles.

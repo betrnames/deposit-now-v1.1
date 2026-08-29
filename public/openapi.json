@@ -2,9 +2,9 @@
   "openapi": "3.1.0",
   "info": {
     "title": "deposit.now — Open x402 funding rail",
-    "version": "3.2.0",
-    "description": "Open x402 deposit API: pay amount + 1% USDC on Base; net forwards to target after settlement. Optional managed child wallets via provision:true (CDP Server Wallet, platform-managed keys — no key export in v1). Optional public receipts. Complements Coinbase CDP Fund/Send. HTTP 200 payment_received does not guarantee funds already arrived at target.",
-    "x-guidance": "POST /api/deposit with { target, amount, memo? } OR { provision: true, label, amount, memo? }. Unpaid → 402 for gross = amount + 1%. Paid → payment_received + receiptUrl. Check forwardStatus on the receipt. Docs: https://deposit.now/docs",
+    "version": "3.3.0",
+    "description": "Open x402 deposit API: pay 0.25% USDC on Base (min $0.001, max $0.25); net forwards to target after settlement. Optional managed child wallets via provision:true (CDP Server Wallet, platform-managed keys — no key export in v1). Optional public receipts. Complements Coinbase CDP Fund/Send. HTTP 200 payment_received does not guarantee funds already arrived at target.",
+    "x-guidance": "POST /api/deposit with { target, amount, memo? } OR { provision: true, label, amount, memo? }. Unpaid → 402 for gross = amount + 0.25% (min $0.001, max $0.25). Paid → payment_received + receiptUrl. Check forwardStatus on the receipt. Docs: https://deposit.now/docs",
     "contact": { "email": "support@deposit.now" }
   },
   "servers": [{ "url": "https://deposit.now" }],
@@ -24,7 +24,7 @@
           }
         ],
         "x-payment-info": {
-          "price": { "mode": "dynamic", "currency": "USD", "description": "amount + 1% platform fee" },
+          "price": { "mode": "dynamic", "currency": "USD", "description": "amount + 0.25% platform fee (min $0.001, max $0.25)" },
           "protocols": [{ "x402": {} }]
         },
         "requestBody": {
@@ -42,7 +42,7 @@
                   },
                   "amount": {
                     "type": "string",
-                    "description": "Net USDC to forward to target (agent pays this + 1%)",
+                    "description": "Net USDC to forward to target (agent pays this + 0.25%, min $0.001, max $0.25)",
                     "examples": ["50.00"]
                   },
                   "memo": {
@@ -105,7 +105,7 @@
             }
           },
           "402": {
-            "description": "Payment required. Pay amount + 1% USDC via x402 exact scheme on Base mainnet. Body includes target and optional child when provisioned."
+            "description": "Payment required. Pay amount + 0.25% USDC (min $0.001, max $0.25) via x402 exact scheme on Base mainnet. Body includes target and optional child when provisioned."
           },
           "400": {
             "description": "Invalid target, amount, or provision parameters (ambiguous_target, missing_target, invalid_label, missing_provision_identity)."

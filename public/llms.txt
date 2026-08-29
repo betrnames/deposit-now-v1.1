@@ -1,6 +1,6 @@
 # deposit.now
 
-> deposit.now — open x402 agent funding rail (USDC on Base). Pay amount + 1% over HTTP 402; net forwards to any EVM target — or provision a managed child wallet with provision:true. Optional public receipt. Complements Coinbase CDP Fund/Send.
+> deposit.now — open x402 agent funding rail (USDC on Base). Pay 0.25% (min $0.001, max $0.25) over HTTP 402; net forwards to any EVM target — or provision a managed child wallet with provision:true. Optional public receipt. Complements Coinbase CDP Fund/Send.
 
 Homepage: https://deposit.now · Docs: https://deposit.now/docs  
 Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-full.txt · Discovery: https://deposit.now/api/discovery
@@ -29,7 +29,7 @@ Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-
   - label: stable child id (e.g. trading-agent-1) — **required with provision** unless Idempotency-Key header
   - memo: optional string (max 256)
 - Header (optional): Idempotency-Key — stable provision identity
-- Price: amount + 1% platform fee (agent pays gross via x402)
+- Price: amount + 0.25% platform fee, $0.001 min, $0.25 max (agent pays gross via x402; fee always under the ~$0.32 average x402 payment)
 - Network: Base mainnet eip155:8453 (production)
 - Unpaid → HTTP 402 + Payment-Required (includes target + child when provisioned)
 - Paid → 200 with status **payment_received** (not a guarantee that target already holds funds)

@@ -10,7 +10,7 @@ Site: https://deposit.now · Docs: https://deposit.now/docs · OpenAPI: https://
    - **target** — an EVM address you already control, or
    - **provision: true** + **label** — deposit.now creates/resolves a managed CDP Server Wallet child and uses it as target.
 2. You POST net `amount` (+ target or provision fields).
-3. You pay **amount + 1%** via x402 to the platform.
+3. You pay **amount + 0.25% (min $0.001, max $0.25)** via x402 to the platform.
 4. After settlement, the platform **forwards net** to `target` (async; can fail).
 5. Optional **public receipt** at `/receipt/{id}` when storage is configured.
 
@@ -56,7 +56,7 @@ Rules:
 Flow:
 
 1. `POST https://deposit.now/api/deposit`
-2. **402** with gross price = amount + 1%.
+2. **402** with gross price = amount + 0.25% (min $0.001, max $0.25).
 3. Pay with any x402 v2 exact client; retry with payment proof.
 4. **200** body uses `status: "payment_received"` and `forwardStatus: "pending"` until settlement finishes forwarding.
 5. Poll or open `receiptUrl` for `forwardStatus` (`settled` | `forward_failed` | `pending` | `held`), `forwardTxHash`, payer, target, child fields, Basescan links.
@@ -72,6 +72,17 @@ Flow:
 | forwardStatus: held | Guardrail or payment verify held forward |
 | provisioned: true | Destination is a managed child wallet |
 | receipt missing | Storage may be unconfigured or settlement lag |
+
+## Fee model
+
+gross = amount + clamp(amount × 0.25%, $0.001, $0.25). Fee always stays under the ~$0.32 average x402 payment.
+
+| net | fee | gross |
+|-----|-----|-------|
+| 0.32 | 0.001 (min) | 0.321 |
+| 50.00 | 0.125 | 50.125 |
+| 100.00 | 0.25 (max) | 100.25 |
+| 1000.00 | 0.25 (max) | 1000.25 |
 
 ## Field reference
 
