@@ -241,10 +241,31 @@ console.log(await res.json()); // includes child.address when provisioned`;
           </aside>
 
           <main className="flex-1 min-w-0">
+            <nav
+              className="md:hidden sticky top-0 z-40 -mx-6 mb-8 border-b border-border/60 bg-background/90 px-6 backdrop-blur-md"
+              aria-label="Documentation sections"
+            >
+              <div className="flex gap-1 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {SECTIONS.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => scrollToSection(s.id)}
+                    className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors ${
+                      activeSection === s.id
+                        ? 'bg-primary/20 text-primary'
+                        : 'text-muted-foreground hover:text-white hover:bg-muted/50'
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </nav>
             <div className="max-w-4xl space-y-16">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2 font-mono">
-                  <span className="text-primary/80" aria-hidden="true">
+                  <span className="hidden sm:inline text-primary/80" aria-hidden="true">
                     &gt;_
                   </span>{' '}
                   deposit.now documentation
