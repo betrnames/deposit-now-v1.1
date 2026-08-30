@@ -265,14 +265,11 @@ console.log(await res.json()); // includes child.address when provisioned`;
             <div className="max-w-4xl min-w-0 space-y-16">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2 font-mono">
-                  <span className="text-primary/80" aria-hidden="true">
-                    &gt;_
-                  </span>{' '}
                   deposit.now documentation
                 </p>
-                <h1 className="font-mono text-3xl font-black text-white tracking-tight">
+                <TerminalTitle className="text-3xl font-black text-white tracking-tight">
                   {PRODUCT.productLine}
-                </h1>
+                </TerminalTitle>
                 <p className="mt-3 text-base text-primary font-medium max-w-2xl">
                   {PRODUCT.tagline}
                 </p>
