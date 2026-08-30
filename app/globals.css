@@ -235,6 +235,17 @@ html.dark[data-theme='classic'] .page-shell {
     @apply bg-background text-foreground font-sans antialiased;
     letter-spacing: var(--tracking-normal);
   }
+  pre {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  pre code {
+    display: block;
+    width: max-content;
+    min-width: 100%;
+    white-space: pre;
+  }
 }
 
 /* deposit logo cycle: 3s deposit → 0.5s fade → 5s bot → 0.5s fade → repeat */

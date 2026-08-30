@@ -95,8 +95,8 @@ export default function Home() {
             </div>
 
             {/* Right: 30s recipe */}
-            <div className="min-w-0 w-full">
-              <pre className="font-mono text-[11px] sm:text-sm leading-relaxed text-foreground/90 bg-card/80 border border-border/60 rounded-2xl px-4 py-4 sm:px-5 sm:py-5 overflow-x-auto shadow-lg shadow-primary/5 transition-all duration-300 hover:border-primary/45 hover:shadow-[0_0_32px_color-mix(in_oklch,var(--primary)_28%,transparent),0_0_64px_color-mix(in_oklch,var(--primary)_12%,transparent)]">
+            <div className="min-w-0 w-full overflow-x-auto">
+              <pre className="min-w-0 font-mono text-[11px] sm:text-sm leading-relaxed text-foreground/90 bg-card/80 border border-border/60 rounded-2xl px-4 py-4 sm:px-5 sm:py-5 overflow-x-auto shadow-lg shadow-primary/5 transition-all duration-300 hover:border-primary/45 hover:shadow-[0_0_32px_color-mix(in_oklch,var(--primary)_28%,transparent),0_0_64px_color-mix(in_oklch,var(--primary)_12%,transparent)]">
                 <span className="text-purple-400">POST</span>
                 {' /api/deposit\n'}
                 <span className="text-muted-foreground">
