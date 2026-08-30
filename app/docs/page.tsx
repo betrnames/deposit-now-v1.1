@@ -523,7 +523,9 @@ console.log(await res.json()); // includes child.address when provisioned`;
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-sm font-semibold text-white">JavaScript (@x402/fetch)</h3>
+                    <TerminalTitle as="h3" className="text-sm font-semibold text-white">
+                      JavaScript (@x402/fetch)
+                    </TerminalTitle>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(jsExample, 0)}
@@ -550,7 +552,9 @@ console.log(await res.json()); // includes child.address when provisioned`;
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-sm font-semibold text-white">curl (probe 402)</h3>
+                    <TerminalTitle as="h3" className="text-sm font-semibold text-white">
+                      curl (probe 402)
+                    </TerminalTitle>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(curlExample, 1)}

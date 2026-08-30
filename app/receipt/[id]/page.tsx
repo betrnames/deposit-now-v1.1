@@ -1,7 +1,6 @@
 import { head } from '@vercel/blob';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { TerminalTitle } from '@/components/TerminalTitle';
 import {
   DepositReceipt,
   explorerTxUrl,
@@ -62,9 +61,9 @@ export default async function ReceiptPage({
 
         {!receipt ? (
           <div className="mt-10 border border-border/60 rounded-2xl p-8 bg-card/40">
-            <TerminalTitle hideOnMobile className="text-xl font-bold mb-3 text-white">
+            <h1 className="font-mono text-xl font-bold mb-3 text-white">
               Receipt not found
-            </TerminalTitle>
+            </h1>
             <p className="text-sm text-muted-foreground leading-relaxed">
               No settled deposit matches this receipt ID. If the payment just happened, settlement
               can take a few seconds — refresh shortly. Otherwise, check the receiptUrl returned by
@@ -75,9 +74,9 @@ export default async function ReceiptPage({
           <div className="mt-10 border border-border/60 rounded-2xl p-8 bg-card/40">
             <div className="flex items-center gap-3 mb-1">
               <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-400 shrink-0" />
-              <TerminalTitle hideOnMobile className="text-xl font-bold text-white">
+              <h1 className="font-mono text-xl font-bold text-white">
                 Deposit settled
-              </TerminalTitle>
+              </h1>
             </div>
             <p className="text-sm text-muted-foreground mb-6">
               Verifiable x402 payment receipt · {networkLabel(receipt.network)}
