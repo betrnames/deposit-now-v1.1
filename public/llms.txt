@@ -19,6 +19,22 @@ Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-
 - Platform (server): CDP for hot wallet receive/forward + child provision; optional Blob for public receipts.
 - Humans on the website: docs only — no connect-wallet required to use the API.
 
+## Networks (USDC)
+
+Pay the 402 **on the same chain as `target`**. The 402 `accepts` list includes both; pick the matching one.
+
+| Chain | CAIP-2 | USDC | When |
+|-------|--------|------|------|
+| Base mainnet | `eip155:8453` | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | `target` is `0x…` or `provision:true` |
+| Solana mainnet | `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` | `target` is a Solana address |
+
+- 0x EVM address → pay + forward on Base
+- Solana base58 address → pay + forward on Solana
+- `provision:true` → Base only (managed CDP child)
+- Paying the other chain is held (`CHAIN_MISMATCH`) — no bridge
+
+Client packages: `@x402/evm` (Base) · `@x402/svm` (Solana)
+
 ## Core API
 
 - POST https://deposit.now/api/deposit
@@ -30,7 +46,6 @@ Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-
   - memo: optional string (max 256)
 - Header (optional): Idempotency-Key — stable provision identity
 - Price: amount + 0.25% platform fee, $0.001 min, $0.25 max (agent pays gross via x402; fee always under the ~$0.32 average x402 payment)
-- Network: Base mainnet `eip155:8453` **or** Solana mainnet `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` — match the chain of `target`. `provision:true` is Base only.
 - Unpaid → HTTP 402 + Payment-Required (includes target + child when provisioned)
 - Paid → 200 with status **payment_received** (not a guarantee that target already holds funds)
 - Forward to target is **async after settlement** and can fail — check receiptUrl / forwardStatus
@@ -43,13 +58,11 @@ Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-
 
 {"target":"<solana-address>","amount":"50.00","memo":"optional note"}
 
-Pay the 402 on the same chain as target. Solana clients: `npm i @x402/svm` and `client.register('solana:*', new ExactSvmScheme(svmSigner))`.
-
 ## Example — provision + fund child
 
 {"provision":true,"label":"trading-agent-1","amount":"50.00","memo":"Fund child trading agent"}
 
-## Agent pays with JavaScript
+## Agent pays with JavaScript (Base)
 
     npm install @x402/fetch @x402/core @x402/evm viem
 
@@ -67,19 +80,41 @@ Pay the 402 on the same chain as target. Solana clients: `npm i @x402/svm` and `
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        provision: true,
-        label: 'trading-agent-1',
+        target: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
         amount: '50.00',
-        memo: 'Fund child trading agent',
       }),
     });
-    console.log(await res.json()); // payment_received + child + receiptUrl
+    console.log(await res.json()); // payment_received + receiptUrl
+
+## Agent pays with JavaScript (Solana)
+
+    npm install @x402/fetch @x402/core @x402/svm
+
+    import { wrapFetchWithPayment } from '@x402/fetch';
+    import { x402Client } from '@x402/core/client';
+    import { ExactSvmScheme } from '@x402/svm/exact/client';
+
+    const client = new x402Client();
+    client.register('solana:*', new ExactSvmScheme(svmSigner)); // paying-agent Solana signer
+    const fetchWithPayment = wrapFetchWithPayment(fetch, client);
+
+    const res = await fetchWithPayment('https://deposit.now/api/deposit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        target: '<solana-address>',
+        amount: '50.00',
+      }),
+    });
+    console.log(await res.json()); // payment_received + receiptUrl
 
 ## Discovery
 
 - GET https://deposit.now/api/discovery
 - GET https://deposit.now/.well-known/x402
 - GET https://deposit.now/openapi.json
+- GET https://deposit.now/llms.txt
+- GET https://deposit.now/llms-full.txt
 - GET https://deposit.now/receipt/{id}
 
 ## Docs
@@ -90,5 +125,5 @@ Pay the 402 on the same chain as target. Solana clients: `npm i @x402/svm` and `
 ## Facts
 
 - Settlement payTo (platform): 0x96da70311D3fDb8500B9AB0855E17F213dB0C9AA (Base). Solana payTo is the CDP account named `deposit-now-platform` (override with CDP_PLATFORM_SOLANA_ADDRESS).
-- Facilitator: Coinbase CDP x402 (mainnet)
+- Facilitator: Coinbase CDP x402 (mainnet) — Base + Solana
 - Contact: support@deposit.now
