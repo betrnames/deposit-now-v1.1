@@ -62,7 +62,7 @@ export default async function ReceiptPage({
 
         {!receipt ? (
           <div className="mt-10 border border-border/60 rounded-2xl p-8 bg-card/40">
-            <TerminalTitle className="text-xl font-bold mb-3 text-white">
+            <TerminalTitle hideOnMobile className="text-xl font-bold mb-3 text-white">
               Receipt not found
             </TerminalTitle>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -75,7 +75,7 @@ export default async function ReceiptPage({
           <div className="mt-10 border border-border/60 rounded-2xl p-8 bg-card/40">
             <div className="flex items-center gap-3 mb-1">
               <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-400 shrink-0" />
-              <TerminalTitle className="text-xl font-bold text-white">
+              <TerminalTitle hideOnMobile className="text-xl font-bold text-white">
                 Deposit settled
               </TerminalTitle>
             </div>
