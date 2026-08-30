@@ -27,7 +27,7 @@ export function TerminalTitle({
         )}
         aria-hidden="true"
       >
-        >_
+        {'>_'}
       </span>
       {children}
     </Tag>
