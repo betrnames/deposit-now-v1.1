@@ -1,6 +1,6 @@
 # deposit.now
 
-> deposit.now — open x402 agent funding rail (USDC on Base). Pay 0.25% (min $0.001, max $0.25) over HTTP 402; net forwards to any EVM target — or provision a managed child wallet with provision:true. Optional public receipt. Complements Coinbase CDP Fund/Send.
+> deposit.now — open x402 agent funding rail (USDC on Base and Solana). Pay 0.25% (min $0.001, max $0.25) over HTTP 402; net forwards to any Base or Solana target — or provision a managed child wallet with provision:true (Base). Optional public receipt. Complements Coinbase CDP Fund/Send.
 
 Homepage: https://deposit.now · Docs: https://deposit.now/docs  
 Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-full.txt · Discovery: https://deposit.now/api/discovery
@@ -9,12 +9,12 @@ Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-
 
 - deposit.now is a **protocol-shaped deposit API** plus optional **managed child wallets**.
 - Coinbase Agentic / Server Wallets already include **Fund** and **Send**. Use those if you live fully in CDP.
-- Use deposit.now when a paying agent should fund **any EVM address** via **x402** without a deposit.now API key — or create+fund a child address in one call.
+- Use deposit.now when a paying agent should fund **any Base or Solana address** via **x402** without a deposit.now API key — or create+fund a child address in one call (Base).
 
 ## Who needs what
 
-- Paying agent: any x402 client + Base USDC wallet/signer. No deposit.now API key. AgentKit optional, not required.
-- Target: any EVM address you already have, **or** set provision:true to mint a managed CDP child wallet.
+- Paying agent: any x402 client + USDC on Base (`@x402/evm`) or Solana (`@x402/svm`). No deposit.now API key. AgentKit optional, not required.
+- Target: any Base EVM or Solana address you already have, **or** set provision:true to mint a managed CDP child wallet (Base only).
 - Managed children: keys stay in deposit.now’s CDP project (platform_managed). v1 does **not** export keys or offer child spend APIs. For full custody, generate your own address and pass target.
 - Platform (server): CDP for hot wallet receive/forward + child provision; optional Blob for public receipts.
 - Humans on the website: docs only — no connect-wallet required to use the API.
@@ -24,20 +24,26 @@ Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-
 - POST https://deposit.now/api/deposit
 - Body (JSON):
   - amount: net USDC to forward (decimal string, min 0.01, max 100000) — **required**
-  - target: EVM address receiving net USDC — **required unless provision**
+  - target: Base EVM or Solana address receiving net USDC — **required unless provision**
   - provision: true — create/resolve managed child wallet (do not send target)
   - label: stable child id (e.g. trading-agent-1) — **required with provision** unless Idempotency-Key header
   - memo: optional string (max 256)
 - Header (optional): Idempotency-Key — stable provision identity
 - Price: amount + 0.25% platform fee, $0.001 min, $0.25 max (agent pays gross via x402; fee always under the ~$0.32 average x402 payment)
-- Network: Base mainnet eip155:8453 (production)
+- Network: Base mainnet `eip155:8453` **or** Solana mainnet `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` — match the chain of `target`. `provision:true` is Base only.
 - Unpaid → HTTP 402 + Payment-Required (includes target + child when provisioned)
 - Paid → 200 with status **payment_received** (not a guarantee that target already holds funds)
 - Forward to target is **async after settlement** and can fail — check receiptUrl / forwardStatus
 
-## Example — fund existing address
+## Example — fund existing address (Base)
 
 {"target":"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0","amount":"50.00","memo":"optional note"}
+
+## Example — fund existing address (Solana)
+
+{"target":"<solana-address>","amount":"50.00","memo":"optional note"}
+
+Pay the 402 on the same chain as target. Solana clients: `npm i @x402/svm` and `client.register('solana:*', new ExactSvmScheme(svmSigner))`.
 
 ## Example — provision + fund child
 
@@ -83,6 +89,6 @@ Machine contracts: https://deposit.now/openapi.json · https://deposit.now/llms-
 
 ## Facts
 
-- Settlement payTo (platform): 0x96da70311D3fDb8500B9AB0855E17F213dB0C9AA (Base)
+- Settlement payTo (platform): 0x96da70311D3fDb8500B9AB0855E17F213dB0C9AA (Base). Solana payTo is the CDP account named `deposit-now-platform` (override with CDP_PLATFORM_SOLANA_ADDRESS).
 - Facilitator: Coinbase CDP x402 (mainnet)
 - Contact: support@deposit.now

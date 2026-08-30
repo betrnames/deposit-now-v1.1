@@ -15,7 +15,8 @@ import { buildIntent, mergeReceipt, saveDepositIntent } from '@/lib/deposit-inte
 import { validateDepositTarget } from '@/lib/payment-verification';
 import { receiptIdFromPaymentHeader } from '@/lib/receipts';
 import { PRODUCT } from '@/lib/product-copy';
-import { PLATFORM_PAY_TO, X402_NETWORK } from '@/lib/x402';
+import { PLATFORM_PAY_TO, SOLANA_NETWORK, X402_NETWORK } from '@/lib/x402';
+import { networkLabelShort } from '@/lib/networks';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -43,7 +44,7 @@ function receiptFields(request: NextRequest) {
 }
 
 function networkLabel() {
-  return X402_NETWORK === 'eip155:8453' ? 'base' : 'base-sepolia';
+  return networkLabelShort(X402_NETWORK);
 }
 
 export async function handleDepositGet(request: NextRequest) {
@@ -54,6 +55,12 @@ export async function handleDepositGet(request: NextRequest) {
       description: PRODUCT.apiDescription,
       network: networkLabel(),
       x402Network: X402_NETWORK,
+      networks: [
+        { caip2: X402_NETWORK, label: networkLabelShort(X402_NETWORK), asset: 'USDC' },
+        { caip2: SOLANA_NETWORK, label: networkLabelShort(SOLANA_NETWORK), asset: 'USDC' },
+      ],
+      payHint:
+        'EVM 0x target → pay USDC on Base. Solana target → pay USDC on Solana. provision:true is Base only.',
       feePercent: PLATFORM_FEE_PERCENT,
       feeMinUsdc: PLATFORM_FEE_MIN_USDC,
       feeMaxUsdc: PLATFORM_FEE_MAX_USDC,
@@ -209,7 +216,7 @@ export async function handleDepositPost(request: NextRequest) {
       status: 'payment_received',
       message: child
         ? `Payment received for ${split.net.toFixed(6)} USDC net to managed child ${child.address}. Forwarding is async — keys are platform-managed in CDP (no export in v1).`
-        : `Payment received for ${split.net.toFixed(6)} USDC net to ${target}. Forwarding is async after settlement — use receiptUrl for payer, target, fee, and Basescan links when available.`,
+        : `Payment received for ${split.net.toFixed(6)} USDC net to ${target}. Forwarding is async after settlement — use receiptUrl for payer, target, fee, and explorer links when available.`,
       target,
       memo,
       provisioned: !!child,

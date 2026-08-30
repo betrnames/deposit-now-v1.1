@@ -4,10 +4,10 @@ Site: https://deposit.now · Docs: https://deposit.now/docs · OpenAPI: https://
 
 ## What this is
 
-**deposit.now** is an **open x402 agent funding rail** (USDC on Base):
+**deposit.now** is an **open x402 agent funding rail** (USDC on Base and Solana):
 
 1. Choose a destination:
-   - **target** — an EVM address you already control, or
+   - **target** — a Base EVM or Solana address you already control, or
    - **provision: true** + **label** — deposit.now creates/resolves a managed CDP Server Wallet child and uses it as target.
 2. You POST net `amount` (+ target or provision fields).
 3. You pay **amount + 0.25% (min $0.001, max $0.25)** via x402 to the platform.
@@ -25,7 +25,7 @@ Site: https://deposit.now · Docs: https://deposit.now/docs · OpenAPI: https://
 | Situation | Prefer |
 |-----------|--------|
 | Agents already on Coinbase Agentic / Server Wallets | CDP **Fund** / **Send** |
-| Need open HTTP 402 deposit to an address you have | **deposit.now** + `target` |
+| Need open HTTP 402 deposit to an address you have | **deposit.now** + `target` (Base or Solana) |
 | Need create+fund a receive wallet in one call | **deposit.now** + `provision: true` + `label` |
 | Need child that signs freely under your key | Generate key client-side, pass `target` |
 | One-off raw transfer you fully control | Direct on-chain USDC transfer |
@@ -36,6 +36,12 @@ Site: https://deposit.now · Docs: https://deposit.now/docs · OpenAPI: https://
 
 ```json
 { "target": "0x…", "amount": "50.00", "memo": "optional" }
+```
+
+Solana target (pay the 402 on Solana):
+
+```json
+{ "target": "<solana-address>", "amount": "50.00", "memo": "optional" }
 ```
 
 ### Provision + fund child
@@ -59,7 +65,7 @@ Flow:
 2. **402** with gross price = amount + 0.25% (min $0.001, max $0.25).
 3. Pay with any x402 v2 exact client; retry with payment proof.
 4. **200** body uses `status: "payment_received"` and `forwardStatus: "pending"` until settlement finishes forwarding.
-5. Poll or open `receiptUrl` for `forwardStatus` (`settled` | `forward_failed` | `pending` | `held`), `forwardTxHash`, payer, target, child fields, Basescan links.
+5. Poll or open `receiptUrl` for `forwardStatus` (`settled` | `forward_failed` | `pending` | `held`), `forwardTxHash`, payer, target, child fields, explorer links (Basescan or Solscan).
 
 ## Success does not mean delivered
 
@@ -89,7 +95,7 @@ gross = amount + clamp(amount × 0.25%, $0.001, $0.25). Fee always stays under t
 | Field | Required | Description |
 |--------|----------|-------------|
 | amount | yes | Net USDC for target, 0.01 – 100000 |
-| target | xor provision | EVM address receiving net funds |
+| target | xor provision | Base EVM or Solana address receiving net funds |
 | provision | xor target | true → mint/resolve managed child |
 | label | with provision* | Stable child id (*or Idempotency-Key) |
 | memo | no | ≤ 256 chars |

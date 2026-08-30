@@ -5,18 +5,22 @@
  */
 
 import { put, head } from '@vercel/blob';
-import { isValidEvmAddress } from '@/lib/billing';
 import { getDb } from '@/lib/db';
+import {
+  BASE_MAINNET_USDC,
+  BASE_SEPOLIA_USDC,
+  detectTargetChain,
+  getSolanaPayToCache,
+  isValidSolanaAddress,
+  usdcAssetForNetwork,
+} from '@/lib/networks';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
 /** Base mainnet USDC (Circle) */
-export const BASE_MAINNET_USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
-
-/** Base Sepolia USDC (testnet only) */
-export const BASE_SEPOLIA_USDC = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
+export { BASE_MAINNET_USDC, BASE_SEPOLIA_USDC } from '@/lib/networks';
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -58,32 +62,54 @@ export function validateDepositTarget(
   target: unknown,
   platformPayTo: string
 ): { ok: true; address: string } | { ok: false; code: TargetValidationCode; message: string } {
-  if (!isValidEvmAddress(target)) {
+  if (typeof target !== 'string' || !target.trim()) {
     return {
       ok: false,
       code: 'invalid_format',
-      message: 'target must be a valid EVM address (0x + 40 hex chars).',
+      message:
+        'target must be a Base EVM address (0x + 40 hex) or a Solana address (base58).',
     };
   }
 
-  const address = target as string;
-  if (address.toLowerCase() === ZERO_ADDRESS.toLowerCase()) {
-    return {
-      ok: false,
-      code: 'zero_address',
-      message: 'target cannot be the zero address.',
-    };
+  const address = target.trim();
+  const chain = detectTargetChain(address);
+
+  if (chain === 'base') {
+    if (address.toLowerCase() === ZERO_ADDRESS.toLowerCase()) {
+      return {
+        ok: false,
+        code: 'zero_address',
+        message: 'target cannot be the zero address.',
+      };
+    }
+    if (address.toLowerCase() === platformPayTo.toLowerCase()) {
+      return {
+        ok: false,
+        code: 'platform_self_deposit',
+        message: 'target cannot be the platform wallet (self-deposit loop blocked).',
+      };
+    }
+    return { ok: true, address };
   }
 
-  if (address.toLowerCase() === platformPayTo.toLowerCase()) {
-    return {
-      ok: false,
-      code: 'platform_self_deposit',
-      message: 'target cannot be the platform wallet (self-deposit loop blocked).',
-    };
+  if (chain === 'solana' && isValidSolanaAddress(address)) {
+    const solPayTo = getSolanaPayToCache();
+    if (solPayTo && address === solPayTo) {
+      return {
+        ok: false,
+        code: 'platform_self_deposit',
+        message: 'target cannot be the platform wallet (self-deposit loop blocked).',
+      };
+    }
+    return { ok: true, address };
   }
 
-  return { ok: true, address };
+  return {
+    ok: false,
+    code: 'invalid_format',
+    message:
+      'target must be a Base EVM address (0x + 40 hex) or a Solana address (base58).',
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -91,17 +117,7 @@ export function validateDepositTarget(
 // ---------------------------------------------------------------------------
 
 function expectedUsdcForNetwork(network: string | null | undefined): string {
-  const n = (network ?? '').toLowerCase();
-  if (
-    n === 'eip155:84532' ||
-    n === 'base-sepolia' ||
-    n.includes('84532') ||
-    n.includes('sepolia')
-  ) {
-    return BASE_SEPOLIA_USDC;
-  }
-  // Production default: Base mainnet USDC
-  return BASE_MAINNET_USDC;
+  return usdcAssetForNetwork(network);
 }
 
 export function verifyTokenContract(

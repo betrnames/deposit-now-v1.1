@@ -287,7 +287,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                   </li>
                   <li className="flex gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    Two modes: fund any EVM <code className="text-primary">target</code>, or{' '}
+                    Two modes: fund any Base or Solana <code className="text-primary">target</code>, or{' '}
                     <code className="text-primary">provision</code> a managed child + fund it
                   </li>
                   <li className="flex gap-2">
@@ -329,7 +329,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                         <td className="px-4 py-3 text-white font-medium align-top">Paying agent</td>
                         <td className="px-4 py-3 align-top">
                           Any x402 client (e.g. <code className="text-primary">@x402/fetch</code> +
-                          viem), a wallet/signer, and USDC on Base
+                          viem or @x402/svm), a wallet/signer, and USDC on Base or Solana
                         </td>
                         <td className="px-4 py-3 align-top">
                           deposit.now API key, site account, browser &quot;Connect wallet&quot;, or
@@ -339,7 +339,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                       <tr className="border-b border-white/5">
                         <td className="px-4 py-3 text-white font-medium align-top">Target wallet</td>
                         <td className="px-4 py-3 align-top">
-                          An EVM address you already have, <strong className="text-white">or</strong>{' '}
+                          An EVM (Base) or Solana address you already have, <strong className="text-white">or</strong>{' '}
                           <code className="text-primary">provision: true</code> +{' '}
                           <code className="text-primary">label</code> for a managed child
                         </td>
@@ -447,7 +447,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                     <strong className="text-white">5.</strong> Returns{' '}
                     <code className="text-primary">payment_received</code> +{' '}
                     <code className="text-primary">receiptUrl</code>. Check the receipt for{' '}
-                    <code className="text-primary">forwardStatus</code> and Basescan links — 200
+                    <code className="text-primary">forwardStatus</code> and explorer links — 200
                     does not mean the target already holds funds.
                   </li>
                 </ol>
@@ -461,8 +461,8 @@ console.log(await res.json()); // includes child.address when provisioned`;
                       <code className="text-primary font-mono">POST /api/deposit</code>
                       <p className="text-muted-foreground mt-2">
                         Body: <code className="text-white">amount</code> (required net USDC
-                        0.01–100000) plus either <code className="text-white">target</code> (EVM
-                        address) <strong className="text-white">or</strong>{' '}
+                        0.01–100000) plus either <code className="text-white">target</code> (Base
+                        or Solana address) <strong className="text-white">or</strong>{' '}
                         <code className="text-white">provision: true</code> with{' '}
                         <code className="text-white">label</code> (stable child id). Optional{' '}
                         <code className="text-white">memo</code> (max 256). Optional header{' '}
@@ -543,7 +543,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                 <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
                   <li>Platform hot wallet via Coinbase CDP / Agentic Wallet only — no raw platform private keys in app code.</li>
                   <li>Managed children are platform_managed in CDP — API never returns private keys.</li>
-                  <li>Strict validation: EVM address + amount caps (0.01–100000 USDC); provision rate limits.</li>
+                  <li>Strict validation: Base or Solana address + amount caps (0.01–100000 USDC); provision rate limits (Base children only).</li>
                   <li>Rate limiting on /api/* (stricter on deposit and provision).</li>
                   <li>x402 facilitator verifies payment on-chain before success response.</li>
                   <li>Forward to target only after settlement; retries + settlement logs on failure.</li>
