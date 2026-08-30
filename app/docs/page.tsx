@@ -242,7 +242,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
 
           <main className="flex-1 min-w-0">
             <nav
-              className="md:hidden sticky top-0 z-40 -mx-6 mb-8 border-b border-border/60 bg-background/90 px-6 backdrop-blur-md"
+              className="md:hidden sticky top-0 z-40 -mx-6 mb-8 border-b border-border/60 bg-background px-6"
               aria-label="Documentation sections"
             >
               <div className="flex gap-1 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -262,7 +262,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                 ))}
               </div>
             </nav>
-            <div className="max-w-4xl space-y-16">
+            <div className="max-w-4xl min-w-0 space-y-16">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2 font-mono">
                   <span className="hidden sm:inline text-primary/80" aria-hidden="true">
@@ -278,7 +278,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                 </p>
               </div>
 
-              <section id="introduction" className="space-y-4">
+              <section id="introduction" className="scroll-mt-16 space-y-4">
                 <h2 className="text-2xl font-bold text-white">Introduction</h2>
                 <div className="border border-primary/30 rounded-lg p-5 bg-primary/5">
                   <p className="text-sm text-muted-foreground leading-relaxed">
@@ -298,34 +298,43 @@ console.log(await res.json()); // includes child.address when provisioned`;
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    Network: {PRODUCT.networkLabel}
+                    <span className="min-w-0 break-words">
+                      Network: {PRODUCT.networkLabel}
+                    </span>
                   </li>
                   <li className="flex gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    Fee: 0.25% of net, $0.001 min, $0.25 max · status{' '}
-                    <code className="text-primary">payment_received</code> means paid, not delivered
-                    — check <code className="text-primary">forwardStatus</code>
+                    <span className="min-w-0 break-words">
+                      Fee: 0.25% of net, $0.001 min, $0.25 max · status{' '}
+                      <code className="text-primary">payment_received</code> means paid, not
+                      delivered — check <code className="text-primary">forwardStatus</code>
+                    </span>
                   </li>
                   <li className="flex gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    Two modes: fund any Base or Solana <code className="text-primary">target</code>, or{' '}
-                    <code className="text-primary">provision</code> a managed child + fund it
+                    <span className="min-w-0 break-words">
+                      Two modes: fund any Base or Solana{' '}
+                      <code className="text-primary">target</code>, or{' '}
+                      <code className="text-primary">provision</code> a managed child + fund it
+                    </span>
                   </li>
                   <li className="flex gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    Machine contracts:{' '}
-                    <a href="/llms.txt" className="text-primary hover:underline">
-                      llms.txt
-                    </a>
-                    ,{' '}
-                    <a href="/openapi.json" className="text-primary hover:underline">
-                      openapi.json
-                    </a>
+                    <span className="min-w-0 break-words">
+                      Machine contracts:{' '}
+                      <a href="/llms.txt" className="text-primary hover:underline">
+                        llms.txt
+                      </a>
+                      ,{' '}
+                      <a href="/openapi.json" className="text-primary hover:underline">
+                        openapi.json
+                      </a>
+                    </span>
                   </li>
                 </ul>
               </section>
 
-              <section id="who-needs-what" className="space-y-4">
+              <section id="who-needs-what" className="scroll-mt-16 space-y-4">
                 <h2 className="text-2xl font-bold text-white">Who needs what</h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {PRODUCT.noBrowserWallet} Credentials differ by role:
@@ -420,7 +429,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                 </div>
               </section>
 
-              <section id="quickstart" className="space-y-4">
+              <section id="quickstart" className="scroll-mt-16 space-y-4">
                 <h2 className="text-2xl font-bold text-white">Quickstart</h2>
                 <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
                   <li>Install an x402 client (e.g. @x402/fetch + viem for JS).</li>
@@ -436,7 +445,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                 </ol>
               </section>
 
-              <section id="flow" className="space-y-4">
+              <section id="flow" className="scroll-mt-16 space-y-4">
                 <h2 className="text-2xl font-bold text-white">Bare-bones flow</h2>
                 <ol className="space-y-3 text-sm text-muted-foreground">
                   <li>
@@ -474,7 +483,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                 </ol>
               </section>
 
-              <section id="endpoints" className="space-y-4">
+              <section id="endpoints" className="scroll-mt-16 space-y-4">
                 <h2 className="text-2xl font-bold text-white">Endpoints</h2>
                 <Card className="bg-card/60 border-border/60">
                   <CardContent className="p-6 space-y-4 text-sm">
@@ -509,7 +518,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                 </Card>
               </section>
 
-              <section id="examples" className="space-y-6">
+              <section id="examples" className="scroll-mt-16 space-y-6">
                 <h2 className="text-2xl font-bold text-white">Code examples</h2>
 
                 <div>
@@ -528,9 +537,11 @@ console.log(await res.json()); // includes child.address when provisioned`;
                       Copy
                     </button>
                   </div>
-                  <pre className="bg-muted/50 border border-border/60 rounded-xl p-4 text-xs overflow-x-auto leading-relaxed font-mono">
+                  <div className="max-w-full overflow-x-auto rounded-xl">
+                    <pre className="bg-muted/50 border border-border/60 rounded-xl p-4 text-xs leading-relaxed font-mono">
                     <code>{jsHighlighted}</code>
                   </pre>
+                  </div>
                   <p className="text-xs text-muted-foreground mt-2">
                     <code className="text-primary">EVM_PRIVATE_KEY</code> is only for the{' '}
                     <em>paying</em> agent client — never for the deposit.now server.
@@ -553,13 +564,15 @@ console.log(await res.json()); // includes child.address when provisioned`;
                       Copy
                     </button>
                   </div>
-                  <pre className="bg-muted/50 border border-border/60 rounded-xl p-4 text-xs overflow-x-auto leading-relaxed font-mono">
+                  <div className="max-w-full overflow-x-auto rounded-xl">
+                    <pre className="bg-muted/50 border border-border/60 rounded-xl p-4 text-xs leading-relaxed font-mono">
                     <code>{curlHighlighted}</code>
                   </pre>
+                  </div>
                 </div>
               </section>
 
-              <section id="security" className="space-y-4">
+              <section id="security" className="scroll-mt-16 space-y-4">
                 <h2 className="text-2xl font-bold text-white">Security</h2>
                 <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
                   <li>Platform hot wallet via Coinbase CDP / Agentic Wallet only — no raw platform private keys in app code.</li>
@@ -571,7 +584,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
                 </ul>
               </section>
 
-              <section id="faq" className="space-y-4">
+              <section id="faq" className="scroll-mt-16 space-y-4">
                 <h2 className="text-2xl font-bold text-white">FAQ</h2>
                 <div className="space-y-4 text-sm text-muted-foreground">
                   {PRODUCT.faq.map((item) => (
