@@ -8,8 +8,8 @@
 
 1. `POST /api/deposit` `{ target, amount, memo? }` **or** `{ provision: true, label, amount, memo? }`
 2. HTTP 402 for **amount + 0.25% (min $0.001, max $0.25)** (provision mode returns `child.address` as target)
-3. Agent pays USDC via x402 to platform CDP wallet
-4. Confirm → fee retained → net forwarded to `target` via CDP
+3. Agent pays USDC via x402 to platform CDP wallet (Base or Solana — same chain as `target`)
+4. Confirm → fee retained → net forwarded to `target` via CDP on that chain
 5. Public receipt at `/receipt/<id>`
 
 ### Managed children (v1)
@@ -31,7 +31,8 @@
 CDP_API_KEY_ID
 CDP_API_KEY_SECRET
 CDP_WALLET_SECRET          # CDP Server Wallet auth — not a MetaMask raw key paste in repo
-CDP_PLATFORM_ADDRESS       # optional override for payTo
+CDP_PLATFORM_ADDRESS       # optional override for Base payTo
+CDP_PLATFORM_SOLANA_ADDRESS # optional override for Solana payTo (else CDP account deposit-now-platform)
 X402_NETWORK=mainnet
 BLOB_READ_WRITE_TOKEN
 DATABASE_URL               # Neon — guardrails, payment nonces, failed-forward queue
@@ -47,6 +48,8 @@ node scripts/run-migration.mjs migrations/003_child_agents.sql
 ```
 
 **Never** put platform hot-wallet private keys or MetaMask secrets in `.env` for production settlement. Agents that *pay* may use their own client-side keys offline only.
+
+Fund the Solana platform account with USDC before the first Solana forward (CDP named account `deposit-now-platform`, or `CDP_PLATFORM_SOLANA_ADDRESS`). Same rule as the Base hot wallet.
 
 ## Verify
 

@@ -1,6 +1,6 @@
 # deposit.now
 
-**Open x402 funding rail for agents.** Fund any EVM wallet — or provision a managed child — via one HTTP call. Pay 0.25% (min $0.001, max $0.25) over HTTP 402; net forwards after settlement. No deposit.now API key.
+**Open x402 funding rail for agents.** Fund any Base or Solana wallet — or provision a managed child — via one HTTP call. Pay 0.25% (min $0.001, max $0.25) over HTTP 402; net forwards after settlement. No deposit.now API key.
 
 **Live:** [deposit.now](https://deposit.now)
 
@@ -8,7 +8,7 @@
 
 - **x402 deposits** — `POST /api/deposit` with `{ target, amount }` or `{ provision: true, label, amount }`
 - **Managed children** — optional CDP Server Wallet provision (platform-managed keys; no export in v1)
-- **CDP settlement** — platform receive + forward on Base
+- **CDP settlement** — platform receive + forward on Base or Solana (match target chain)
 - **MCP server** — agents can call the funding rail from Cursor / Claude Desktop
 - **Public receipts** — optional `/receipt/{id}` when Blob storage is configured
 

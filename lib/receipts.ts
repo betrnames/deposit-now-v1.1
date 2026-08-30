@@ -59,11 +59,19 @@ export function explorerTxUrl(network: string | null, txHash: string | null): st
   if (!txHash) return null;
   if (network === 'eip155:8453') return `https://basescan.org/tx/${txHash}`;
   if (network === 'eip155:84532') return `https://sepolia.basescan.org/tx/${txHash}`;
+  if (network?.startsWith('solana:5eykt') || network === 'solana') {
+    return `https://solscan.io/tx/${txHash}`;
+  }
+  if (network?.startsWith('solana:EtWTRAB') || network?.includes('devnet')) {
+    return `https://solscan.io/tx/${txHash}?cluster=devnet`;
+  }
   return null;
 }
 
 export function networkLabel(network: string | null): string {
   if (network === 'eip155:8453') return 'Base';
   if (network === 'eip155:84532') return 'Base Sepolia (testnet)';
+  if (network?.startsWith('solana:5eykt') || network === 'solana') return 'Solana';
+  if (network?.startsWith('solana:EtWTRAB')) return 'Solana Devnet (testnet)';
   return network ?? 'unknown';
 }

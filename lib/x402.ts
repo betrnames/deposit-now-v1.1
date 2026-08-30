@@ -1,5 +1,6 @@
 import { paymentProxy, x402ResourceServer } from '@x402/next';
 import { ExactEvmScheme } from '@x402/evm/exact/server';
+import { ExactSvmScheme } from '@x402/svm/exact/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
 import {
   declareDiscoveryExtension,
@@ -14,7 +15,7 @@ import {
   fallbackGrossPrice,
   formatUsdcPrice,
 } from '@/lib/billing';
-import { forwardWithRetry, logSettlement } from '@/lib/cdp';
+import { forwardWithRetry, logSettlement, resolveSolanaPayTo } from '@/lib/cdp';
 import {
   provisionChild,
   recordChildFunded,
@@ -41,6 +42,16 @@ import {
 } from '@/lib/payment-verification';
 import { enqueueFailedForward } from '@/lib/reconciliation';
 import { receiptIdFromPayload } from '@/lib/receipts';
+import {
+  BASE_MAINNET,
+  BASE_SEPOLIA,
+  SOLANA_DEVNET,
+  SOLANA_MAINNET,
+  chainFromNetwork,
+  detectTargetChain,
+  networkLabelShort,
+  usdcAssetForNetwork,
+} from '@/lib/networks';
 import type { HTTPRequestContext } from '@x402/core/server';
 
 export const PLATFORM_PAY_TO =
@@ -51,7 +62,9 @@ const useMainnet =
   !!process.env.CDP_API_KEY_ID &&
   !!process.env.CDP_API_KEY_SECRET;
 
-export const X402_NETWORK = useMainnet ? 'eip155:8453' : 'eip155:84532';
+export const X402_NETWORK: `${string}:${string}` = useMainnet ? BASE_MAINNET : BASE_SEPOLIA;
+export const SOLANA_NETWORK: `${string}:${string}` = useMainnet ? SOLANA_MAINNET : SOLANA_DEVNET;
+export const SOLANA_ENABLED = useMainnet || !!process.env.CDP_PLATFORM_SOLANA_ADDRESS;
 
 const facilitatorClient = new HTTPFacilitatorClient(
   useMainnet ? cdpFacilitator : { url: 'https://x402.org/facilitator' }
@@ -69,12 +82,12 @@ const depositDiscovery = declareDiscoveryExtension({
       target: {
         type: 'string',
         description:
-          'EVM address receiving net USDC. Omit when provision: true (managed child wallet).',
+          'EVM address (Base) or Solana address receiving net USDC. Omit when provision: true (managed child wallet, Base only).',
       },
       amount: {
         type: 'string',
         description:
-          'Net USDC to forward to target (min $0.01, max $100000). Agent pays amount + 0.25% (min $0.001, max $0.25) via x402.',
+          'Net USDC to forward to target (min $0.01, max $100000). Agent pays amount + 0.25% (min $0.001, max $0.25) via x402 on Base or Solana.',
       },
       memo: {
         type: 'string',
@@ -322,6 +335,7 @@ async function resolveIntent(
 
 const server = new x402ResourceServer(facilitatorClient)
   .register(X402_NETWORK, new ExactEvmScheme())
+  .register(SOLANA_NETWORK, new ExactSvmScheme())
   .registerExtension(bazaarResourceServerExtension)
   .onAfterSettle(async (ctx) => {
     try {
@@ -527,7 +541,31 @@ const server = new x402ResourceServer(facilitatorClient)
         }
 
         if (!blocked) {
-          const fwd = await forwardWithRetry(target, split.net);
+          const paidChain =
+            chainFromNetwork(req.network ?? result.network ?? X402_NETWORK) ?? 'base';
+          const destChain = detectTargetChain(target);
+          if (destChain && destChain !== paidChain) {
+            blocked = true;
+            forwardStatus = 'held';
+            holdReason = `CHAIN_MISMATCH: paid on ${paidChain}, target is ${destChain}`;
+            try {
+              await updateTransactionStatus(txnId, 'held', {
+                guardrailFlags: ['CHAIN_MISMATCH'],
+                errorMessage: holdReason,
+              });
+            } catch {
+              // non-fatal
+            }
+            console.error(
+              `payment-verify: deposit ${txnId} held — ${holdReason}`
+            );
+          }
+        }
+
+        if (!blocked) {
+          const paidChain =
+            chainFromNetwork(req.network ?? result.network ?? X402_NETWORK) ?? 'base';
+          const fwd = await forwardWithRetry(target, split.net, paidChain);
           forwardTxHash = fwd.txHash;
           forwardStatus = fwd.txHash ? 'settled' : 'forward_failed';
 
@@ -653,9 +691,19 @@ export const middleware = paymentProxy(
           network: X402_NETWORK,
           payTo: PLATFORM_PAY_TO,
         },
+        ...(SOLANA_ENABLED
+          ? [
+              {
+                scheme: 'exact' as const,
+                price: resolveDepositPrice,
+                network: SOLANA_NETWORK,
+                payTo: resolveSolanaPayTo,
+              },
+            ]
+          : []),
       ],
       description:
-        'Open x402 funding rail: POST target+amount or provision:true+label+amount; pay 0.25% (min $0.001, max $0.25) via x402; net forwarded on Base. Optional managed child wallets (CDP). Optional public receipt when storage is configured.',
+        'Open x402 funding rail: POST target+amount or provision:true+label+amount; pay 0.25% (min $0.001, max $0.25) via x402 on Base or Solana; net forwarded on the same chain. Optional managed child wallets (CDP, Base only). Optional public receipt when storage is configured.',
       mimeType: 'application/json',
       extensions: {
         ...depositDiscovery,
@@ -672,7 +720,7 @@ export const middleware = paymentProxy(
               error: 'invalid_request',
               code: 'invalid_amount',
               message:
-                'POST JSON { "target": "0x…", "amount": "50.00" } or { "provision": true, "label": "child-1", "amount": "50.00" }. amount is net USDC; you pay amount + 0.25% (min $0.001, max $0.25).',
+                'POST JSON { "target": "0x… or Solana address", "amount": "50.00" } or { "provision": true, "label": "child-1", "amount": "50.00" }. amount is net USDC; you pay amount + 0.25% (min $0.001, max $0.25) on Base or Solana.',
               feePercent: PLATFORM_FEE_PERCENT,
               minAmount: DEPOSIT_MIN_USDC,
               maxAmount: 100_000,
@@ -702,6 +750,9 @@ export const middleware = paymentProxy(
 
         await rememberIntentFromBody(body);
 
+        const destChain = detectTargetChain(resolved.target) ?? 'base';
+        const payNetwork = destChain === 'solana' ? SOLANA_NETWORK : X402_NETWORK;
+
         return {
           contentType: 'application/json',
           body: {
@@ -716,14 +767,15 @@ export const middleware = paymentProxy(
             feePercent: split.feePercent,
             grossToPay: split.gross.toFixed(6),
             asset: 'USDC',
-            assetAddress:
-              X402_NETWORK === 'eip155:8453'
-                ? '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
-                : '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
-            network: X402_NETWORK === 'eip155:8453' ? 'base' : 'base-sepolia',
+            assetAddress: usdcAssetForNetwork(payNetwork),
+            network: networkLabelShort(payNetwork),
+            x402Network: payNetwork,
+            payOn: destChain,
             hint: resolved.child
-              ? 'Managed child wallet provisioned. Pay grossToPay via x402, then retry with the same body + payment proof. Keys are platform-managed in CDP (no export in v1).'
-              : 'Pay grossToPay via x402, then retry with payment proof. Net is forwarded after settlement; check receiptUrl for forward status.',
+              ? 'Managed child wallet provisioned on Base. Pay grossToPay via x402 on Base, then retry with the same body + payment proof. Keys are platform-managed in CDP (no export in v1).'
+              : destChain === 'solana'
+                ? 'Pay grossToPay via x402 on Solana, then retry with payment proof. Net is forwarded on Solana after settlement; check receiptUrl for forward status.'
+                : 'Pay grossToPay via x402 on Base, then retry with payment proof. Net is forwarded after settlement; check receiptUrl for forward status.',
           },
         };
       },

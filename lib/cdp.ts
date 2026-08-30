@@ -1,5 +1,7 @@
 import { CdpClient } from '@coinbase/cdp-sdk';
 import { put } from '@vercel/blob';
+import type { RailChain } from '@/lib/networks';
+import { setSolanaPayToCache } from '@/lib/networks';
 
 /**
  * Coinbase Developer Platform (CDP) Agentic / Server Wallet only.
@@ -27,6 +29,10 @@ async function getPlatformAccount() {
   return getCdpClient().evm.getOrCreateAccount({ name: 'deposit-now-platform' });
 }
 
+async function getSolanaPlatformAccount() {
+  return getCdpClient().solana.getOrCreateAccount({ name: 'deposit-now-platform' });
+}
+
 /** True when CDP Server Wallet credentials are present (required to provision children). */
 export function isCdpProvisioningAvailable(): boolean {
   return !!(
@@ -50,9 +56,41 @@ export async function createChildCdpAccount(
   return { address: account.address, name };
 }
 
-async function forwardToTarget(target: string, netUsdc: number): Promise<string> {
-  const account = await getPlatformAccount();
+/**
+ * Solana platform receive address. Env override, else the named CDP Solana account.
+ */
+export async function resolveSolanaPayTo(): Promise<string> {
+  const fromEnv = process.env.CDP_PLATFORM_SOLANA_ADDRESS?.trim();
+  if (fromEnv) {
+    setSolanaPayToCache(fromEnv);
+    return fromEnv;
+  }
+  const account = await getSolanaPlatformAccount();
+  setSolanaPayToCache(account.address);
+  return account.address;
+}
+
+function solanaNetwork(): 'mainnet' | 'devnet' {
+  return process.env.X402_NETWORK === 'mainnet' ? 'mainnet' : 'devnet';
+}
+
+async function forwardToTarget(
+  target: string,
+  netUsdc: number,
+  chain: RailChain
+): Promise<string> {
   const atomicAmount = BigInt(Math.round(netUsdc * 1e6));
+  if (chain === 'solana') {
+    const account = await getSolanaPlatformAccount();
+    const result = await account.transfer({
+      to: target,
+      amount: atomicAmount,
+      token: 'usdc',
+      network: solanaNetwork(),
+    });
+    return result.signature;
+  }
+  const account = await getPlatformAccount();
   const result = await account.transfer({
     to: target as `0x${string}`,
     amount: atomicAmount,
@@ -68,12 +106,13 @@ const RETRY_DELAYS_MS = [2_000, 4_000, 8_000];
 
 export async function forwardWithRetry(
   target: string,
-  netUsdc: number
+  netUsdc: number,
+  chain: RailChain = 'base'
 ): Promise<{ txHash: string | null; error: string | null; attempts: number }> {
   let lastError = 'max retries exceeded';
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
-      const txHash = await forwardToTarget(target, netUsdc);
+      const txHash = await forwardToTarget(target, netUsdc, chain);
       return { txHash, error: null, attempts: attempt + 1 };
     } catch (err) {
       lastError = err instanceof Error ? err.message : 'unknown';

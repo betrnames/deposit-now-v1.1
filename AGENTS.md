@@ -1,6 +1,6 @@
 # deposit.now — agent instructions
 
-This is an open x402 funding rail on Base. Agents POST `/api/deposit`, pay USDC via HTTP 402, and net funds forward to a target EVM address or a managed CDP child wallet.
+This is an open x402 funding rail on Base and Solana. Agents POST `/api/deposit`, pay USDC via HTTP 402, and net funds forward to a target address on the same chain or a managed CDP child wallet (Base).
 
 Repo: `betrnames/deposit-now-v1.1`
 Live: https://deposit.now
