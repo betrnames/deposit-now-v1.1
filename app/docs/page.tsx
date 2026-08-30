@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { SiteFooter } from '@/components/SiteFooter';
-import { TerminalTitle } from '@/components/TerminalTitle';
 import { PRODUCT } from '@/lib/product-copy';
 import { ChevronRight, Copy, CheckCircle2 } from 'lucide-react';
 
@@ -265,21 +264,21 @@ console.log(await res.json()); // includes child.address when provisioned`;
             <div className="max-w-4xl min-w-0 space-y-16">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2 font-mono">
-                  <span className="hidden sm:inline text-primary/80" aria-hidden="true">
+                  <span className="text-primary/80" aria-hidden="true">
                     &gt;_
                   </span>{' '}
                   deposit.now documentation
                 </p>
-                <TerminalTitle hideOnMobile className="text-3xl font-black text-white tracking-tight">
+                <h1 className="font-mono text-3xl font-black text-white tracking-tight">
                   {PRODUCT.productLine}
-                </TerminalTitle>
+                </h1>
                 <p className="mt-3 text-base text-primary font-medium max-w-2xl">
                   {PRODUCT.tagline}
                 </p>
               </div>
 
               <section id="introduction" className="scroll-mt-16 space-y-4">
-                <TerminalTitle as="h2" className="text-2xl font-bold text-white">Introduction</TerminalTitle>
+                <h2 className="text-2xl font-bold text-white">Introduction</h2>
                 <div className="border border-primary/30 rounded-lg p-5 bg-primary/5">
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     <strong className="text-white">deposit.now</strong> is an open{' '}
@@ -335,7 +334,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
               </section>
 
               <section id="who-needs-what" className="scroll-mt-16 space-y-4">
-                <TerminalTitle as="h2" className="text-2xl font-bold text-white">Who needs what</TerminalTitle>
+                <h2 className="text-2xl font-bold text-white">Who needs what</h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {PRODUCT.noBrowserWallet} Credentials differ by role:
                 </p>
@@ -430,7 +429,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
               </section>
 
               <section id="quickstart" className="scroll-mt-16 space-y-4">
-                <TerminalTitle as="h2" className="text-2xl font-bold text-white">Quickstart</TerminalTitle>
+                <h2 className="text-2xl font-bold text-white">Quickstart</h2>
                 <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
                   <li>Install an x402 client (e.g. @x402/fetch + viem for JS).</li>
                   <li>
@@ -446,7 +445,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
               </section>
 
               <section id="flow" className="scroll-mt-16 space-y-4">
-                <TerminalTitle as="h2" className="text-2xl font-bold text-white">Bare-bones flow</TerminalTitle>
+                <h2 className="text-2xl font-bold text-white">Bare-bones flow</h2>
                 <ol className="space-y-3 text-sm text-muted-foreground">
                   <li>
                     <strong className="text-white">1.</strong> Agent calls{' '}
@@ -484,7 +483,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
               </section>
 
               <section id="endpoints" className="scroll-mt-16 space-y-4">
-                <TerminalTitle as="h2" className="text-2xl font-bold text-white">Endpoints</TerminalTitle>
+                <h2 className="text-2xl font-bold text-white">Endpoints</h2>
                 <Card className="bg-card/60 border-border/60">
                   <CardContent className="p-6 space-y-4 text-sm">
                     <div>
@@ -519,13 +518,13 @@ console.log(await res.json()); // includes child.address when provisioned`;
               </section>
 
               <section id="examples" className="scroll-mt-16 space-y-6">
-                <TerminalTitle as="h2" className="text-2xl font-bold text-white">Code examples</TerminalTitle>
+                <h2 className="text-2xl font-bold text-white">Code examples</h2>
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <TerminalTitle as="h3" className="text-sm font-semibold text-white">
+                    <h3 className="text-sm font-semibold text-white">
                       JavaScript (@x402/fetch)
-                    </TerminalTitle>
+                    </h3>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(jsExample, 0)}
@@ -552,9 +551,9 @@ console.log(await res.json()); // includes child.address when provisioned`;
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <TerminalTitle as="h3" className="text-sm font-semibold text-white">
+                    <h3 className="text-sm font-semibold text-white">
                       curl (probe 402)
-                    </TerminalTitle>
+                    </h3>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(curlExample, 1)}
@@ -577,7 +576,7 @@ console.log(await res.json()); // includes child.address when provisioned`;
               </section>
 
               <section id="security" className="scroll-mt-16 space-y-4">
-                <TerminalTitle as="h2" className="text-2xl font-bold text-white">Security</TerminalTitle>
+                <h2 className="text-2xl font-bold text-white">Security</h2>
                 <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
                   <li>Platform hot wallet via Coinbase CDP / Agentic Wallet only — no raw platform private keys in app code.</li>
                   <li>Managed children are platform_managed in CDP — API never returns private keys.</li>
@@ -589,20 +588,20 @@ console.log(await res.json()); // includes child.address when provisioned`;
               </section>
 
               <section id="faq" className="scroll-mt-16 space-y-4">
-                <TerminalTitle as="h2" className="text-2xl font-bold text-white">FAQ</TerminalTitle>
+                <h2 className="text-2xl font-bold text-white">FAQ</h2>
                 <div className="space-y-4 text-sm text-muted-foreground">
                   {PRODUCT.faq.map((item) => (
                     <div key={item.q}>
-                      <TerminalTitle as="p" className="text-white font-semibold mb-1">
+                      <p className="text-white font-semibold mb-1">
                         {item.q}
-                      </TerminalTitle>
+                      </p>
                       <p>{item.a}</p>
                     </div>
                   ))}
                   <div>
-                    <TerminalTitle as="p" className="text-white font-semibold mb-1">
+                    <p className="text-white font-semibold mb-1">
                       Do I need AgentKit or a connect-wallet button?
-                    </TerminalTitle>
+                    </p>
                     <p>
                       No. Payers use any x402 client and their own wallet/signer. AgentKit is
                       optional. This site does not require browser wallet connect — agents call the
@@ -618,9 +617,9 @@ console.log(await res.json()); // includes child.address when provisioned`;
                     </p>
                   </div>
                   <div>
-                    <TerminalTitle as="p" className="text-white font-semibold mb-1">
+                    <p className="text-white font-semibold mb-1">
                       Does 200 mean the target is funded?
-                    </TerminalTitle>
+                    </p>
                     <p>
                       No. <code className="text-primary">payment_received</code> means the x402
                       payment was accepted. Check <code className="text-primary">receiptUrl</code>{' '}
@@ -628,9 +627,9 @@ console.log(await res.json()); // includes child.address when provisioned`;
                     </p>
                   </div>
                   <div>
-                    <TerminalTitle as="p" className="text-white font-semibold mb-1">
+                    <p className="text-white font-semibold mb-1">
                       Where is the machine-readable guide?
-                    </TerminalTitle>
+                    </p>
                     <p>
                       <a href="/llms.txt" className="text-primary hover:underline">
                         /llms.txt
