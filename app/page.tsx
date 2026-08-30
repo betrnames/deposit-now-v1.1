@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Zap, Coins, CheckCircle2, Sparkles } from 'lucide-react';
+import { Zap, Coins, CheckCircle2, Sparkle, Sparkles } from 'lucide-react';
 import { SiteFooter } from '@/components/SiteFooter';
 import { Header } from '@/components/Header';
 import { PRODUCT } from '@/lib/product-copy';
@@ -42,7 +42,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
             {/* Left: message */}
             <div className="text-left flex flex-col items-start min-w-0">
-              <div className="mb-5 sm:mb-6 flex flex-wrap items-center gap-2">
+              <div className="mb-5 sm:mb-6 flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                 <Badge
                   className="px-4 py-2 bg-transparent border-primary/50 text-primary font-black uppercase"
                   style={{ letterSpacing: '0.2em', fontSize: '10px' }}
@@ -56,6 +56,7 @@ export default function Home() {
                   style={{ letterSpacing: '0.16em', fontSize: '10px' }}
                   variant="outline"
                 >
+                  <Sparkle className="h-3 w-3 mr-2" />
                   New · Solana USDC
                 </Badge>
               </div>
