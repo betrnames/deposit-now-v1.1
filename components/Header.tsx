@@ -1,8 +1,6 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
 import { DepositLogo } from '@/components/DepositLogo';
 
 const NAV = [{ href: '/docs', label: 'Docs' }] as const;
@@ -11,8 +9,6 @@ const navLinkClass =
   'text-sm font-medium text-muted-foreground hover:text-white transition-colors';
 
 export function Header() {
-  const [open, setOpen] = useState(false);
-
   return (
     <nav className="w-full z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
@@ -21,7 +17,7 @@ export function Header() {
             <DepositLogo size={36} className="text-white/85" />
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="flex items-center gap-4 sm:gap-8">
             {NAV.map((item) => (
               <Link key={item.href} href={item.href} className={navLinkClass}>
                 {item.label}
@@ -29,44 +25,12 @@ export function Header() {
             ))}
             <Link
               href="/docs#quickstart"
-              className="bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-4 h-9 rounded-lg inline-flex items-center"
+              className="bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider px-3 sm:px-4 h-9 rounded-lg inline-flex items-center"
             >
               Get started
             </Link>
           </div>
-
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5 transition-colors"
-            aria-expanded={open}
-            aria-label={open ? 'Close menu' : 'Open menu'}
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
         </div>
-
-        {open && (
-          <div className="md:hidden mt-4 pt-4 border-t border-border/60 flex flex-col gap-1">
-            {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-white hover:bg-muted/50 transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Link
-              href="/docs#quickstart"
-              onClick={() => setOpen(false)}
-              className="mt-2 mx-3 mb-1 bg-primary hover:bg-primary/90 text-white font-black text-[10px] uppercase tracking-wider h-10 rounded-lg inline-flex items-center justify-center"
-            >
-              Get started
-            </Link>
-          </div>
-        )}
       </div>
     </nav>
   );

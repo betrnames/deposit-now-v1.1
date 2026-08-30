@@ -18,7 +18,7 @@ export function TerminalTitle({
   return (
     <Tag className={cn('font-mono', className)}>
       <span
-        className={cn('text-primary select-none mr-2 sm:mr-3', promptClassName)}
+        className={cn('hidden sm:inline text-primary select-none mr-2 sm:mr-3', promptClassName)}
         aria-hidden="true"
       >
         &gt;_
