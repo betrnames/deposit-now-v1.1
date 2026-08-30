@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Zap, Coins, CheckCircle2, Sparkles } from 'lucide-react';
 import { SiteFooter } from '@/components/SiteFooter';
 import { Header } from '@/components/Header';
+import { TerminalTitle } from '@/components/TerminalTitle';
 import { PRODUCT } from '@/lib/product-copy';
 import { SITE, openGraphImages } from '@/lib/seo';
 
@@ -148,7 +149,7 @@ export default function Home() {
                 01
               </div>
               <CardContent className="p-10 relative z-10">
-                <h3 className="text-2xl font-bold mb-4 text-white">Call deposit</h3>
+                <TerminalTitle as="h3" className="text-2xl font-bold mb-4 text-white">Call deposit</TerminalTitle>
                 <p className="text-muted-foreground mb-6">
                   Agent posts net <code className="text-primary text-sm">amount</code> plus either{' '}
                   <code className="text-primary text-sm">target</code> or{' '}
@@ -175,7 +176,7 @@ export default function Home() {
                 02
               </div>
               <CardContent className="p-10 relative z-10">
-                <h3 className="text-2xl font-bold mb-4 text-white">Pay x402</h3>
+                <TerminalTitle as="h3" className="text-2xl font-bold mb-4 text-white">Pay x402</TerminalTitle>
                 <p className="text-muted-foreground mb-6">
                   HTTP 402 for amount + 0.25% (min $0.001, max $0.25). Agent pays USDC on Base or Solana — same chain as the target.
                 </p>
@@ -197,7 +198,7 @@ export default function Home() {
                 03
               </div>
               <CardContent className="p-10 relative z-10">
-                <h3 className="text-2xl font-bold mb-4 text-white">Forward + receipt</h3>
+                <TerminalTitle as="h3" className="text-2xl font-bold mb-4 text-white">Forward + receipt</TerminalTitle>
                 <p className="text-muted-foreground mb-6">
                   After settlement, net is forwarded to target (or provisioned child). Check{' '}
                   <code className="text-primary text-sm">forwardStatus</code> — 200 is not delivery.
