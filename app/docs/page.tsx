@@ -263,17 +263,9 @@ console.log(await res.json()); // includes child.address when provisioned`;
               </div>
             </nav>
             <div className="max-w-4xl min-w-0 space-y-16">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2 font-mono">
-                  deposit.now documentation
-                </p>
-                <TerminalTitle className="text-3xl font-black text-white tracking-tight">
-                  {PRODUCT.productLine}
-                </TerminalTitle>
-                <p className="mt-3 text-base text-primary font-medium max-w-2xl">
-                  {PRODUCT.tagline}
-                </p>
-              </div>
+              <h1 className="text-base text-primary font-medium max-w-2xl">
+                {PRODUCT.tagline}
+              </h1>
 
               <section id="introduction" className="scroll-mt-16 space-y-4">
                 <TerminalTitle as="h2" className="text-2xl font-bold text-white">Introduction</TerminalTitle>
