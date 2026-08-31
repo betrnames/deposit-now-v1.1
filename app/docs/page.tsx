@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { SiteFooter } from '@/components/SiteFooter';
@@ -263,9 +264,34 @@ console.log(await res.json()); // includes child.address when provisioned`;
               </div>
             </nav>
             <div className="max-w-4xl min-w-0 space-y-16">
-              <h1 className="text-base text-primary font-medium max-w-2xl">
-                {PRODUCT.tagline}
-              </h1>
+              <div>
+                <nav aria-label="Breadcrumb" className="mb-4">
+                  <ol className="flex flex-wrap items-center gap-1.5 text-xs font-mono text-muted-foreground">
+                    <li>
+                      <Link href="/" className="hover:text-white">
+                        deposit.now
+                      </Link>
+                    </li>
+                    <li aria-hidden="true" className="text-muted-foreground/50">
+                      /
+                    </li>
+                    <li>
+                      <Link href="/docs" className="hover:text-white">
+                        Docs
+                      </Link>
+                    </li>
+                    <li aria-hidden="true" className="text-muted-foreground/50">
+                      /
+                    </li>
+                    <li className="text-white" aria-current="page">
+                      {SECTIONS.find((s) => s.id === activeSection)?.label ?? 'Introduction'}
+                    </li>
+                  </ol>
+                </nav>
+                <h1 className="text-base text-primary font-medium max-w-2xl">
+                  {PRODUCT.tagline}
+                </h1>
+              </div>
 
               <section id="introduction" className="scroll-mt-16 space-y-4">
                 <TerminalTitle as="h2" className="text-2xl font-bold text-white">Introduction</TerminalTitle>
