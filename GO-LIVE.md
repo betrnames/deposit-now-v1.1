@@ -61,6 +61,19 @@ curl -i -X POST https://deposit.now/api/deposit \
 
 Expect 402; Payment-Required should include mainnet network when `X402_NETWORK=mainnet` + CDP keys are set.
 
+Health check (uptime monitor, every 5 min):
+
+```
+curl -i https://deposit.now/api/health
+```
+
+Expect 200 `{"ok":true}`.
+
+## Restore
+
+See **docs/RESTORE.md** — Neon PITR + Blob restore steps. Run the throwaway-branch
+restore once before launch; a backup you have never restored is not a backup.
+
 ## Local
 
 Without mainnet CDP env, middleware falls back to Base Sepolia facilitator.
