@@ -17,13 +17,13 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        // Private/utility — receipts are noindex; admin is secret; deposit is a payment API not a content page
-        disallow: ['/api/admin/', '/api/deposit', '/receipt/'],
+        // Block all API surfaces from crawlers; keep public pages allowed
+        disallow: ['/api/', '/receipt/'],
       },
       ...AI_CRAWLERS.map((userAgent) => ({
         userAgent,
         allow: '/',
-        disallow: ['/api/admin/', '/api/deposit', '/receipt/'],
+        disallow: ['/api/', '/receipt/'],
       })),
     ],
     sitemap: 'https://deposit.now/sitemap.xml',
