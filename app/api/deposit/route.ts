@@ -15,17 +15,7 @@ function clientIp(request: NextRequest): string {
 }
 
 export async function GET(request: NextRequest) {
-  try {
-    const rl = await checkRateLimitDb('GET', '/api/deposit', clientIp(request), null);
-    if (rl.blocked) {
-      return NextResponse.json(
-        { error: 'GUARDRAIL_BLOCKED', code: rl.code, message: rl.message, retryAfter: rl.retryAfter },
-        { status: 429, headers: { 'Retry-After': String(rl.retryAfter ?? 60) } }
-      );
-    }
-  } catch {
-    // DB unavailable — fall through to handler
-  }
+  // Skip Neon rate-limit INSERT on read-only GETs (CPU/DB cost without paid traffic).
   return handleDepositGet(request);
 }
 

@@ -26,7 +26,6 @@ import {
   buildIntent,
   loadIntentByGrossAtomic,
   mergeReceipt,
-  saveDepositIntent,
   type DepositIntent,
 } from '@/lib/deposit-intent';
 import {
@@ -215,22 +214,6 @@ function childIntentFields(child: ChildAgentInfo | null | undefined) {
   };
 }
 
-async function rememberIntentFromBody(body: DepositBody): Promise<void> {
-  if (!body.target || !body.amount) return;
-  const intent = buildIntent(
-    body.target,
-    body.amount,
-    body.memo,
-    childIntentFields(body.resolvedChild)
-  );
-  if (!intent) return;
-  try {
-    await saveDepositIntent(intent);
-  } catch (err) {
-    console.error('saveDepositIntent failed:', err instanceof Error ? err.message : 'unknown');
-  }
-}
-
 /**
  * Resolve target for target-mode or provision-mode. Mutates body.target / resolvedChild.
  * Safe to call multiple times (uses cache fields on body).
@@ -298,15 +281,12 @@ async function ensureResolvedTarget(
   return { ok: true, target: tv.address, child: provisioned.child };
 }
 
-/** x402 price = net + clamp(net × 0.25%, $0.001, $0.25) */
+/** x402 price = net + clamp(net × 0.25%, $0.001, $0.25)
+ * Quote from amount alone — no CDP provision / Blob writes before payment verifies.
+ */
 async function resolveDepositPrice(context: HTTPRequestContext): Promise<string> {
   try {
     const body = await parseDepositBody(context);
-    // Resolve provision early so intent has a concrete target before pay
-    const resolved = await ensureResolvedTarget(body, context);
-    if (resolved.ok) {
-      await rememberIntentFromBody(body);
-    }
     const net = clampDepositUsdc(body.amount);
     if (net === null) return fallbackGrossPrice();
     const split = calculateDepositSplit(net);
@@ -730,15 +710,19 @@ export const middleware = paymentProxy(
           };
         }
 
-        const resolved = await ensureResolvedTarget(body, context);
-        if (!resolved.ok) {
+        // Quote from amount alone — no CDP provision / Blob writes before payment verifies.
+        // Provision + intent persistence happen in handleDepositPost / onAfterSettle after pay.
+        const mode = resolveDepositTargetMode({
+          target: body.target,
+          provision: body.provision,
+        });
+        if (mode.mode === 'error') {
           return {
             contentType: 'application/json',
             body: {
               error: 'invalid_request',
-              code: resolved.code,
-              message: resolved.message,
-              ...(resolved.retryAfter != null ? { retryAfter: resolved.retryAfter } : {}),
+              code: mode.code,
+              message: mode.message,
               feePercent: PLATFORM_FEE_PERCENT,
               minAmount: DEPOSIT_MIN_USDC,
               maxAmount: 100_000,
@@ -748,9 +732,50 @@ export const middleware = paymentProxy(
           };
         }
 
-        await rememberIntentFromBody(body);
+        if (mode.mode === 'provision') {
+          const payNetwork = X402_NETWORK;
+          return {
+            contentType: 'application/json',
+            body: {
+              service: 'deposit.now',
+              action: 'deposit',
+              memo: body.memo,
+              provision: true,
+              label: body.label,
+              provisioned: false,
+              netToTarget: split.net.toFixed(6),
+              fee: split.fee.toFixed(6),
+              feePercent: split.feePercent,
+              grossToPay: split.gross.toFixed(6),
+              asset: 'USDC',
+              assetAddress: usdcAssetForNetwork(payNetwork),
+              network: networkLabelShort(payNetwork),
+              x402Network: payNetwork,
+              payOn: 'base',
+              hint:
+                'Pay grossToPay via x402 on Base, then retry with the same body + payment proof. Managed child wallet is provisioned after payment verifies (Base only; keys platform-managed in CDP, no export in v1).',
+            },
+          };
+        }
 
-        const destChain = detectTargetChain(resolved.target) ?? 'base';
+        const tv = validateDepositTarget(body.target, PLATFORM_PAY_TO);
+        if (!tv.ok) {
+          return {
+            contentType: 'application/json',
+            body: {
+              error: 'invalid_request',
+              code: tv.code ?? 'invalid_target',
+              message: tv.message,
+              feePercent: PLATFORM_FEE_PERCENT,
+              minAmount: DEPOSIT_MIN_USDC,
+              maxAmount: 100_000,
+              docs: 'https://deposit.now/docs',
+              llms: 'https://deposit.now/llms.txt',
+            },
+          };
+        }
+
+        const destChain = detectTargetChain(tv.address) ?? 'base';
         const payNetwork = destChain === 'solana' ? SOLANA_NETWORK : X402_NETWORK;
 
         return {
@@ -758,10 +783,9 @@ export const middleware = paymentProxy(
           body: {
             service: 'deposit.now',
             action: 'deposit',
-            target: resolved.target,
+            target: tv.address,
             memo: body.memo,
-            provisioned: !!resolved.child,
-            ...(resolved.child ? { child: resolved.child } : {}),
+            provisioned: false,
             netToTarget: split.net.toFixed(6),
             fee: split.fee.toFixed(6),
             feePercent: split.feePercent,
@@ -771,9 +795,8 @@ export const middleware = paymentProxy(
             network: networkLabelShort(payNetwork),
             x402Network: payNetwork,
             payOn: destChain,
-            hint: resolved.child
-              ? 'Managed child wallet provisioned on Base. Pay grossToPay via x402 on Base, then retry with the same body + payment proof. Keys are platform-managed in CDP (no export in v1).'
-              : destChain === 'solana'
+            hint:
+              destChain === 'solana'
                 ? 'Pay grossToPay via x402 on Solana, then retry with payment proof. Net is forwarded on Solana after settlement; check receiptUrl for forward status.'
                 : 'Pay grossToPay via x402 on Base, then retry with payment proof. Net is forwarded after settlement; check receiptUrl for forward status.',
           },

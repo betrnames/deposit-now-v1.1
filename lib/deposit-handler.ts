@@ -70,7 +70,13 @@ export async function handleDepositGet(request: NextRequest) {
       timestamp: new Date().toISOString(),
       ...receiptFields(request),
     },
-    { status: 200, headers: CORS_HEADERS }
+    {
+      status: 200,
+      headers: {
+        ...CORS_HEADERS,
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+      },
+    }
   );
 }
 

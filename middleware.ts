@@ -1,23 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { middleware as x402Middleware } from '@/lib/x402';
 
-function isX402Route(pathname: string): boolean {
-  return pathname === '/api/deposit' || pathname === '/api/deposit/';
-}
-
+/**
+ * Only /api/deposit hits this middleware. Non-POST methods skip the heavy
+ * x402/crypto stack entirely (lazy import below runs for POST only).
+ */
 export async function middleware(request: NextRequest) {
   const limited = checkRateLimit(request);
   if (limited) return limited;
 
-  if (isX402Route(request.nextUrl.pathname)) {
-    return x402Middleware(request);
+  if (request.method !== 'POST') {
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
+  // Dynamic import so GET/HEAD/OPTIONS and cold paths never load lib/x402
+  // (@x402/next, EVM+Solana schemes, CDP facilitator, etc.).
+  const { middleware: x402Middleware } = await import('@/lib/x402');
+  return x402Middleware(request);
 }
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: ['/api/deposit', '/api/deposit/'],
   runtime: 'nodejs',
 };
